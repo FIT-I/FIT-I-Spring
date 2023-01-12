@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
-@Tag(name = "계정 API(Login VC)")
+@Tag(name = "계정 API")
 @RequestMapping("/api/accounts")
 @RequiredArgsConstructor
 public class AccountController {
