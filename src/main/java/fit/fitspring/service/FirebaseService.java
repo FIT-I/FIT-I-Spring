@@ -6,6 +6,7 @@ import com.google.common.net.HttpHeaders;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import fit.fitspring.controller.dto.firebase.FcmMessage;
+import fit.fitspring.controller.dto.firebase.FcmTokenDto;
 import fit.fitspring.domain.account.Account;
 import fit.fitspring.domain.account.AccountRepository;
 import fit.fitspring.domain.firebase.FCMToken;
@@ -48,6 +49,20 @@ public class FirebaseService {
         }catch (IOException e){
             e.printStackTrace();
         }
+    }
+
+    public void storeToken(String email, String token) {
+        FCMToken tokenEntity = FCMToken.builder()
+                .account(accountService.getByEmail(email))
+                .token(token)
+                .build();
+        firebaseRepository.save(tokenEntity);
+    }
+
+    public void deleteTokenByEmail(String email) {
+        FCMToken token = firebaseRepository.findByAccount(accountService.getByEmail(email))
+                .orElseThrow(EntityNotFoundException::new);
+        firebaseRepository.delete(token);
     }
 
     /**
