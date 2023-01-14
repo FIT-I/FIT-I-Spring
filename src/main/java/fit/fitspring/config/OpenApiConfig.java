@@ -60,28 +60,7 @@ public class OpenApiConfig {
     public WebClient firebaseWebClient() throws IOException {
         return WebClient.builder()
                 .baseUrl(FIREBASE_URL)
-                .defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer " + getAccessToken())
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, "application/json; UTF-8")
                 .build();
-    }
-    @PostConstruct
-    public void init(){
-        try{
-            FirebaseOptions options = new FirebaseOptions.Builder()
-                    .setCredentials(GoogleCredentials.fromStream(new ClassPathResource(firebasePath).getInputStream())).build();
-
-            if(FirebaseApp.getApps().isEmpty()){
-                FirebaseApp.initializeApp(options);
-            }
-        }catch (IOException e){
-            e.printStackTrace();
-        }
-    }
-    private String getAccessToken() throws IOException {
-        GoogleCredentials googleCredentials = GoogleCredentials
-                .fromStream(new ClassPathResource(firebasePath).getInputStream())
-                .createScoped(List.of("https://www.googleapis.com/auth/cloud-platform"));
-        googleCredentials.refreshIfExpired();
-        return googleCredentials.getAccessToken().getTokenValue();
     }
 }
