@@ -38,7 +38,7 @@ public class FirebaseController {
         return ResponseEntity.ok().build();
     }
     @Operation(summary = "토큰 삭제", description = "해당 유저의 토큰을 삭제")
-    @DeleteMapping("/users/{email}}")
+    @DeleteMapping("/users/{email}")
     public ResponseEntity deleteTokenByUser(@Parameter(description = "이메일") @PathVariable String email){
 
         return ResponseEntity.ok().build();
