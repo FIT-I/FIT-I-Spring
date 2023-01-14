@@ -1,7 +1,6 @@
 package fit.fitspring.controller;
 
 import fit.fitspring.controller.dto.firebase.FcmTokenDto;
-import fit.fitspring.controller.dto.notification.NotificationSendDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
