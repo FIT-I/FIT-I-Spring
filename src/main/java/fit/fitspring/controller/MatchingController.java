@@ -3,6 +3,7 @@ package fit.fitspring.controller;
 import fit.fitspring.controller.dto.customer.SearchTrainerDto;
 import fit.fitspring.controller.dto.customer.TrainerDto;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,14 +31,14 @@ public class MatchingController {
     }
 
     @Operation(summary = "매칭정보조회(미완)", description = "매칭정보조회(Request/Response)")
-    @GetMapping()
-    public ResponseEntity getMatchingInformation(){
+    @GetMapping("/{matchingIdx}")
+    public ResponseEntity getMatchingInformation(@Parameter(description = "매칭신청식별자")@PathVariable Integer matchingIdx){
         return ResponseEntity.ok().build();
     }
 
     @Operation(summary = "매칭요청답변(수락/거절)(미완)", description = "매칭요청답변(Request)")
     @PatchMapping("/{answer}")
-    public ResponseEntity answerMatchingRequest(@PathVariable String answer){
+    public ResponseEntity answerMatchingRequest(@Parameter(description = "답변('수락' or '거절')")@PathVariable String answer){
         return ResponseEntity.ok().build();
     }
 }
