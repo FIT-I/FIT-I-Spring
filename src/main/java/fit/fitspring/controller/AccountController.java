@@ -76,7 +76,7 @@ public class AccountController {
     }
 
     @Operation(summary = "이용약관수락(미완)", description = "이용약관수락")
-    @PostMapping("/Terms")
+    @PostMapping("/terms")
     public ResponseEntity acceptTermsOfUse(){
         return ResponseEntity.ok().build();
     }
@@ -87,5 +87,21 @@ public class AccountController {
         return ResponseEntity.ok().build();
     }
 
-    //트레이너인증 api - 인증방식 결정 후후 생성
+    @Operation(summary = "로그아웃(미완)", description = "로그아웃")
+    @PostMapping("/logout")
+    public ResponseEntity userLogout(){
+        return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "계정탈퇴(미완)", description = "계정탈퇴")
+    @PatchMapping("/close")
+    public ResponseEntity userCloseAccount(){
+        return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "계정상태수정(미완)", description = "계정상태수정(Request)")
+    @PatchMapping("/state/{state}")
+    public ResponseEntity modifyAccountState(@Parameter(description = "상태('able' or 'disabled'")@PathVariable String state){
+        return ResponseEntity.ok().build();
+    }
 }
