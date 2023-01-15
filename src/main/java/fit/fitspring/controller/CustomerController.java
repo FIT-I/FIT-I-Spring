@@ -21,20 +21,20 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CustomerController {
 
-    @Operation(summary = "트레이너 목록조회", description = "트레이너 목록조회(Request/Response)")
+    @Operation(summary = "트레이너 목록조회(미완)", description = "트레이너 목록조회(Request/Response)")
     @GetMapping()
     public ResponseEntity getTrainerList(@RequestBody SearchTrainerDto category){
         List<TrainerDto> trainerDtoList; // 리턴객체
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "트레이너 찜하기", description = "트레이너 찜하기(Request)")
+    @Operation(summary = "트레이너 찜하기(미완)", description = "트레이너 찜하기(Request)")
     @PostMapping("/{userIdx}")
     public ResponseEntity likeTrainer(@Parameter(description = "유저식별자")@PathVariable String userIdx){
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "트레이너 매칭요청", description = "트레이너 매칭요청(Request)")
+    @Operation(summary = "트레이너 매칭요청(미완)", description = "트레이너 매칭요청(Request)")
     @PostMapping("/matching/{userIdx}")
     public ResponseEntity requestTrainerMatching(@RequestBody MatchingRequestDto matchingRequest){
         return ResponseEntity.ok().build();

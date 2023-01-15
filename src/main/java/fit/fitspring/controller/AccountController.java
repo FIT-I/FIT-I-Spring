@@ -37,51 +37,51 @@ public class AccountController {
 //        return ResponseEntity.ok().build();
 //    }
 
-    @Operation(summary = "회원가입", description = "회원가입(Request)")
+    @Operation(summary = "회원가입(미완)", description = "회원가입(Request)")
     @PostMapping
     public ResponseEntity registerUser(@RequestBody RegisterDto registerDto){
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "로그인", description = "로그인(Request)")
+    @Operation(summary = "로그인(미완)", description = "로그인(Request)")
     @PostMapping("/{email}/{password}")
     public ResponseEntity userLogin(@Parameter(description = "이메일")@PathVariable String email,
                                     @Parameter(description = "비밀번호")@PathVariable String password){
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "인증메일전송", description = "인증메일전송(Request/Response)")
+    @Operation(summary = "인증메일전송(미완)", description = "인증메일전송(Request/Response)")
     @GetMapping("/{email}")
     public ResponseEntity findUserPassword(@Parameter(description = "이메일")@PathVariable String email){
         String certificationNumber = "6자리 인증번호";
         return ResponseEntity.ok().body(certificationNumber);
     }
 
-    @Operation(summary = "카카오로그인", description = "카카오로그인(Request)")
+    @Operation(summary = "카카오로그인(미완)", description = "카카오로그인(Request)")
     @PostMapping("/kakao")
     public ResponseEntity userKakaoLogin(){
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "애플로그인", description = "애플로그인(Request)")
+    @Operation(summary = "애플로그인(미완)", description = "애플로그인(Request)")
     @PostMapping("/apple")
     public ResponseEntity userAppleLogin(){
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "네이버로그인", description = "네이버로그인(Request)")
+    @Operation(summary = "네이버로그인(미완)", description = "네이버로그인(Request)")
     @PostMapping("/naver")
     public ResponseEntity userNaverLogin(){
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "이용약관수락", description = "이용약관수락")
+    @Operation(summary = "이용약관수락(미완)", description = "이용약관수락")
     @PostMapping("/Terms")
     public ResponseEntity acceptTermsOfUse(){
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "비밀번호변경", description = "비밀번호변경(Request)")
+    @Operation(summary = "비밀번호변경(미완)", description = "비밀번호변경(Request)")
     @PatchMapping("/{password}")
     public ResponseEntity modifyPassword(@Parameter(description = "비밀번호")@PathVariable String password){
         return ResponseEntity.ok().build();
