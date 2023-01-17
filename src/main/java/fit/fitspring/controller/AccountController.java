@@ -40,13 +40,13 @@ public class AccountController {
 //        return ResponseEntity.ok().build();
 //    }
 
-    @Operation(summary = "회원가입", description = "회원가입(Request)")
+    @Operation(summary = "회원가입(미완)", description = "회원가입(Request)")
     @PostMapping
     public ResponseEntity registerUser(@RequestBody RegisterDto registerDto){
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "로그인", description = "로그인(Request)")
+    @Operation(summary = "로그인(미완)", description = "로그인(Request)")
     @PostMapping("/{email}/{password}")
     public ResponseEntity userLogin(@Parameter(description = "이메일")@PathVariable String email,
                                     @Parameter(description = "비밀번호")@PathVariable String password){
@@ -64,35 +64,51 @@ public class AccountController {
         }
     }
 
-    @Operation(summary = "카카오로그인", description = "카카오로그인(Request)")
+    @Operation(summary = "카카오로그인(미완)", description = "카카오로그인(Request)")
     @PostMapping("/kakao")
     public ResponseEntity userKakaoLogin(){
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "애플로그인", description = "애플로그인(Request)")
+    @Operation(summary = "애플로그인(미완)", description = "애플로그인(Request)")
     @PostMapping("/apple")
     public ResponseEntity userAppleLogin(){
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "네이버로그인", description = "네이버로그인(Request)")
+    @Operation(summary = "네이버로그인(미완)", description = "네이버로그인(Request)")
     @PostMapping("/naver")
     public ResponseEntity userNaverLogin(){
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "이용약관수락", description = "이용약관수락")
-    @PostMapping("/Terms")
+    @Operation(summary = "이용약관수락(미완)", description = "이용약관수락")
+    @PostMapping("/terms")
     public ResponseEntity acceptTermsOfUse(){
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "비밀번호변경", description = "비밀번호변경(Request)")
+    @Operation(summary = "비밀번호변경(미완)", description = "비밀번호변경(Request)")
     @PatchMapping("/{password}")
     public ResponseEntity modifyPassword(@Parameter(description = "비밀번호")@PathVariable String password){
         return ResponseEntity.ok().build();
     }
 
-    //트레이너인증 api - 인증방식 결정 후후 생성
+    @Operation(summary = "로그아웃(미완)", description = "로그아웃")
+    @PostMapping("/logout")
+    public ResponseEntity userLogout(){
+        return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "계정탈퇴(미완)", description = "계정탈퇴")
+    @PatchMapping("/close")
+    public ResponseEntity userCloseAccount(){
+        return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "계정상태수정(미완)", description = "계정상태수정(Request)")
+    @PatchMapping("/state/{state}")
+    public ResponseEntity modifyAccountState(@Parameter(description = "상태('able' or 'disabled'")@PathVariable String state){
+        return ResponseEntity.ok().build();
+    }
 }
