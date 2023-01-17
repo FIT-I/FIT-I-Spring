@@ -18,7 +18,7 @@ public enum ErrorCode {
     /*유저*/
     ACCOUNT_NOT_FOUND(false, 3001, "사용자를 찾을 수 없습니다."),
     DUPLICATE_ACCOUNT(false, 3002, "이미 사용중인 이메일입니다."),
-
+    EMAIL_SENDING_ERROR(false, 3003, "이메일 전송에 실패하였습니다."),
     ;
 
     private final boolean isSuccess;

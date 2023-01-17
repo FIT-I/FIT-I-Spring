@@ -4,12 +4,18 @@ import fit.fitspring.controller.dto.account.AccountForRegisterDto;
 import fit.fitspring.domain.account.Account;
 import fit.fitspring.domain.account.AccountRepository;
 import fit.fitspring.exception.account.DuplicatedAccountException;
+import fit.fitspring.exception.common.BusinessException;
+import fit.fitspring.exception.common.ErrorCode;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -28,7 +34,7 @@ public class AccountService {
         }
     }
 
-    public String getCertificationNumber(String email) {
+    public String getCertificationNumber(String email) throws BusinessException{
         String number = "";
         for(int i = 0; i < 6; i++){
             number += Integer.toString((int)(Math.random() * 9));
@@ -41,8 +47,8 @@ public class AccountService {
         try {
             javaMailSender.send(simpleMailMessage);
             return number;
-        } catch (DataIntegrityViolationException e){
-            throw new DuplicatedAccountException();
+        } catch (Exception e){
+            throw new BusinessException(ErrorCode.EMAIL_SENDING_ERROR);
         }
     }
 }
