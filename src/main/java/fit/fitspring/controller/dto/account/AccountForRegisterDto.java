@@ -4,11 +4,13 @@ import fit.fitspring.domain.account.Account;
 import fit.fitspring.domain.account.AccountType;
 
 public class AccountForRegisterDto {
+    private String name;
     private String email;
     private String password;
     private AccountType accountType;
 
-    public AccountForRegisterDto(String email, String password, AccountType accountType) {
+    public AccountForRegisterDto(String name, String email, String password, AccountType accountType) {
+        this.name = name;
         this.email = email;
         this.password = password;
         this.accountType = accountType;
@@ -16,6 +18,7 @@ public class AccountForRegisterDto {
 
     public Account toEntity(){
         return Account.builder()
+                .name(name)
                 .email(email)
                 .password(password)
                 .accountType(accountType)
