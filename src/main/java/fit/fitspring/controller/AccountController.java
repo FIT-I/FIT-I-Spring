@@ -55,7 +55,7 @@ public class AccountController {
 
     @Operation(summary = "인증메일전송", description = "인증메일전송(Request/Response)")
     @GetMapping("/email/{email}")
-    public BaseResponse<String> findUserPassword(@Parameter(description = "이메일")@PathVariable String email){
+    public BaseResponse<String> sendCertificationEmail(@Parameter(description = "이메일")@PathVariable String email){
         try{
             String number = accountService.getCertificationNumber(email);
             return new BaseResponse<>(number);
