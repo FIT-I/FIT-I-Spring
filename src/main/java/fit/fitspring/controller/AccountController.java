@@ -51,10 +51,10 @@ public class AccountController {
     }
 
     @Operation(summary = "인증메일전송", description = "인증메일전송(Request/Response)")
-    @GetMapping("/{email}")
+    @GetMapping("/email/{email}")
     public ResponseEntity findUserPassword(@Parameter(description = "이메일")@PathVariable String email){
-        String certificationNumber = "6자리 인증번호";
-        return ResponseEntity.ok().body(certificationNumber);
+        String number = accountService.getCertificationNumber(email);
+        return ResponseEntity.ok().body(number);
     }
 
     @Operation(summary = "카카오로그인", description = "카카오로그인(Request)")
