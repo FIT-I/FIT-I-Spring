@@ -2,6 +2,9 @@ package fit.fitspring.controller;
 
 import fit.fitspring.controller.dto.account.AccountForRegisterDto;
 import fit.fitspring.controller.dto.account.RegisterDto;
+import fit.fitspring.exception.common.BusinessException;
+import fit.fitspring.exception.common.ErrorCode;
+import fit.fitspring.response.BaseResponse;
 import fit.fitspring.service.AccountService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -50,11 +53,15 @@ public class AccountController {
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "인증메일전송(미완)", description = "인증메일전송(Request/Response)")
-    @GetMapping("/{email}")
-    public ResponseEntity findUserPassword(@Parameter(description = "이메일")@PathVariable String email){
-        String certificationNumber = "6자리 인증번호";
-        return ResponseEntity.ok().body(certificationNumber);
+    @Operation(summary = "인증메일전송", description = "인증메일전송(Request/Response)")
+    @GetMapping("/email/{email}")
+    public BaseResponse<String> sendCertificationEmail(@Parameter(description = "이메일")@PathVariable String email){
+        try{
+            String number = accountService.getCertificationNumber(email);
+            return new BaseResponse<>(number);
+        } catch(BusinessException e){
+            return new BaseResponse<>(e.getErrorCode());
+        }
     }
 
     @Operation(summary = "카카오로그인(미완)", description = "카카오로그인(Request)")
