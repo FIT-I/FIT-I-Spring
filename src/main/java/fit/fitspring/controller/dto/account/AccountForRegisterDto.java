@@ -2,7 +2,11 @@ package fit.fitspring.controller.dto.account;
 
 import fit.fitspring.domain.account.Account;
 import fit.fitspring.domain.account.AccountType;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class AccountForRegisterDto {
     private String name;
     private String email;

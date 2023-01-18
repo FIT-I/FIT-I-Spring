@@ -1,6 +1,7 @@
 package fit.fitspring.service;
 
 import fit.fitspring.controller.dto.account.AccountForRegisterDto;
+import fit.fitspring.controller.mdoel.account.PostAccountRes;
 import fit.fitspring.domain.account.Account;
 import fit.fitspring.domain.account.AccountRepository;
 import fit.fitspring.exception.account.DuplicatedAccountException;
@@ -25,11 +26,14 @@ public class AccountService {
     private JavaMailSender javaMailSender;
 
     private final AccountRepository accountRepository;
-    public void registerAccount(AccountForRegisterDto accountDto) {
+    public PostAccountRes registerAccount(AccountForRegisterDto accountDto) {
         Account account = accountDto.toEntity();
         try {
+            String createResult = accountDto.getEmail();
             accountRepository.save(account);
+            return new PostAccountRes(createResult);
         } catch (DataIntegrityViolationException e){
+            // 중복 이메일 게정 체크
             throw new DuplicatedAccountException();
         }
     }

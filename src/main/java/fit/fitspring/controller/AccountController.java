@@ -2,8 +2,11 @@ package fit.fitspring.controller;
 
 import fit.fitspring.controller.dto.account.AccountForRegisterDto;
 import fit.fitspring.controller.dto.account.RegisterDto;
+import fit.fitspring.controller.mdoel.account.PostAccountRes;
 import fit.fitspring.exception.common.BusinessException;
 import fit.fitspring.exception.common.ErrorCode;
+import fit.fitspring.controller.mdoel.account.*;
+import static fit.fitspring.utils.ValidationRegex.isRegexEmail;
 import fit.fitspring.response.BaseResponse;
 import fit.fitspring.service.AccountService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -13,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 
 @Slf4j
 @RestController
@@ -42,8 +46,33 @@ public class AccountController {
 
     @Operation(summary = "회원가입(미완)", description = "회원가입(Request)")
     @PostMapping
-    public ResponseEntity registerUser(@RequestBody RegisterDto registerDto){
-        return ResponseEntity.ok().build();
+    public BaseResponse<PostAccountRes> registerUser(@RequestBody RegisterDto registerDto){
+
+        // 이메일, 비밀번호, 이름이 입력 되지 않았을 경우 에러 코드 리턴
+        if (registerDto.getEmail() == null) {
+            return new BaseResponse<>(ErrorCode.POST_ACCOUNTS_EMPTY_EMAIL);
+        }
+
+        // 이름이 입력되지 않았을 경우 에러 리턴
+        if (registerDto.getName() ==null) {
+            return new BaseResponse<>(ErrorCode.POST_ACCOUNTS_EMPTY_NAME);
+        }
+
+        // 이메일 형식이 맞지 않은 경우 에러 코드 리턴
+        if (!isRegexEmail(registerDto.getEmail())){
+            return new BaseResponse<>(ErrorCode.POST_ACCOUNTS_INVALID_EMAIL);
+        }
+
+        // DB에 저장
+        try {
+            AccountForRegisterDto accountForRegisterDto = new AccountForRegisterDto(registerDto.getName(), registerDto.getEmail(), registerDto.getPassword(), registerDto.getAccountType());
+            PostAccountRes postAccountRes = accountService.registerAccount(accountForRegisterDto);
+            return new BaseResponse<>(postAccountRes);
+        } catch(BusinessException e){
+            return new BaseResponse<>(e.getErrorCode());
+        }
+
+        //return ResponseEntity.ok().build();
     }
 
     @Operation(summary = "로그인(미완)", description = "로그인(Request)")

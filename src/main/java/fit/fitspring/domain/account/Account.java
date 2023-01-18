@@ -16,6 +16,7 @@ import lombok.*;
         }
 )
 public class Account {
+    @Column(name="user_idx")
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -28,6 +29,7 @@ public class Account {
     @Column(name="user_pwd")
     private String password;
 
+    @Column(name="user_role")
     @Enumerated(EnumType.STRING)
     private AccountType accountType;
 
