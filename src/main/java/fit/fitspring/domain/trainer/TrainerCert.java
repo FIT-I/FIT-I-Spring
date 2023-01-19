@@ -1,7 +1,10 @@
 package fit.fitspring.domain.trainer;
 
+import fit.fitspring.domain.account.TermAgreeId;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.io.Serializable;
 
 @Builder
 @AllArgsConstructor
@@ -9,6 +12,8 @@ import lombok.*;
 @Getter
 @Setter
 @Entity
+@EqualsAndHashCode
+@IdClass(TrainerCert.class)
 @Table(name="trainer_cert",
         uniqueConstraints={
                 @UniqueConstraint(
@@ -16,16 +21,14 @@ import lombok.*;
                         columnNames = {"trainer_idx","cert_idx"}
                 )
         })
-public class Trainer_Cert {
+public class TrainerCert implements Serializable {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="trainer_cert_idx")
-    private Long id;
-
+    @Id
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "trainer_idx")
     private Trainer trainer;
 
+    @Id
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cert_idx")
     private Certificate certificate;

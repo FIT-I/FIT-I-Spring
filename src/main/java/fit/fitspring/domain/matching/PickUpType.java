@@ -1,11 +1,11 @@
-package fit.fitspring.domain.account;
+package fit.fitspring.domain.matching;
 
-public enum AccountType {
-    TRAINER("트레이너"),
-    CUSTOMER("고객");
+public enum PickUpType {
+    TRAINER_GO("트레이너가 갈게요"),
+    CUSTOMER_GO("고객이 갈게요");
 
     private String krName;
-    AccountType(String krName) {
+    PickUpType(String krName) {
         this.krName = krName;
     }
 
