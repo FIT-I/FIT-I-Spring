@@ -1,9 +1,12 @@
 package fit.fitspring.controller;
 
 import fit.fitspring.controller.dto.customer.MatchingRequestDto;
+import fit.fitspring.controller.dto.customer.RegisterReviewDto;
 import fit.fitspring.controller.dto.customer.SearchTrainerDto;
 import fit.fitspring.controller.dto.customer.TrainerDto;
+import fit.fitspring.exception.common.BusinessException;
 import fit.fitspring.exception.trainer.TrainerException;
+import fit.fitspring.response.BaseResponse;
 import fit.fitspring.service.CustomerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -67,11 +70,16 @@ public class CustomerController {
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "리뷰작성(미완)", description = "리뷰작성(Request)")
-    @PostMapping("/review/{grade}/{contents}")
-    public ResponseEntity reviewTrainer(@Parameter(description = "별점")@PathVariable Integer grade,
-                                        @Parameter(description = "내용")@PathVariable String contents){
-        return ResponseEntity.ok().build();
+    @Operation(summary = "리뷰작성(거의완)", description = "리뷰작성(Request)")
+    @PostMapping("/review")
+    public BaseResponse<String> reviewTrainer(Long userIdx, @RequestBody RegisterReviewDto review){
+        try{
+            //로그인 구현 후 수정
+            customerService.registerReview(userIdx, review);
+            return new BaseResponse<>("리뷰를 작성하였습니다.");
+        }catch(BusinessException e){
+            return new BaseResponse<>(e.getErrorCode());
+        }
     }
 
     @Operation(summary = "매칭위치설정(미완)", description = "매칭위치설정(Request)")

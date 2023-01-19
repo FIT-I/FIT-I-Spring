@@ -1,15 +1,20 @@
 package fit.fitspring.service;
 
 import fit.fitspring.controller.dto.customer.MatchingRequestDto;
+import fit.fitspring.controller.dto.customer.RegisterReviewDto;
 import fit.fitspring.controller.dto.customer.SearchTrainerDto;
 import fit.fitspring.controller.dto.customer.TrainerDto;
 import fit.fitspring.domain.account.Account;
 import fit.fitspring.domain.account.AccountRepository;
 import fit.fitspring.domain.account.AccountType;
 import fit.fitspring.domain.matching.*;
+import fit.fitspring.domain.review.Review;
+import fit.fitspring.domain.review.ReviewRepository;
 import fit.fitspring.domain.trainer.Trainer;
 import fit.fitspring.domain.trainer.TrainerRepository;
 import fit.fitspring.exception.account.DuplicatedAccountException;
+import fit.fitspring.exception.common.BusinessException;
+import fit.fitspring.exception.common.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -30,6 +35,7 @@ public class CustomerService {
     private final AccountRepository accountRepository;
     private final WishListRepository wishListRepository;
     private final MatchingOrderRepository matchingOrderRepository;
+    private final ReviewRepository reviewRepository;
 
     /*@Transactional
     public SliceResDto<TrainerDto> getTrainerList(SearchTrainerDto category){
@@ -72,6 +78,24 @@ public class CustomerService {
                 .startAt(request.getStartAt()).finishAt(request.getFinishAt())
                 .pickUpType(pickUpType).isComplete("N").build();
         matchingOrderRepository.save(matchingOrder);
+    }
+
+    @Transactional
+    public void registerReview(Long userIdx, RegisterReviewDto reviewDto) throws BusinessException {
+        Optional<Account> optionalC = accountRepository.findById(userIdx);
+        Optional<Trainer> optionalT = trainerRepository.findById(reviewDto.getTrainerIdx());
+        if(optionalC.isEmpty()) {
+            throw new BusinessException(ErrorCode.INVALID_USERIDX);
+        }
+        if(optionalT.isEmpty()) {
+            throw new BusinessException(ErrorCode.INVALID_TRAINERIDX);
+        }
+        Review review = reviewDto.toEntity(optionalC.get(), optionalT.get());
+        try{
+            reviewRepository.save(review);
+        } catch (Exception e){
+            throw new BusinessException(ErrorCode.DB_INSERT_ERROR);
+        }
     }
 
 
