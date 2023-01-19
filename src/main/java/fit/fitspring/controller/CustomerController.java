@@ -1,9 +1,6 @@
 package fit.fitspring.controller;
 
-import fit.fitspring.controller.dto.customer.MatchingRequestDto;
-import fit.fitspring.controller.dto.customer.RegisterReviewDto;
-import fit.fitspring.controller.dto.customer.SearchTrainerDto;
-import fit.fitspring.controller.dto.customer.TrainerDto;
+import fit.fitspring.controller.dto.customer.*;
 import fit.fitspring.exception.common.BusinessException;
 import fit.fitspring.exception.trainer.TrainerException;
 import fit.fitspring.response.BaseResponse;
@@ -64,10 +61,16 @@ public class CustomerController {
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "찜목록조회(미완)", description = "찜목록조회(Request)")
-    @GetMapping("/like")
-    public ResponseEntity getLikeList(){
-        return ResponseEntity.ok().build();
+    @Operation(summary = "찜목록조회(거의완)", description = "찜목록조회(Response)")
+    @GetMapping("/wish")
+    public BaseResponse<List<WishDto>> getWishList(Long userIdx){
+        try{
+            //로그인 구현 후 수정
+            List<WishDto> wishDtoList = customerService.getWishList(userIdx);
+            return new BaseResponse<>(wishDtoList);
+        }catch(BusinessException e){
+            return new BaseResponse<>(e.getErrorCode());
+        }
     }
 
     @Operation(summary = "리뷰작성(거의완)", description = "리뷰작성(Request)")

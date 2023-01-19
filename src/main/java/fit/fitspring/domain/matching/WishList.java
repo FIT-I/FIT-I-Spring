@@ -18,7 +18,7 @@ import lombok.*;
                 columnNames = {"cust_idx","trainer_idx"}
         )
 })
-public class WishList{
+public class WishList extends BaseTimeEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="wish_list_idx")

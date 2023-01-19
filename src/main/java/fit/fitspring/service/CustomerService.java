@@ -1,9 +1,6 @@
 package fit.fitspring.service;
 
-import fit.fitspring.controller.dto.customer.MatchingRequestDto;
-import fit.fitspring.controller.dto.customer.RegisterReviewDto;
-import fit.fitspring.controller.dto.customer.SearchTrainerDto;
-import fit.fitspring.controller.dto.customer.TrainerDto;
+import fit.fitspring.controller.dto.customer.*;
 import fit.fitspring.domain.account.Account;
 import fit.fitspring.domain.account.AccountRepository;
 import fit.fitspring.domain.account.AccountType;
@@ -12,6 +9,8 @@ import fit.fitspring.domain.review.Review;
 import fit.fitspring.domain.review.ReviewRepository;
 import fit.fitspring.domain.trainer.Trainer;
 import fit.fitspring.domain.trainer.TrainerRepository;
+import fit.fitspring.domain.trainer.UserImg;
+import fit.fitspring.domain.trainer.UserImgRepository;
 import fit.fitspring.exception.account.DuplicatedAccountException;
 import fit.fitspring.exception.common.BusinessException;
 import fit.fitspring.exception.common.ErrorCode;
@@ -22,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -36,6 +36,7 @@ public class CustomerService {
     private final WishListRepository wishListRepository;
     private final MatchingOrderRepository matchingOrderRepository;
     private final ReviewRepository reviewRepository;
+    private final UserImgRepository userImgRepository;
 
     /*@Transactional
     public SliceResDto<TrainerDto> getTrainerList(SearchTrainerDto category){
@@ -112,4 +113,27 @@ public class CustomerService {
         }
     }
 
+    @Transactional
+    public List<WishDto> getWishList(Long userIdx) throws BusinessException{
+        Optional<Account> optional = accountRepository.findById(userIdx);
+        if(optional.isEmpty()){
+            throw new BusinessException(ErrorCode.INVALID_USERIDX);
+        }
+        List<WishList> wishList = optional.get().getWishListList();
+        List<WishDto> wishDtoList = new ArrayList<>();
+        for(WishList i : wishList){
+            Trainer trainer = i.getTrainer();
+            Optional<UserImg> userImg = userImgRepository.findByTrainer(trainer);
+            String image = "none";
+            if (userImg.isPresent()){
+                image = userImg.get().getProfile();
+            }
+            WishDto wishDto = new WishDto(trainer.getId(), trainer.getUser().getName(),
+                    image, trainer.getGrade(), i.getTrainer().getSchool(),
+                    i.getCreatedDate().toLocalDate());
+            wishDtoList.add(wishDto);
+        }
+        return wishDtoList;
+    }
 }
+
