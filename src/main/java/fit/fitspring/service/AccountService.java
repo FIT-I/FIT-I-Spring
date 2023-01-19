@@ -82,4 +82,5 @@ public class AccountService {
     public Account getByEmail(String email) {
         return accountRepository.findByEmail(email).orElseThrow(EntityNotFoundException::new);
     }
+
 }
