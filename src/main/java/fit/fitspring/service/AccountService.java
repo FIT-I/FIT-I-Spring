@@ -1,11 +1,15 @@
 package fit.fitspring.service;
 
+import fit.fitspring.config.Secret;
 import fit.fitspring.controller.dto.account.AccountForRegisterDto;
+import fit.fitspring.controller.mdoel.account.PostAccountRes;
 import fit.fitspring.domain.account.Account;
 import fit.fitspring.domain.account.AccountRepository;
 import fit.fitspring.exception.account.DuplicatedAccountException;
 import fit.fitspring.exception.common.BusinessException;
 import fit.fitspring.exception.common.ErrorCode;
+import fit.fitspring.utils.JwtService;
+import fit.fitspring.utils.AES128;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -23,14 +28,36 @@ public class AccountService {
 
     @Autowired
     private JavaMailSender javaMailSender;
+    @Autowired
+    private final JwtService jwtService;
+
 
     private final AccountRepository accountRepository;
-    public void registerAccount(AccountForRegisterDto accountDto) {
-        Account account = accountDto.toEntity();
+    public PostAccountRes registerAccount(AccountForRegisterDto accountDto) throws BusinessException {
+        String pwd;
+        String email = accountDto.getEmail();
+
+        // 비번 암호화 + 이메일 중복 확인
         try {
-            accountRepository.save(account);
-        } catch (DataIntegrityViolationException e){
+            pwd = new AES128(Secret.USER_INFO_PASSWORD_KEY).encrypt(accountDto.getPassword()); // 비번 암호화
+            accountDto.setPassword(pwd);
+        } catch (Exception ignored) {
+            throw new BusinessException(ErrorCode.DUPLICATE_ACCOUNT);
+        }
+
+        Account account = accountDto.toEntity();
+
+        // 회원가입 정보 저장, jwt 생성, 결과 반환(userIdx, jwt)
+        try{
+            accountRepository.save(account); // 일단 데이터 저장
+            int userIdx = accountRepository.findByEmail(email).get().getId().intValue(); // 데이터 저장하면서 자동 생성된 id 가져오기
+            String jwt = jwtService.createJwt(userIdx); // 그 아이디로 jwt 생성
+            return new PostAccountRes(userIdx, jwt); // 요청 결과 반환
+            //return new PostAccountRes(30, "tmp_jwt");
+        } catch (DataIntegrityViolationException e){ // 중복 이메일 게정 체크
             throw new DuplicatedAccountException();
+        } catch(Exception exception){
+            throw new BusinessException(ErrorCode.DATABASE_ERROR);
         }
     }
 
