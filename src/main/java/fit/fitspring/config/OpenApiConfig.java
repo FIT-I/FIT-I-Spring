@@ -1,22 +1,9 @@
 package fit.fitspring.config;
 
-import com.google.auth.oauth2.GoogleCredentials;
-import com.google.common.net.HttpHeaders;
-import com.google.common.net.MediaType;
-import com.google.firebase.FirebaseApp;
-import com.google.firebase.FirebaseOptions;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
-import org.apache.catalina.connector.Request;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.web.reactive.function.client.WebClient;
-
-import javax.annotation.PostConstruct;
-import java.io.IOException;
-import java.util.List;
 
 @Configuration
 public class OpenApiConfig {
@@ -38,13 +25,6 @@ public class OpenApiConfig {
     private static final String API_VERSION = "1.0.0";
     private static final String API_DESCRIPTION = "Fit-I API 명세서";
 
-    @Value("${fcm.token.name}")
-    private String firebasePath;
-
-    @Value("${fcm.api.url}")
-    private String FIREBASE_URL;
-
-
     @Bean
     public OpenAPI openAPI() {
         Info info = new Info()
@@ -54,13 +34,5 @@ public class OpenApiConfig {
 
         return new OpenAPI()
                 .info(info);
-    }
-
-    @Bean
-    public WebClient firebaseWebClient() throws IOException {
-        return WebClient.builder()
-                .baseUrl(FIREBASE_URL)
-                .defaultHeader(HttpHeaders.CONTENT_TYPE, "application/json; UTF-8")
-                .build();
     }
 }
