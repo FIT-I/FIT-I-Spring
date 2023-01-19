@@ -43,6 +43,17 @@ dependencies {
     implementation 'javax.servlet:servlet-api:2.5'
     implementation 'javax.xml.bind:jaxb-api:2.3.0'
 
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+    // for firebase
+    implementation 'com.google.firebase:firebase-admin:9.1.1'
+    implementation 'org.webjars.bower:vue:2.5.16'
+    implementation 'org.webjars.bower:axios:0.17.1'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect'
+
+    // for web client request
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
 }
 
 tasks.named('test') {

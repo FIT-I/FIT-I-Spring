@@ -10,6 +10,7 @@ import fit.fitspring.exception.common.BusinessException;
 import fit.fitspring.exception.common.ErrorCode;
 import fit.fitspring.utils.JwtService;
 import fit.fitspring.utils.AES128;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,4 +79,8 @@ public class AccountService {
             throw new BusinessException(ErrorCode.EMAIL_SENDING_ERROR);
         }
     }
+    public Account getByEmail(String email) {
+        return accountRepository.findByEmail(email).orElseThrow(EntityNotFoundException::new);
+    }
+
 }
