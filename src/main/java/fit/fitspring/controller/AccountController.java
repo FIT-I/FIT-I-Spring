@@ -86,12 +86,16 @@ public class AccountController {
     @PostMapping("/{email}/{password}")
     public BaseResponse<PostLoginRes> userLogin(@Parameter(description = "이메일")@PathVariable String email,
                                     @Parameter(description = "비밀번호")@PathVariable String password){
-        // validation 넣어야 함
+        // 이메일이 DB에 존재하는가
+        if(accountProvider.checkEmail(email) == false) {
+            return new BaseResponse<>(ErrorCode.ACCOUNT_NOT_FOUND);
+        }
+
         try{
             PostLoginRes postLoginRes = accountProvider.logIn(email, password);
             return new BaseResponse<>(postLoginRes);
         } catch (BusinessException e){
-            return new BaseResponse<>(ErrorCode.INTERNAL_SERVER_ERROR);
+            return new BaseResponse<>(e.getErrorCode());
         }
 
         //return ResponseEntity.ok().build();
