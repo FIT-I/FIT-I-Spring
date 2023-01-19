@@ -66,8 +66,11 @@ public class Account {
     @Column(name="user_state")
     private String userState;
 
+    @Column(name="user_location")
+    private String location;
+
     public void updateName(String name){
         this.name=name;
     }
-
+    public void modifyLocation(String location){ this.location = location; }
 }

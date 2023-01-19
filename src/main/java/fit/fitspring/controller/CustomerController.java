@@ -82,9 +82,15 @@ public class CustomerController {
         }
     }
 
-    @Operation(summary = "매칭위치설정(미완)", description = "매칭위치설정(Request)")
+    @Operation(summary = "매칭위치설정(거의완)", description = "매칭위치설정(Request)")
     @PatchMapping("/location/{location}")
-    public ResponseEntity modifyMatchingLocation(@Parameter(description = "위치")@PathVariable String location){
-        return ResponseEntity.ok().build();
+    public BaseResponse<String> modifyMatchingLocation(Long userIdx, @Parameter(description = "위치")@PathVariable String location){
+        try{
+            //로그인 구현 후 수정
+            customerService.modifyUserLocation(userIdx, location);
+            return new BaseResponse<>("매칭 위치를 변경하였습니다.");
+        }catch(BusinessException e){
+            return new BaseResponse<>(e.getErrorCode());
+        }
     }
 }

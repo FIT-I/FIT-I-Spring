@@ -32,6 +32,7 @@ public enum ErrorCode {
     /*서버, DB 4000*/
     DATABASE_ERROR(false, 4000, "DB에 문제가 발생했습니다."),
     DB_INSERT_ERROR(false, 4001, "데이터 저장 오류가 발생하였습니다."),
+    DB_MODIFY_ERROR(false, 4002, "데이터 수정 오류가 발생하였습니다."),
     ;
 
     private final boolean isSuccess;
