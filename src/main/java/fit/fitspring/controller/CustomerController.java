@@ -1,9 +1,9 @@
 package fit.fitspring.controller;
 
-import fit.fitspring.controller.dto.customer.MatchingRequestDto;
-import fit.fitspring.controller.dto.customer.SearchTrainerDto;
-import fit.fitspring.controller.dto.customer.TrainerDto;
+import fit.fitspring.controller.dto.customer.*;
+import fit.fitspring.exception.common.BusinessException;
 import fit.fitspring.exception.trainer.TrainerException;
+import fit.fitspring.response.BaseResponse;
 import fit.fitspring.service.CustomerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -61,22 +61,39 @@ public class CustomerController {
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "찜목록조회(미완)", description = "찜목록조회(Request)")
-    @GetMapping("/like")
-    public ResponseEntity getLikeList(){
-        return ResponseEntity.ok().build();
+    @Operation(summary = "찜목록조회(거의완)", description = "찜목록조회(Response)")
+    @GetMapping("/wish")
+    public BaseResponse<List<WishDto>> getWishList(Long userIdx){
+        try{
+            //로그인 구현 후 수정
+            List<WishDto> wishDtoList = customerService.getWishList(userIdx);
+            return new BaseResponse<>(wishDtoList);
+        }catch(BusinessException e){
+            return new BaseResponse<>(e.getErrorCode());
+        }
     }
 
-    @Operation(summary = "리뷰작성(미완)", description = "리뷰작성(Request)")
-    @PostMapping("/review/{grade}/{contents}")
-    public ResponseEntity reviewTrainer(@Parameter(description = "별점")@PathVariable Integer grade,
-                                        @Parameter(description = "내용")@PathVariable String contents){
-        return ResponseEntity.ok().build();
+    @Operation(summary = "리뷰작성(거의완)", description = "리뷰작성(Request)")
+    @PostMapping("/review")
+    public BaseResponse<String> reviewTrainer(Long userIdx, @RequestBody RegisterReviewDto review){
+        try{
+            //로그인 구현 후 수정
+            customerService.registerReview(userIdx, review);
+            return new BaseResponse<>("리뷰를 작성하였습니다.");
+        }catch(BusinessException e){
+            return new BaseResponse<>(e.getErrorCode());
+        }
     }
 
-    @Operation(summary = "매칭위치설정(미완)", description = "매칭위치설정(Request)")
+    @Operation(summary = "매칭위치설정(거의완)", description = "매칭위치설정(Request)")
     @PatchMapping("/location/{location}")
-    public ResponseEntity modifyMatchingLocation(@Parameter(description = "위치")@PathVariable String location){
-        return ResponseEntity.ok().build();
+    public BaseResponse<String> modifyMatchingLocation(Long userIdx, @Parameter(description = "위치")@PathVariable String location){
+        try{
+            //로그인 구현 후 수정
+            customerService.modifyUserLocation(userIdx, location);
+            return new BaseResponse<>("매칭 위치를 변경하였습니다.");
+        }catch(BusinessException e){
+            return new BaseResponse<>(e.getErrorCode());
+        }
     }
 }
