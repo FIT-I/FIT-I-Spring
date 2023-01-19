@@ -6,6 +6,8 @@ import fit.fitspring.domain.review.Review;
 import fit.fitspring.domain.trainer.Trainer;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DynamicInsert;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,28 +15,32 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@DynamicInsert
 @Getter
 @Setter
 @Entity
 @Table(name="user",
-        indexes = @Index(
-                name = "idx_email",
-                columnList = "user_email"
-        )
+        indexes = {
+            @Index(name = "email", columnList = "user_email"),
+            @Index(name = "userIdx", columnList = "user_idx")
+        }
 )
-public class Account{
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class Account {
     @Column(name="user_idx")
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(unique = true, name = "user_email")
     private String email;
-    @Column(name = "user_pwd")
-    private String password;
-    @Column(name = "user_name")
+
+    @Column(name="user_name")
     private String name;
 
-    @Enumerated(EnumType.STRING) @Column(name = "user_role")
+    @Column(name="user_pwd")
+    private String password;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "user_role")
     private AccountType accountType;
 
     @Column(name="user_status")
@@ -52,7 +58,16 @@ public class Account{
     @OneToMany(mappedBy = "customer")
     private List<WishList> wishListList = new ArrayList<>();
 
+    @ColumnDefault("off")
+    @Column(name="user_alarm_state")
+    private String alarmState;
+
+    @ColumnDefault("A")
+    @Column(name="user_state")
+    private String userState;
+
     public void updateName(String name){
         this.name=name;
     }
+
 }
