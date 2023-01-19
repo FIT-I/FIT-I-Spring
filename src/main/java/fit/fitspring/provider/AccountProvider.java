@@ -43,4 +43,12 @@ public class AccountProvider {
             throw new BusinessException(ErrorCode.FAILED_TO_LOGIN);
         }
     }
+
+    public boolean checkEmail(String email) throws BusinessException {
+        try{
+            return accountRepository.findByEmail(email).isPresent();
+        } catch (Exception e) {
+            throw new BusinessException(ErrorCode.DATABASE_ERROR);
+        }
+    }
 }
