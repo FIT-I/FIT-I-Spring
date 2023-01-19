@@ -30,7 +30,7 @@ public class AccountController {
     @Operation(summary = "테스트", description = "테스트")
     @GetMapping("/test")
     public String test(){
-        return "1";
+        return "10";
     }
 
     /**
@@ -137,7 +137,7 @@ public class AccountController {
 
     @Operation(summary = "계정상태수정(미완)", description = "계정상태수정(Request)")
     @PatchMapping("/state/{state}")
-    public ResponseEntity modifyAccountState(@Parameter(description = "상태('able' or 'disabled'")@PathVariable String state){
+    public ResponseEntity modifyAccountState(@Parameter(description = "상태('A: Active(활성상태), D: Disabled(비활성화 상태), W: Withdrawal(탈퇴한 상태)'")@PathVariable String state){
         return ResponseEntity.ok().build();
     }
 }

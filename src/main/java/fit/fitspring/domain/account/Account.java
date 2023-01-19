@@ -2,10 +2,13 @@ package fit.fitspring.domain.account;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DynamicInsert;
 
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@DynamicInsert
 @Getter
 @Setter
 @Entity
@@ -32,5 +35,13 @@ public class Account {
     @Column(name="user_role")
     @Enumerated(EnumType.STRING)
     private AccountType accountType;
+
+    @ColumnDefault("off")
+    @Column(name="user_alarm_state")
+    private String alarmState;
+
+    @ColumnDefault("A")
+    @Column(name="user_state")
+    private String userState;
 
 }
