@@ -3,10 +3,13 @@ package fit.fitspring.controller;
 import fit.fitspring.controller.dto.account.AccountForRegisterDto;
 import fit.fitspring.controller.dto.account.RegisterDto;
 import fit.fitspring.controller.mdoel.account.PostAccountRes;
+import fit.fitspring.controller.mdoel.account.PostLoginRes;
 import fit.fitspring.exception.common.BusinessException;
 import fit.fitspring.exception.common.ErrorCode;
 import fit.fitspring.controller.mdoel.account.*;
 import static fit.fitspring.utils.ValidationRegex.isRegexEmail;
+
+import fit.fitspring.provider.AccountProvider;
 import fit.fitspring.response.BaseResponse;
 import fit.fitspring.service.AccountService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -16,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.beans.factory.annotation.Autowired;
 
 
 @Slf4j
@@ -24,7 +28,10 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/accounts")
 @RequiredArgsConstructor
 public class AccountController {
+    @Autowired
     private final AccountService accountService;
+    @Autowired
+    private final AccountProvider accountProvider;
 
     /* 테스트 용 */
     @Operation(summary = "테스트", description = "테스트")
@@ -44,7 +51,7 @@ public class AccountController {
 //        return ResponseEntity.ok().build();
 //    }
 
-    @Operation(summary = "회원가입(미완)", description = "회원가입(Request)")
+    @Operation(summary = "회원가입", description = "회원가입(Request)")
     @PostMapping
     public BaseResponse<PostAccountRes> registerUser(@RequestBody RegisterDto registerDto){
 
@@ -77,9 +84,17 @@ public class AccountController {
 
     @Operation(summary = "로그인(미완)", description = "로그인(Request)")
     @PostMapping("/{email}/{password}")
-    public ResponseEntity userLogin(@Parameter(description = "이메일")@PathVariable String email,
+    public BaseResponse<PostLoginRes> userLogin(@Parameter(description = "이메일")@PathVariable String email,
                                     @Parameter(description = "비밀번호")@PathVariable String password){
-        return ResponseEntity.ok().build();
+        // validation 넣어야 함
+        try{
+            PostLoginRes postLoginRes = accountProvider.logIn(email, password);
+            return new BaseResponse<>(postLoginRes);
+        } catch (BusinessException e){
+            return new BaseResponse<>(ErrorCode.INTERNAL_SERVER_ERROR);
+        }
+
+        //return ResponseEntity.ok().build();
     }
 
     @Operation(summary = "인증메일전송", description = "인증메일전송(Request/Response)")

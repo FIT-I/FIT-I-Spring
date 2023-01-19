@@ -24,6 +24,7 @@ public enum ErrorCode {
     POST_ACCOUNTS_EMPTY_EMAIL(false, 3004, "이메일을 입력해주세요."),
     POST_ACCOUNTS_EMPTY_NAME(false, 3005, "이름을 입력해주세요."),
     POST_ACCOUNTS_INVALID_EMAIL(false, 3006, "이메일 형식이 잘 못 되었습니다."),
+    FAILED_TO_LOGIN(false, 3007, "없는 이메일이거나 비밀번호가 틀렸습니다."),
 
     /*서버, DB 4000*/
     DATABASE_ERROR(false, 4000, "DB에 문제가 발생했습니다.")
