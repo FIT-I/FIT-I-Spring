@@ -19,7 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TrainerController {
 
-    @Operation(summary = "트레이너 정보수정(미완)", description = "트레이너 정보수정(Request)")
+    @Operation(summary = "트레이너 정보수정", description = "트레이너 정보수정(Request)")
     @PutMapping("/information")
     public ResponseEntity modifyTrainerInformation(@RequestBody TrainerInformationDto trainerInformationDto){
         return ResponseEntity.ok().build();
