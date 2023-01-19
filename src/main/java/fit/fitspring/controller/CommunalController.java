@@ -1,7 +1,11 @@
 package fit.fitspring.controller;
 
+import fit.fitspring.controller.dto.communal.AnnouncementDto;
 import fit.fitspring.controller.dto.communal.ReviewDto;
 import fit.fitspring.controller.dto.communal.TrainerInformationDto;
+import fit.fitspring.response.BaseResponse;
+import fit.fitspring.service.CommunalService;
+import fit.fitspring.service.CustomerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -19,6 +23,8 @@ import java.util.List;
 @RequestMapping("/api/communal")
 @RequiredArgsConstructor
 public class CommunalController {
+
+    private final CommunalService communalService;
 
     @Operation(summary = "트레이너 정보조회(미완)", description = "트레이너 정보조회(Request/Response)")
     @GetMapping("/trainer/{userIdx}")
@@ -40,16 +46,10 @@ public class CommunalController {
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "공지사항목록조회(미완)", description = "공지사항목록조회(Response)")
+    @Operation(summary = "공지사항목록조회", description = "공지사항목록조회(Response)")
     @GetMapping("/announcement")
-    public ResponseEntity getAnnouncementList(){
-        return ResponseEntity.ok().build();
-    }
-
-    @Operation(summary = "공지사항조회(미완)", description = "공지사항조회(Response)")
-    @GetMapping("/announcement/{announcementIdx}")
-    public ResponseEntity getAnnouncement(@Parameter(description = "공지사항식별자")@PathVariable Integer announcementIdx){
-        return ResponseEntity.ok().build();
+    public BaseResponse<List<AnnouncementDto>> getAnnouncementList(){
+        return new BaseResponse<>(communalService.getAnnouncementList());
     }
 
     @Operation(summary = "이용약관조회(미완)", description = "이용약관조회(Response)")
