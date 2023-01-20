@@ -7,6 +7,6 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface TermRepository extends JpaRepository<Term, Long> {
-    List<Term> findAll();
+public interface AnnouncementRepository extends JpaRepository<Announcement, Long> {
+    List<Announcement> findAll();
 }
