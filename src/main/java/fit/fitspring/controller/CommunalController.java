@@ -5,7 +5,10 @@ import fit.fitspring.controller.dto.communal.ReviewDto;
 import fit.fitspring.controller.dto.communal.TermDto;
 import fit.fitspring.controller.dto.communal.TrainerInformationDto;
 import fit.fitspring.controller.dto.customer.WishDto;
+import fit.fitspring.domain.review.Review;
 import fit.fitspring.exception.common.BusinessException;
+import fit.fitspring.exception.common.ErrorCode;
+import fit.fitspring.exception.trainer.TrainerException;
 import fit.fitspring.response.BaseResponse;
 import fit.fitspring.service.CommunalService;
 import fit.fitspring.service.CustomerService;
@@ -28,6 +31,7 @@ import java.util.List;
 public class CommunalController {
 
     private final CommunalService communalService;
+    private final CustomerService customerService;
 
     @Operation(summary = "트레이너 정보조회(미완)", description = "트레이너 정보조회(Request/Response)")
     @GetMapping("/trainer/{userIdx}")
@@ -36,11 +40,14 @@ public class CommunalController {
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "트레이너 리뷰목록조회(미완)", description = "트레이너 리뷰목록조회(Request)")
-    @GetMapping("/review/{userIdx}")
-    public ResponseEntity getTrainerReviewList(@Parameter(description = "유저식별자")@PathVariable String userIdx){
-        List<ReviewDto> reviewDtoList; // 리턴객체
-        return ResponseEntity.ok().build();
+    @Operation(summary = "트레이너 리뷰목록조회", description = "트레이너 리뷰목록조회(Request/Response)")
+    @GetMapping("/review/{trainerIdx}")
+    public BaseResponse<List<ReviewDto>> getTrainerReviewList(@Parameter(description = "트레이너 식별자")@PathVariable Long trainerIdx){
+        try{
+            return new BaseResponse<>(communalService.getTrainerReviewList(trainerIdx));
+        } catch(BusinessException e){
+            return new BaseResponse<>(e.getErrorCode());
+        }
     }
 
     @Operation(summary = "마이페이지조회(미완)", description = "마이페이지조회(Request/Response)")
