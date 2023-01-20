@@ -1,10 +1,9 @@
 package fit.fitspring.service;
 
 import fit.fitspring.controller.dto.communal.AnnouncementDto;
+import fit.fitspring.controller.dto.communal.TermDto;
 import fit.fitspring.controller.dto.customer.WishDto;
-import fit.fitspring.domain.account.Account;
-import fit.fitspring.domain.account.Announcement;
-import fit.fitspring.domain.account.AnnouncementRepository;
+import fit.fitspring.domain.account.*;
 import fit.fitspring.domain.matching.WishList;
 import fit.fitspring.domain.trainer.Trainer;
 import fit.fitspring.domain.trainer.UserImg;
@@ -23,6 +22,7 @@ import java.util.Optional;
 public class CommunalService {
 
     private final AnnouncementRepository announcementRepository;
+    private final TermRepository termRepository;
 
     @Transactional
     public List<AnnouncementDto> getAnnouncementList() {
@@ -33,5 +33,15 @@ public class CommunalService {
             annoDtoList.add(annoDto);
         }
         return annoDtoList;
+    }
+    @Transactional
+    public List<TermDto> getTermList(){
+        List<Term> termList = termRepository.findAll();
+        List<TermDto> termDtoList = new ArrayList<>();
+        for(Term i : termList){
+            TermDto termDto = new TermDto(i.getId(), i.getName(), i.getDetail());
+            termDtoList.add(termDto);
+        }
+        return termDtoList;
     }
 }

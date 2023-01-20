@@ -2,7 +2,10 @@ package fit.fitspring.controller;
 
 import fit.fitspring.controller.dto.communal.AnnouncementDto;
 import fit.fitspring.controller.dto.communal.ReviewDto;
+import fit.fitspring.controller.dto.communal.TermDto;
 import fit.fitspring.controller.dto.communal.TrainerInformationDto;
+import fit.fitspring.controller.dto.customer.WishDto;
+import fit.fitspring.exception.common.BusinessException;
 import fit.fitspring.response.BaseResponse;
 import fit.fitspring.service.CommunalService;
 import fit.fitspring.service.CustomerService;
@@ -52,10 +55,11 @@ public class CommunalController {
         return new BaseResponse<>(communalService.getAnnouncementList());
     }
 
-    @Operation(summary = "이용약관조회(미완)", description = "이용약관조회(Response)")
+    @Operation(summary = "이용약관목록조회", description = "이용약관목록조회(Response)")
     @GetMapping("/terms")
-    public ResponseEntity getTerms(){
-        return ResponseEntity.ok().build();
+    public BaseResponse<List<TermDto>> getTermList(){
+        List<TermDto> termDtoList = communalService.getTermList();
+        return new BaseResponse<>(termDtoList);
     }
 
     @Operation(summary = "프로필수정(미완)", description = "프로필수정(Request)")
