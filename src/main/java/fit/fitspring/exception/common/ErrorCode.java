@@ -25,9 +25,14 @@ public enum ErrorCode {
     POST_ACCOUNTS_EMPTY_NAME(false, 3005, "이름을 입력해주세요."),
     POST_ACCOUNTS_INVALID_EMAIL(false, 3006, "이메일 형식이 잘 못 되었습니다."),
     FAILED_TO_LOGIN(false, 3007, "비밀번호가 틀렸습니다."),
+    IS_NOT_TRAINER(false,3008, "트레이너가 아닙니다."),
+    INVALID_USERIDX(false, 3009, "잘못된 유저 식별자입니다."),
+    INVALID_TRAINERIDX(false, 3010, "잘못된 트레이너 식별자입니다."),
 
     /*서버, DB 4000*/
-    DATABASE_ERROR(false, 4000, "DB에 문제가 발생했습니다.")
+    DATABASE_ERROR(false, 4000, "DB에 문제가 발생했습니다."),
+    DB_INSERT_ERROR(false, 4001, "데이터 저장 오류가 발생하였습니다."),
+    DB_MODIFY_ERROR(false, 4002, "데이터 수정 오류가 발생하였습니다."),
     ;
 
     private final boolean isSuccess;

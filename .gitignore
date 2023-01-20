@@ -38,3 +38,7 @@ out/
 
 ### security ###
 Secret.java
+
+###
+*.properties
+application.properties

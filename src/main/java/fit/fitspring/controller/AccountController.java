@@ -82,7 +82,7 @@ public class AccountController {
         //return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "로그인(미완)", description = "로그인(Request)")
+    @Operation(summary = "로그인", description = "로그인(Request)")
     @PostMapping("/{email}/{password}")
     public BaseResponse<PostLoginRes> userLogin(@Parameter(description = "이메일")@PathVariable String email,
                                     @Parameter(description = "비밀번호")@PathVariable String password){
