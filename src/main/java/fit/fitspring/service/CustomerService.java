@@ -15,11 +15,14 @@ import fit.fitspring.exception.account.DuplicatedAccountException;
 import fit.fitspring.exception.common.BusinessException;
 import fit.fitspring.exception.common.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -37,6 +40,12 @@ public class CustomerService {
     private final MatchingOrderRepository matchingOrderRepository;
     private final ReviewRepository reviewRepository;
     private final UserImgRepository userImgRepository;
+
+    @Value("${cloud.aws.s3.bucket}")
+    private String bucket;
+
+    @Value("${cloud.aws.region.static}")
+    private String awsStatic;
 
     /*@Transactional
     public SliceResDto<TrainerDto> getTrainerList(SearchTrainerDto category){
@@ -134,6 +143,15 @@ public class CustomerService {
             wishDtoList.add(wishDto);
         }
         return wishDtoList;
+    }
+
+    public void modifyCustomerProfile(Long userIdx, String customerProfile) throws BusinessException {
+        Optional<Account> optional = accountRepository.findById(userIdx);
+        if(optional.isEmpty()){
+            throw new BusinessException(ErrorCode.INVALID_USERIDX);
+        }
+        optional.get().setProfile(customerProfile);
+        accountRepository.save(optional.get());
     }
 }
 

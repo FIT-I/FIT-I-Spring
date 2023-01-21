@@ -70,9 +70,4 @@ public class CommunalController {
         return new BaseResponse<>(termDtoList);
     }
 
-    @Operation(summary = "프로필수정(미완)", description = "프로필수정(Request)")
-    @PatchMapping("/profile")
-    public ResponseEntity modifyProfileImage(@Parameter(description = "공지사항식별자")@RequestPart(value = "profileImage") MultipartFile image){
-        return ResponseEntity.ok().build();
-    }
 }

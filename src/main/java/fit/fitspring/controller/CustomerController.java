@@ -5,12 +5,14 @@ import fit.fitspring.exception.common.BusinessException;
 import fit.fitspring.exception.trainer.TrainerException;
 import fit.fitspring.response.BaseResponse;
 import fit.fitspring.service.CustomerService;
+import io.jsonwebtoken.io.IOException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -93,6 +95,17 @@ public class CustomerController {
             customerService.modifyUserLocation(userIdx, location);
             return new BaseResponse<>("매칭 위치를 변경하였습니다.");
         }catch(BusinessException e){
+            return new BaseResponse<>(e.getErrorCode());
+        }
+    }
+
+    @Operation(summary = "고객 프로필수정(거의완)", description = "프로필수정(Request)")
+    @PatchMapping("/profile/{profile}")
+    public BaseResponse<String> modifyCustomerProfileImage(@Parameter(description = "프로필 문자열")@PathVariable String profile){
+        try {
+            customerService.modifyCustomerProfile(custIdx, profile);
+            return new BaseResponse<>("고객 프로필 이미지를 변경하였습니다.");
+        } catch (BusinessException e) {
             return new BaseResponse<>(e.getErrorCode());
         }
     }
