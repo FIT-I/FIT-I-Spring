@@ -1,5 +1,6 @@
 package fit.fitspring.domain.account;
 
+import fit.fitspring.chat.entity.ChatUser;
 import fit.fitspring.domain.matching.MatchingOrder;
 import fit.fitspring.domain.matching.WishList;
 import fit.fitspring.domain.review.Review;
@@ -71,6 +72,9 @@ public class Account {
 
     @Column(name="user_location")
     private String location;
+
+    @OneToMany(mappedBy = "chatUser")
+    private List<ChatUser> chatUser =  new ArrayList<>();
 
     public void updateName(String name){
         this.name=name;
