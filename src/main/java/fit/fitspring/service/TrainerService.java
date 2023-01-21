@@ -46,5 +46,4 @@ public class TrainerService {
             userImgRepository.save(userImg.get());
         }
     }
-
 }
