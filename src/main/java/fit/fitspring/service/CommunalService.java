@@ -16,6 +16,7 @@ import fit.fitspring.exception.common.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +30,7 @@ public class CommunalService {
     private final TermRepository termRepository;
     private final TrainerRepository trainerRepository;
     private final UserImgRepository userImgRepository;
+    private final AccountRepository accountRepository;
 
     @Transactional
     public List<AnnouncementDto> getAnnouncementList() {

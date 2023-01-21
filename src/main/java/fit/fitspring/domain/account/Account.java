@@ -39,6 +39,9 @@ public class Account {
     @Column(name="user_pwd")
     private String password;
 
+    @Column(name = "user_profile")
+    private String profile;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "user_role")
     private AccountType accountType;
@@ -73,4 +76,5 @@ public class Account {
         this.name=name;
     }
     public void modifyLocation(String location){ this.location = location; }
+    public void modifyProfile(String profile){ this.profile = profile; }
 }
