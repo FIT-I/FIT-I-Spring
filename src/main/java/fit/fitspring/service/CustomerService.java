@@ -145,15 +145,13 @@ public class CustomerService {
         return wishDtoList;
     }
 
-    public void modifyCustomerProfile(Long userIdx, Long imageNum) throws BusinessException, IOException {
+    public void modifyCustomerProfile(Long userIdx, String customerProfile) throws BusinessException {
         Optional<Account> optional = accountRepository.findById(userIdx);
         if(optional.isEmpty()){
             throw new BusinessException(ErrorCode.INVALID_USERIDX);
         }
-        String imageUrl = "https://" + bucket + ".s3." + awsStatic + ".amazonaws.com/profile/customerProfile" + Long.toString(imageNum) + ".png";
-        optional.get().setProfile(imageUrl);
+        optional.get().setProfile(customerProfile);
         accountRepository.save(optional.get());
     }
-
 }
 

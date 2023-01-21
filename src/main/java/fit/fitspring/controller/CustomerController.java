@@ -100,15 +100,13 @@ public class CustomerController {
     }
 
     @Operation(summary = "고객 프로필수정(거의완)", description = "프로필수정(Request)")
-    @PatchMapping("/profile/{imageNum}")
-    public BaseResponse<String> modifyCustomerProfileImage(@Parameter(description = "기본이미지 번호")@PathVariable Long imageNum){
+    @PatchMapping("/profile/{profile}")
+    public BaseResponse<String> modifyCustomerProfileImage(@Parameter(description = "프로필 문자열")@PathVariable String profile){
         try {
-            customerService.modifyCustomerProfile(custIdx, imageNum);
-            return new BaseResponse<>("프로필 이미지를 변경하였습니다.");
+            customerService.modifyCustomerProfile(custIdx, profile);
+            return new BaseResponse<>("고객 프로필 이미지를 변경하였습니다.");
         } catch (BusinessException e) {
             return new BaseResponse<>(e.getErrorCode());
-        } catch (IOException | java.io.IOException e){
-            return new BaseResponse<>("IO Exception Error");
         }
     }
 }
