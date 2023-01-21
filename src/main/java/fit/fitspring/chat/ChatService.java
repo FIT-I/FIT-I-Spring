@@ -1,8 +1,13 @@
 package fit.fitspring.chat;
 
 import fit.fitspring.chat.entity.ChatRoom;
+import fit.fitspring.chat.entity.ChatRoomRepository;
+import fit.fitspring.chat.entity.ChatUser;
+import fit.fitspring.domain.account.Account;
+import fit.fitspring.service.AccountService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -12,7 +17,8 @@ import java.util.*;
 @Slf4j
 @RequiredArgsConstructor
 public class ChatService {
-
+    private final AccountService accountService;
+    private final ChatRoomRepository chatRoomRepository;
     private Map<Long, ChatRoom> chatRooms;
 
     @PostConstruct
@@ -37,8 +43,17 @@ public class ChatService {
 
     //채팅방 생성
     public ChatRoom createRoom(String name, List<String> emails) {
-        ChatRoom chatRoom = ChatRoom.create(name);
+        ChatRoom chatRoom = new ChatRoom(name);
+        List<Account> chatUsers = accountService.findAllByEmails(emails);
+        List<ChatUser> users = new ArrayList<>();
+        for (Account user : chatUsers) {
+            ChatUser chatUser = ChatUser.of(chatRoom, user);
+            users.add(chatUser);
+        }
+        chatRoom.setChatUser(users);
         chatRooms.put(chatRoom.getId(), chatRoom);
+
+        chatRoomRepository.save(chatRoom);
         return chatRoom;
     }
 }
