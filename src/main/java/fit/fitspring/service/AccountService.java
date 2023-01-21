@@ -60,7 +60,8 @@ public class AccountService {
             //return new PostAccountRes(30, "tmp_jwt");
         } catch (DataIntegrityViolationException e){ // 중복 이메일 게정 체크
             throw new DuplicatedAccountException();
-        } catch(Exception exception){
+        }
+        catch(Exception exception){
             throw new BusinessException(ErrorCode.DATABASE_ERROR);
         }
     }

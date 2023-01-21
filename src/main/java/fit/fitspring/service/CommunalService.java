@@ -1,6 +1,7 @@
 package fit.fitspring.service;
 
 import fit.fitspring.controller.dto.communal.AnnouncementDto;
+import fit.fitspring.controller.dto.communal.MyPageDto;
 import fit.fitspring.controller.dto.communal.ReviewDto;
 import fit.fitspring.controller.dto.communal.TermDto;
 import fit.fitspring.controller.dto.customer.WishDto;
@@ -75,5 +76,35 @@ public class CommunalService {
             reviewDtoList.add(reviewDto);
         }
         return reviewDtoList;
+    }
+
+    @Transactional
+    public MyPageDto getMyPageBriefInformation(Long userIdx) throws BusinessException{
+        Optional<Account> optional = accountRepository.findById(userIdx);
+        if(optional.isEmpty()){
+            throw new BusinessException(ErrorCode.INVALID_USERIDX);
+        }
+        MyPageDto myPageDto = new MyPageDto();
+        if(optional.get().getAccountType().equals(AccountType.TRAINER)){
+            Optional<Trainer> optionalT = trainerRepository.findById(userIdx);
+            if(optionalT.isEmpty()){
+                throw new BusinessException(ErrorCode.INVALID_TRAINERIDX);
+            }
+            Optional<UserImg> userImg = userImgRepository.findByTrainer(optionalT.get());
+            String image = "none";
+            if (userImg.isPresent()){
+                image = userImg.get().getProfile();
+            }
+            myPageDto.setProfile(image);
+        }
+        else{
+            myPageDto.setProfile(optional.get().getProfile());
+        }
+        myPageDto.setUserIdx(userIdx);
+        myPageDto.setUserName(optional.get().getName());
+        myPageDto.setProfile(optional.get().getProfile());
+        myPageDto.setEmail(optional.get().getEmail());
+        myPageDto.setLocation(optional.get().getLocation());
+        return myPageDto;
     }
 }
