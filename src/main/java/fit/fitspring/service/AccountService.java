@@ -84,4 +84,8 @@ public class AccountService {
         return accountRepository.findByEmail(email).orElseThrow(EntityNotFoundException::new);
     }
 
+    public List<Account> findAllByEmails(List<String> emails){
+        return accountRepository.findByEmailIn(emails);
+    }
+
 }
