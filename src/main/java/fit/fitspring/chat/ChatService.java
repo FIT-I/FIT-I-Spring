@@ -5,6 +5,7 @@ import fit.fitspring.chat.entity.ChatRoom;
 import fit.fitspring.chat.entity.ChatRoomRepository;
 import fit.fitspring.chat.entity.ChatUser;
 import fit.fitspring.domain.account.Account;
+import fit.fitspring.exception.account.AccountNotFoundException;
 import fit.fitspring.service.AccountService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -44,19 +45,17 @@ public class ChatService {
     }
 
     //채팅방 생성
-    public ChatRoom createRoom(String name, List<String> emails) {
+    public ChatRoomAndUserDto createRoom(String name, List<String> emails) {
         ChatRoom chatRoom = new ChatRoom(name);
         List<Account> chatUsers = accountService.findAllByEmails(emails);
-        List<ChatUser> users = new ArrayList<>();
-        for (Account user : chatUsers) {
-            ChatUser chatUser = ChatUser.of(chatRoom, user);
-            users.add(chatUser);
+        if (chatUsers.isEmpty()){
+            throw new AccountNotFoundException();
         }
-        chatRoom.setChatUser(users);
-        chatRooms.put(chatRoom.getId(), chatRoom);
+        chatRoom.setChatUser(chatUsers.stream()
+                .map(user -> ChatUser.of(chatRoom, user)).toList());
 
-        chatRoomRepository.save(chatRoom);
-        return chatRoom;
+        chatRooms.put(chatRoom.getId(), chatRoom);
+        return toEntity(chatRoomRepository.save(chatRoom));
     }
 
     public List<ChatRoomAndUserDto> findAllRoomsByUserId(Long userId) {
@@ -67,7 +66,7 @@ public class ChatService {
 
     private ChatRoomAndUserDto toEntity(ChatRoom chatRoom){
         ChatRoomAndUserDto dto = ChatRoomAndUserDto.builder()
-                .roomId(chatRoom.getId())
+                .roomId(chatRoom.getId() == null ? null : chatRoom.getId())
                 .roomName(chatRoom.getRoomName())
                 .emails(chatRoom.getChatUser().stream()
                         .map(cu ->
