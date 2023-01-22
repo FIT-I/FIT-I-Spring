@@ -34,9 +34,8 @@ public class AccountService {
     @Autowired
     private final JwtService jwtService;
     private final S3Uploader s3Uploader;
-
-
     private final AccountRepository accountRepository;
+
     public PostAccountRes registerAccount(AccountForRegisterDto accountDto) throws BusinessException {
         String pwd;
         String email = accountDto.getEmail();
@@ -56,7 +55,8 @@ public class AccountService {
             accountRepository.save(account); // 일단 데이터 저장
             int userIdx = accountRepository.findByEmail(email).get().getId().intValue(); // 데이터 저장하면서 자동 생성된 id 가져오기
             String jwt = jwtService.createJwt(userIdx); // 그 아이디로 jwt 생성
-            return new PostAccountRes(userIdx, jwt); // 요청 결과 반환
+            String userName = accountRepository.findByEmail(email).get().getName(); // 가입한 회원의 이름 반환
+            return new PostAccountRes(userName); // 요청 결과 반환
             //return new PostAccountRes(30, "tmp_jwt");
         } catch (DataIntegrityViolationException e){ // 중복 이메일 게정 체크
             throw new DuplicatedAccountException();
