@@ -9,16 +9,17 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ChatMessage {
+public class ChatMessageDto {
     public enum MessageType {
         ENTER, TALK
     }
 
     private MessageType type;
     //채팅방 ID
-    private String roomId;
+    private Long roomId;
     //보내는 사람
-    private String sender;
+    private Long senderId;
     //내용
     private String message;
+
 }

@@ -62,6 +62,9 @@ public class ChatService {
         return account.getChatUser().stream()
                 .map(chatUser -> toDto(chatUser.getChatRoom())).toList();
     }
+    public ChatRoom getById(Long id){
+        return chatRoomRepository.getReferenceById(id);
+    }
 
     private ChatRoomAndUserDto toDto(ChatRoom chatRoom){
         ChatRoomAndUserDto dto = ChatRoomAndUserDto.builder()
