@@ -106,6 +106,17 @@ public class CustomerService {
         } catch (Exception e){
             throw new BusinessException(ErrorCode.DB_INSERT_ERROR);
         }
+        List<Review> reviewList = optionalT.get().getReviewList();
+        Float reviewGrade = 0f;
+        for(Review i : reviewList){
+            reviewGrade += i.getGrade();
+        }
+        optionalT.get().setGrade(Float.parseFloat(String.format("%.1f", (reviewGrade / reviewList.toArray().length))));
+        try{
+            trainerRepository.save(optionalT.get());
+        } catch (Exception e){
+            throw new BusinessException(ErrorCode.DB_MODIFY_ERROR);
+        }
     }
 
     @Transactional
