@@ -4,6 +4,7 @@ import fit.fitspring.domain.account.Account;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -14,7 +15,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Entity
 @Builder
-public class ChatRoom {
+public class ChatRoom implements Serializable {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

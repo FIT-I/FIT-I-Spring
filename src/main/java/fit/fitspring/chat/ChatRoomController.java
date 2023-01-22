@@ -1,6 +1,6 @@
 package fit.fitspring.chat;
 
-import fit.fitspring.chat.dto.ChatRoomCreateDto;
+import fit.fitspring.chat.dto.ChatRoomAndUserDto;
 import fit.fitspring.chat.entity.ChatRoom;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -20,16 +20,18 @@ public class ChatRoomController {
     public String rooms(Model model) {
         return "/chat/room";
     }
-    // 모든 채팅방 목록 반환
-    @GetMapping("/rooms")
+
+    // 사용자의 채팅방 목록 반환
+    @GetMapping("/rooms/users/{userId}")
     @ResponseBody
-    public List<ChatRoom> room() {
-        return chatService.findAllRoom();
+    public List<ChatRoomAndUserDto> room(@PathVariable Long userId) {
+        List<ChatRoomAndUserDto> ret = chatService.findAllRoomsByUserId(userId);
+        return ret;
     }
     // 채팅방 생성
     @PostMapping("/room")
     @ResponseBody
-    public ChatRoom createRoom(@RequestBody ChatRoomCreateDto dto) {
+    public ChatRoom createRoom(@RequestBody ChatRoomAndUserDto dto) {
         return chatService.createRoom(dto.getRoomName(), dto.getEmails());
     }
     // 채팅방 입장 화면

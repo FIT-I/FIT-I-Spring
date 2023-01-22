@@ -1,5 +1,6 @@
 package fit.fitspring.chat;
 
+import fit.fitspring.chat.dto.ChatRoomAndUserDto;
 import fit.fitspring.chat.entity.ChatRoom;
 import fit.fitspring.chat.entity.ChatRoomRepository;
 import fit.fitspring.chat.entity.ChatUser;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -55,5 +57,23 @@ public class ChatService {
 
         chatRoomRepository.save(chatRoom);
         return chatRoom;
+    }
+
+    public List<ChatRoomAndUserDto> findAllRoomsByUserId(Long userId) {
+        Account account = accountService.findById(userId);
+        return account.getChatUser().stream()
+                .map(chatUser -> toEntity(chatUser.getChatRoom())).toList();
+    }
+
+    private ChatRoomAndUserDto toEntity(ChatRoom chatRoom){
+        ChatRoomAndUserDto dto = ChatRoomAndUserDto.builder()
+                .roomId(chatRoom.getId())
+                .roomName(chatRoom.getRoomName())
+                .emails(chatRoom.getChatUser().stream()
+                        .map(cu ->
+                                cu.getChatUser().getEmail())
+                        .collect(Collectors.toList()))
+                .build();
+        return dto;
     }
 }

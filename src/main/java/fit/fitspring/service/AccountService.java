@@ -88,4 +88,7 @@ public class AccountService {
         return accountRepository.findByEmailIn(emails);
     }
 
+    public Account findById(Long userId) {
+        return accountRepository.findById(userId).orElseThrow(EntityNotFoundException::new);
+    }
 }
