@@ -1,7 +1,7 @@
 package fit.fitspring.controller;
 
 import fit.fitspring.controller.dto.account.AccountForRegisterDto;
-import fit.fitspring.controller.dto.account.RegisterDto;
+import fit.fitspring.controller.dto.account.*;
 import fit.fitspring.controller.mdoel.account.PostAccountRes;
 import fit.fitspring.controller.mdoel.account.PostLoginRes;
 import fit.fitspring.exception.common.BusinessException;
@@ -12,6 +12,7 @@ import static fit.fitspring.utils.ValidationRegex.isRegexEmail;
 import fit.fitspring.provider.AccountProvider;
 import fit.fitspring.response.BaseResponse;
 import fit.fitspring.service.AccountService;
+import fit.fitspring.utils.ValidationRegex;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -83,16 +84,20 @@ public class AccountController {
     }
 
     @Operation(summary = "로그인", description = "로그인(Request)")
-    @PostMapping("/{email}/{password}")
-    public BaseResponse<PostLoginRes> userLogin(@Parameter(description = "이메일")@PathVariable String email,
-                                    @Parameter(description = "비밀번호")@PathVariable String password){
+    @PostMapping("log-in")
+    public BaseResponse<PostLoginRes> userLogin(@RequestBody LoginDto loginDto){
+        //이메일 형식이 올바른가?
+        if(ValidationRegex.isRegexEmail(loginDto.getEmail()) == false) {
+            return new BaseResponse<>(ErrorCode.POST_ACCOUNTS_INVALID_EMAIL);
+        }
+
         // 이메일이 DB에 존재하는가
-        if(accountProvider.checkEmail(email) == false) {
+        if(accountProvider.checkEmail(loginDto.getEmail()) == false) {
             return new BaseResponse<>(ErrorCode.ACCOUNT_NOT_FOUND);
         }
 
         try{
-            PostLoginRes postLoginRes = accountProvider.logIn(email, password);
+            PostLoginRes postLoginRes = accountProvider.logIn(loginDto.getEmail(), loginDto.getPassword());
             return new BaseResponse<>(postLoginRes);
         } catch (BusinessException e){
             return new BaseResponse<>(e.getErrorCode());
