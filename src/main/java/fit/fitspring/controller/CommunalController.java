@@ -1,9 +1,6 @@
 package fit.fitspring.controller;
 
-import fit.fitspring.controller.dto.communal.AnnouncementDto;
-import fit.fitspring.controller.dto.communal.ReviewDto;
-import fit.fitspring.controller.dto.communal.TermDto;
-import fit.fitspring.controller.dto.communal.TrainerInformationDto;
+import fit.fitspring.controller.dto.communal.*;
 import fit.fitspring.controller.dto.customer.WishDto;
 import fit.fitspring.domain.review.Review;
 import fit.fitspring.exception.common.BusinessException;
@@ -53,10 +50,14 @@ public class CommunalController {
         }
     }
 
-    @Operation(summary = "마이페이지조회(미완)", description = "마이페이지조회(Request/Response)")
+    @Operation(summary = "마이페이지조회(거의완)", description = "마이페이지조회(Request/Response)")
     @GetMapping("/mypage")
-    public ResponseEntity getMyPageInformation(){
-        return ResponseEntity.ok().build();
+    public BaseResponse<MyPageDto> getMyPage(Long userIdx){
+        try{
+            return new BaseResponse<>(communalService.getMyPageBriefInformation(userIdx));
+        } catch(BusinessException e){
+            return new BaseResponse<>(e.getErrorCode());
+        }
     }
 
     @Operation(summary = "공지사항목록조회", description = "공지사항목록조회(Response)")
@@ -72,9 +73,4 @@ public class CommunalController {
         return new BaseResponse<>(termDtoList);
     }
 
-    @Operation(summary = "프로필수정(미완)", description = "프로필수정(Request)")
-    @PatchMapping("/profile")
-    public ResponseEntity modifyProfileImage(@Parameter(description = "공지사항식별자")@RequestPart(value = "profileImage") MultipartFile image){
-        return ResponseEntity.ok().build();
-    }
 }

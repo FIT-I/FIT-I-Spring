@@ -77,4 +77,5 @@ public class Account {
         this.name=name;
     }
     public void modifyLocation(String location){ this.location = location; }
+    public void modifyProfile(String profile){ this.profile = profile; }
 }
