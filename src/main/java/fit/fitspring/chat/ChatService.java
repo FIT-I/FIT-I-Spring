@@ -40,9 +40,11 @@ public class ChatService {
 
     //채팅방 하나 불러오기
     public ChatRoom findById(Long roomId) {
+        return chatRoomRepository.findById(roomId).orElse(null);
+    }
+    public ChatRoom findByIdFromMap(Long roomId) {
         return chatRooms.get(roomId);
     }
-
     //채팅방 생성
     public ChatRoomAndUserDto createRoom(String name, List<String> emails) {
         ChatRoom chatRoom = new ChatRoom(name);
