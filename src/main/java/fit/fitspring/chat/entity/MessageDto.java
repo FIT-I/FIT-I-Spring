@@ -17,7 +17,8 @@ public class MessageDto {
     private Long id;
     private String data;
     private Long chatRoomId;
-    private Account sender;
+    private Long senderId;
+    private String email;
     private LocalDateTime createdAt;
 
 

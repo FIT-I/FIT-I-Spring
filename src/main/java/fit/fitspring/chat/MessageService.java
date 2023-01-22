@@ -74,7 +74,8 @@ public class MessageService {
                 .id(message.getId())
                 .data(message.getData())
                 .chatRoomId(message.getChatRoom().getId())
-                .sender(message.getSender())
+                .senderId(message.getSender().getId())
+                .email(message.getSender().getEmail())
                 .createdAt(message.getCreatedAt())
                 .build();
     }
