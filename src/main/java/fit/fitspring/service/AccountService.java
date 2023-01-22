@@ -91,4 +91,7 @@ public class AccountService {
     public Account findById(Long userId) {
         return accountRepository.findById(userId).orElseThrow(EntityNotFoundException::new);
     }
+    public Account getById(Long id){
+        return accountRepository.getReferenceById(id);
+    }
 }
