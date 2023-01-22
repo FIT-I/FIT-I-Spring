@@ -2,6 +2,7 @@ package fit.fitspring.controller.dto.communal;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -10,6 +11,7 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
+@NoArgsConstructor
 @Schema(title = "트레이너정보")
 public class TrainerInformationDto {
     @Schema(description = "이름", example = "홍길동")
@@ -22,27 +24,17 @@ public class TrainerInformationDto {
     private String levelName;
     @Schema(description = "학교", example = "숭실대학교 재학")
     private String school;
-    @Schema(description = "거리", example = "1km")
-    private String distance;
     @Schema(description = "평점", example = "4.8")
     private Float grade;
-    @Schema(description = "자격증리스트", example = "생활체육지도사 1급")
-    private List<String> certificateList;
-    @Schema(description = "관리비용리스트", example = "10000, 5000")
-    private List<Integer> costList;
+    @Schema(description = "관리비용", example = "10000")
+    private int cost;
     @Schema(description = "소개글", example = "안녕하세요")
-    private String contents1;
+    private String intro;
     @Schema(description = "서비스상세설명", example = "안녕하세요")
-    private String contents2;
-
-    private ReviewDto reviewDto;
-    @Schema(description = "평균평점", example = "4.5")
-    private Float average;
-
+    private String service;
+    @Schema(description = "리뷰리스트", example = "{홍길동, profile1, 4, 2023.1.20, 좋아요")
+    private List<ReviewDto> reviewDto;
     @Schema(description = "사진및자격증리스트", example = "1.jpg")
     private List<String> imageList;
 
-    public TrainerInformationDto(){
-
-    }
 }

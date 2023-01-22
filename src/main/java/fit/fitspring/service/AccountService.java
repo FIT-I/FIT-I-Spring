@@ -10,6 +10,7 @@ import fit.fitspring.exception.common.BusinessException;
 import fit.fitspring.exception.common.ErrorCode;
 import fit.fitspring.utils.JwtService;
 import fit.fitspring.utils.AES128;
+import fit.fitspring.utils.S3Uploader;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +33,7 @@ public class AccountService {
     private JavaMailSender javaMailSender;
     @Autowired
     private final JwtService jwtService;
+    private final S3Uploader s3Uploader;
 
 
     private final AccountRepository accountRepository;
@@ -57,7 +60,8 @@ public class AccountService {
             //return new PostAccountRes(30, "tmp_jwt");
         } catch (DataIntegrityViolationException e){ // 중복 이메일 게정 체크
             throw new DuplicatedAccountException();
-        } catch(Exception exception){
+        }
+        catch(Exception exception){
             throw new BusinessException(ErrorCode.DATABASE_ERROR);
         }
     }
