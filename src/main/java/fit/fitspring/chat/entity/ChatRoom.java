@@ -3,6 +3,7 @@ package fit.fitspring.chat.entity;
 import fit.fitspring.domain.account.Account;
 import jakarta.persistence.*;
 import lombok.*;
+import org.checkerframework.checker.units.qual.A;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -23,6 +24,8 @@ public class ChatRoom implements Serializable {
 
     @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL)
     private List<ChatUser> chatUser = new ArrayList<>();
+    @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL)
+    private List<Message> messages = new ArrayList<>();
 
     public ChatRoom (String roomName) {
         this.roomName = roomName;
