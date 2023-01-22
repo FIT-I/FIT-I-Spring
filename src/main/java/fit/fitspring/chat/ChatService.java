@@ -35,7 +35,6 @@ public class ChatService {
         //채팅방 최근 생성 순으로 반환
         List<ChatRoom> result = new ArrayList<>(chatRooms.values());
         Collections.reverse(result);
-
         return result;
     }
 
@@ -55,16 +54,16 @@ public class ChatService {
                 .map(user -> ChatUser.of(chatRoom, user)).toList());
 
         chatRooms.put(chatRoom.getId(), chatRoom);
-        return toEntity(chatRoomRepository.save(chatRoom));
+        return toDto(chatRoomRepository.save(chatRoom));
     }
 
     public List<ChatRoomAndUserDto> findAllRoomsByUserId(Long userId) {
         Account account = accountService.findById(userId);
         return account.getChatUser().stream()
-                .map(chatUser -> toEntity(chatUser.getChatRoom())).toList();
+                .map(chatUser -> toDto(chatUser.getChatRoom())).toList();
     }
 
-    private ChatRoomAndUserDto toEntity(ChatRoom chatRoom){
+    private ChatRoomAndUserDto toDto(ChatRoom chatRoom){
         ChatRoomAndUserDto dto = ChatRoomAndUserDto.builder()
                 .roomId(chatRoom.getId() == null ? null : chatRoom.getId())
                 .roomName(chatRoom.getRoomName())
