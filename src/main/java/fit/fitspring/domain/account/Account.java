@@ -39,6 +39,10 @@ public class Account {
     @Column(name="user_pwd")
     private String password;
 
+    @ColumnDefault("customerProfile1")
+    @Column(name = "user_profile")
+    private String profile;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "user_role")
     private AccountType accountType;

@@ -3,14 +3,12 @@ package fit.fitspring.service;
 import fit.fitspring.controller.dto.communal.AnnouncementDto;
 import fit.fitspring.controller.dto.communal.ReviewDto;
 import fit.fitspring.controller.dto.communal.TermDto;
+import fit.fitspring.controller.dto.communal.TrainerInformationDto;
 import fit.fitspring.controller.dto.customer.WishDto;
 import fit.fitspring.domain.account.*;
 import fit.fitspring.domain.matching.WishList;
 import fit.fitspring.domain.review.Review;
-import fit.fitspring.domain.trainer.Trainer;
-import fit.fitspring.domain.trainer.TrainerRepository;
-import fit.fitspring.domain.trainer.UserImg;
-import fit.fitspring.domain.trainer.UserImgRepository;
+import fit.fitspring.domain.trainer.*;
 import fit.fitspring.exception.common.BusinessException;
 import fit.fitspring.exception.common.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -73,5 +71,36 @@ public class CommunalService {
             reviewDtoList.add(reviewDto);
         }
         return reviewDtoList;
+    }
+
+    @Transactional
+    public TrainerInformationDto getTrainerInformation(Long trainerIdx){
+        Optional<Trainer> optional = trainerRepository.findById(trainerIdx);
+        if(optional.isEmpty()) {
+            throw new BusinessException(ErrorCode.INVALID_TRAINERIDX);
+        }
+        Optional<UserImg> userImg = userImgRepository.findByTrainer(optional.get());
+        TrainerInformationDto trainerInfo = new TrainerInformationDto();
+        trainerInfo.setName(optional.get().getUser().getName());
+        trainerInfo.setProfile(userImg.get().getProfile());
+        trainerInfo.setBackground(userImg.get().getBackGround());
+        trainerInfo.setLevelName(optional.get().getLevel().getName());
+        trainerInfo.setSchool(optional.get().getSchool());
+        trainerInfo.setGrade(optional.get().getGrade());
+        trainerInfo.setCost(optional.get().getPriceHour());
+        trainerInfo.setIntro(optional.get().getIntro());
+        trainerInfo.setService(optional.get().getService());
+        List<ReviewDto> reviewList = getTrainerReviewList(trainerIdx);
+        if(reviewList.toArray().length > 3){
+            reviewList = reviewList.subList(0, 3);
+        }
+        trainerInfo.setReviewDto(reviewList);
+        List<EtcImg> etcImgList = userImg.get().getEtcImgList();
+        List<String> imageList = new ArrayList<>();
+        for(EtcImg i : etcImgList){
+            imageList.add(i.getEtcImg());
+        }
+        trainerInfo.setImageList(imageList);
+        return trainerInfo;
     }
 }
