@@ -22,28 +22,29 @@ import java.util.stream.Collectors;
 public class ChatService {
     private final AccountService accountService;
     private final ChatRoomRepository chatRoomRepository;
-    private Map<Long, ChatRoom> chatRooms;
+    //private Map<Long, ChatRoom> chatRooms;
 
+    /*
     @PostConstruct
     //의존관게 주입완료되면 실행되는 코드
     private void init() {
         chatRooms = new LinkedHashMap<>();
     }
+     */
 
     //채팅방 불러오기
+    /*
     public List<ChatRoom> findAllRoom() {
         //채팅방 최근 생성 순으로 반환
-        List<ChatRoom> result = new ArrayList<>(chatRooms.values());
+        //List<ChatRoom> result = new ArrayList<>(chatRooms.values());
         Collections.reverse(result);
         return result;
     }
+     */
 
     //채팅방 하나 불러오기
     public ChatRoom findById(Long roomId) {
         return chatRoomRepository.findById(roomId).orElse(null);
-    }
-    public ChatRoom findByIdFromMap(Long roomId) {
-        return chatRooms.get(roomId);
     }
     //채팅방 생성
     public ChatRoomAndUserDto createRoom(String name, List<String> emails) {
@@ -55,7 +56,7 @@ public class ChatService {
         chatRoom.setChatUser(chatUsers.stream()
                 .map(user -> ChatUser.of(chatRoom, user)).toList());
 
-        chatRooms.put(chatRoom.getId(), chatRoom);
+        //chatRooms.put(chatRoom.getId(), chatRoom);
         return toDto(chatRoomRepository.save(chatRoom));
     }
 

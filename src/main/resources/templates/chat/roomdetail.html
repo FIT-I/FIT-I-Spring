@@ -57,8 +57,10 @@
       messages: []
     },
     created() {
-      this.roomId = localStorage.getItem('wschat.roomId');
-      this.sender = localStorage.getItem('wschat.sender');
+      //this.roomId = localStorage.getItem('wschat.roomId');
+      this.roomId = 19;
+      //this.sender = localStorage.getItem('wschat.sender');
+      this.sender = 1;
       this.findRoom();
     },
     methods: {
