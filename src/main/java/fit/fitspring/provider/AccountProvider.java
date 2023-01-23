@@ -37,7 +37,7 @@ public class AccountProvider {
         if(pwdDecode.equals(password)){
             int userIdx = accountRepository.findByEmail(email).get().getId().intValue();
             String jwt = jwtService.createJwt(userIdx);
-            return new PostLoginRes(userIdx, jwt);
+            return new PostLoginRes(jwt);
         }
         else{ // 비밀번호가 다르다면
             throw new BusinessException(ErrorCode.FAILED_TO_LOGIN);

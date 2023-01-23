@@ -10,6 +10,7 @@ import fit.fitspring.exception.common.BusinessException;
 import fit.fitspring.exception.common.ErrorCode;
 import fit.fitspring.utils.JwtService;
 import fit.fitspring.utils.AES128;
+import fit.fitspring.utils.S3Uploader;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,9 +33,9 @@ public class AccountService {
     private JavaMailSender javaMailSender;
     @Autowired
     private final JwtService jwtService;
-
-
+    private final S3Uploader s3Uploader;
     private final AccountRepository accountRepository;
+
     public PostAccountRes registerAccount(AccountForRegisterDto accountDto) throws BusinessException {
         String pwd;
         String email = accountDto.getEmail();
@@ -53,11 +55,13 @@ public class AccountService {
             accountRepository.save(account); // 일단 데이터 저장
             int userIdx = accountRepository.findByEmail(email).get().getId().intValue(); // 데이터 저장하면서 자동 생성된 id 가져오기
             String jwt = jwtService.createJwt(userIdx); // 그 아이디로 jwt 생성
-            return new PostAccountRes(userIdx, jwt); // 요청 결과 반환
+            String userName = accountRepository.findByEmail(email).get().getName(); // 가입한 회원의 이름 반환
+            return new PostAccountRes(userName); // 요청 결과 반환
             //return new PostAccountRes(30, "tmp_jwt");
         } catch (DataIntegrityViolationException e){ // 중복 이메일 게정 체크
             throw new DuplicatedAccountException();
-        } catch(Exception exception){
+        }
+        catch(Exception exception){
             throw new BusinessException(ErrorCode.DATABASE_ERROR);
         }
     }
