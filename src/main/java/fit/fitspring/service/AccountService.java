@@ -1,29 +1,22 @@
 package fit.fitspring.service;
 
-import fit.fitspring.config.Secret;
-import fit.fitspring.controller.dto.account.AccountForRegisterDto;
-import fit.fitspring.controller.mdoel.account.PostAccountRes;
+import fit.fitspring.controller.mdoel.account.PostLoginRes;
 import fit.fitspring.domain.account.Account;
 import fit.fitspring.domain.account.AccountRepository;
-import fit.fitspring.exception.account.DuplicatedAccountException;
 import fit.fitspring.exception.common.BusinessException;
 import fit.fitspring.exception.common.ErrorCode;
-import fit.fitspring.utils.JwtService;
-import fit.fitspring.utils.AES128;
+import fit.fitspring.jwt.TokenProvider;
 import fit.fitspring.utils.S3Uploader;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -31,40 +24,58 @@ public class AccountService {
 
     @Autowired
     private JavaMailSender javaMailSender;
-    @Autowired
-    private final JwtService jwtService;
+
     private final S3Uploader s3Uploader;
     private final AccountRepository accountRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final TokenProvider tokenProvider;
+    private final AuthenticationManagerBuilder authenticationManagerBuilder;
 
-    public PostAccountRes registerAccount(AccountForRegisterDto accountDto) throws BusinessException {
-        String pwd;
-        String email = accountDto.getEmail();
+    // 로그인 Service
+    public PostLoginRes login(String email, String password) {
+        // 1. ID/pwd 를 기반으로 Authentication 객체 생성
+        //    이때 authentication은 인증 여부를 확인하는 authenticated 값이 false
+        UsernamePasswordAuthenticationToken authenticationToken
+                = new UsernamePasswordAuthenticationToken(email,password);
 
-        // 비번 암호화 + 이메일 중복 확인
-        try {
-            pwd = new AES128(Secret.USER_INFO_PASSWORD_KEY).encrypt(accountDto.getPassword()); // 비번 암호화
-            accountDto.setPassword(pwd);
-        } catch (Exception ignored) {
-            throw new BusinessException(ErrorCode.DUPLICATE_ACCOUNT);
-        }
+        // 2. 실제 검증 (사용자 비밀번호 체크)
+        //    authenticate 메서드 실행 => CustomUserDetailsService 에서 만든 loadUserByUsername 메서드 실행
+        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
 
-        Account account = accountDto.toEntity();
-
-        // 회원가입 정보 저장, jwt 생성, 결과 반환(userIdx, jwt)
-        try{
-            accountRepository.save(account); // 일단 데이터 저장
-            int userIdx = accountRepository.findByEmail(email).get().getId().intValue(); // 데이터 저장하면서 자동 생성된 id 가져오기
-            String jwt = jwtService.createJwt(userIdx); // 그 아이디로 jwt 생성
-            String userName = accountRepository.findByEmail(email).get().getName(); // 가입한 회원의 이름 반환
-            return new PostAccountRes(userName); // 요청 결과 반환
-            //return new PostAccountRes(30, "tmp_jwt");
-        } catch (DataIntegrityViolationException e){ // 중복 이메일 게정 체크
-            throw new DuplicatedAccountException();
-        }
-        catch(Exception exception){
-            throw new BusinessException(ErrorCode.DATABASE_ERROR);
-        }
+        // 3. 인증 정보를 바탕으로 JWT 토큰 생성
+        String jwt = tokenProvider.createToken(authentication);
+        return new PostLoginRes(jwt);
     }
+
+//    public PostAccountRes registerAccount(AccountForRegisterDto accountDto) throws BusinessException {
+//        String pwd;
+//        String email = accountDto.getEmail();
+//
+//        // 비번 암호화 + 이메일 중복 확인
+//        try {
+//            pwd = new AES128(Secret.USER_INFO_PASSWORD_KEY).encrypt(accountDto.getPassword()); // 비번 암호화
+//            accountDto.setPassword(pwd);
+//        } catch (Exception ignored) {
+//            throw new BusinessException(ErrorCode.DUPLICATE_ACCOUNT);
+//        }
+//
+//        Account account = accountDto.toEntity();
+//
+//        // 회원가입 정보 저장, jwt 생성, 결과 반환(userIdx, jwt)
+//        try{
+//            accountRepository.save(account); // 일단 데이터 저장
+//            int userIdx = accountRepository.findByEmail(email).get().getId().intValue(); // 데이터 저장하면서 자동 생성된 id 가져오기
+//            String jwt = jwtService.createJwt(userIdx); // 그 아이디로 jwt 생성
+//            String userName = accountRepository.findByEmail(email).get().getName(); // 가입한 회원의 이름 반환
+//            return new PostAccountRes(userName); // 요청 결과 반환
+//            //return new PostAccountRes(30, "tmp_jwt");
+//        } catch (DataIntegrityViolationException e){ // 중복 이메일 게정 체크
+//            throw new DuplicatedAccountException();
+//        }
+//        catch(Exception exception){
+//            throw new BusinessException(ErrorCode.DATABASE_ERROR);
+//        }
+//    }
 
     public String getCertificationNumber(String email) throws BusinessException{
         String number = "";
@@ -85,6 +96,16 @@ public class AccountService {
     }
     public Account getByEmail(String email) {
         return accountRepository.findByEmail(email).orElseThrow(EntityNotFoundException::new);
+    }
+
+
+    // db에 email존재 여부 확인
+    public boolean checkEmail(String email) throws BusinessException {
+        try{
+            return accountRepository.findByEmail(email).isPresent();
+        } catch (Exception e) {
+            throw new BusinessException(ErrorCode.DATABASE_ERROR);
+        }
     }
 
 }

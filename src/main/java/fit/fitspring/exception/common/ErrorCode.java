@@ -8,14 +8,19 @@ public enum ErrorCode {
 
     /*성공 1000*/
     SUCCESS(true, 1000, "요청에 성공하였습니다."),
+    SAVE_AUTH(true, 1001, "인증 정보를 저장했습니다."),
 
     /*공통 2000*/
     INVALID_INPUT(false, 2000, "잘못된 입력값입니다."),
     METHOD_NOT_ALLOWED(false, 2001, "잘못된 호출입니다."),
     HANDLE_ACCESS_DENIED(false, 2002, "접근할 수 없습니다."),
     INTERNAL_SERVER_ERROR(false, 2003, "문제가 발생했습니다."),
-    EMPTY_JWT(false, 2004, "JWT를 입력해주세요."),
-    INVALID_JWT(false, 2005, "유효하지 않은 JWT입니다."),
+    WRONG_JWT(false, 2004, "잘못된 JWT 서명입니다."),
+    EXPIRED_JWT(false, 2005, "만료된 JWT 토큰입니다."),
+    UNSUPPORTED_JWT(false, 2006, "지원되지 않는 JWT 토큰입니다."),
+    ILLEGAL_JWT(false, 2007, "JWT 토큰이 잘못되었습니다."),
+    INVALID_JWT(false, 2008, "유효하지 않은 JWT 토큰입니다."),
+
 
     /*유저 3000*/
     ACCOUNT_NOT_FOUND(false, 3001, "사용자를 찾을 수 없습니다."),
