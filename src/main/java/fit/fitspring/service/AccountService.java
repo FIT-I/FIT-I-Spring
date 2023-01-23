@@ -1,15 +1,22 @@
 package fit.fitspring.service;
 
+import fit.fitspring.config.Secret;
+import fit.fitspring.controller.dto.account.AccountForRegisterDto;
+import fit.fitspring.controller.mdoel.account.PostAccountRes;
 import fit.fitspring.controller.mdoel.account.PostLoginRes;
 import fit.fitspring.domain.account.Account;
 import fit.fitspring.domain.account.AccountRepository;
 import fit.fitspring.exception.common.BusinessException;
+import fit.fitspring.exception.account.DuplicatedAccountException;
 import fit.fitspring.exception.common.ErrorCode;
 import fit.fitspring.jwt.TokenProvider;
+import fit.fitspring.utils.AES128;
 import fit.fitspring.utils.S3Uploader;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -30,52 +37,67 @@ public class AccountService {
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
+    @Value("{user.info.pw.key}") String pwKey;
 
     // 로그인 Service
     public PostLoginRes login(String email, String password) {
-        // 1. ID/pwd 를 기반으로 Authentication 객체 생성
-        //    이때 authentication은 인증 여부를 확인하는 authenticated 값이 false
-        UsernamePasswordAuthenticationToken authenticationToken
-                = new UsernamePasswordAuthenticationToken(email,password);
+        // 0. 비밀번호 풀기
+        String pwdEncode = accountRepository.findByEmail(email).get().getPassword();
+        String pwdDecode;
 
-        // 2. 실제 검증 (사용자 비밀번호 체크)
-        //    authenticate 메서드 실행 => CustomUserDetailsService 에서 만든 loadUserByUsername 메서드 실행
-        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+        try{
+            // 비번 암호 풀기
+            pwdDecode = new AES128(pwKey).decrypt(pwdEncode);
+        } catch (Exception ignored){
+            throw new BusinessException(ErrorCode.INVALID_INPUT);
+        }
 
-        // 3. 인증 정보를 바탕으로 JWT 토큰 생성
-        String jwt = tokenProvider.createToken(authentication);
-        return new PostLoginRes(jwt);
+        if(pwdDecode.equals(password)) {
+            // 1. ID/pwd 를 기반으로 Authentication 객체 생성
+            //    이때 authentication은 인증 여부를 확인하는 authenticated 값이 false
+            UsernamePasswordAuthenticationToken authenticationToken
+                    = new UsernamePasswordAuthenticationToken(email,pwdEncode);
+
+            // 2. 실제 검증 (사용자 비밀번호 체크)
+            //    authenticate 메서드 실행 => CustomUserDetailsService 에서 만든 loadUserByUsername 메서드 실행
+            Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+
+            // 3. 인증 정보를 바탕으로 JWT 토큰 생성
+            String jwt = tokenProvider.createToken(authentication);
+            return new PostLoginRes(jwt);
+        }
+        else{
+            throw new BusinessException(ErrorCode.FAILED_TO_LOGIN);
+        }
     }
 
-//    public PostAccountRes registerAccount(AccountForRegisterDto accountDto) throws BusinessException {
-//        String pwd;
-//        String email = accountDto.getEmail();
-//
-//        // 비번 암호화 + 이메일 중복 확인
-//        try {
-//            pwd = new AES128(Secret.USER_INFO_PASSWORD_KEY).encrypt(accountDto.getPassword()); // 비번 암호화
-//            accountDto.setPassword(pwd);
-//        } catch (Exception ignored) {
-//            throw new BusinessException(ErrorCode.DUPLICATE_ACCOUNT);
-//        }
-//
-//        Account account = accountDto.toEntity();
-//
-//        // 회원가입 정보 저장, jwt 생성, 결과 반환(userIdx, jwt)
-//        try{
-//            accountRepository.save(account); // 일단 데이터 저장
-//            int userIdx = accountRepository.findByEmail(email).get().getId().intValue(); // 데이터 저장하면서 자동 생성된 id 가져오기
-//            String jwt = jwtService.createJwt(userIdx); // 그 아이디로 jwt 생성
-//            String userName = accountRepository.findByEmail(email).get().getName(); // 가입한 회원의 이름 반환
-//            return new PostAccountRes(userName); // 요청 결과 반환
-//            //return new PostAccountRes(30, "tmp_jwt");
-//        } catch (DataIntegrityViolationException e){ // 중복 이메일 게정 체크
-//            throw new DuplicatedAccountException();
-//        }
-//        catch(Exception exception){
-//            throw new BusinessException(ErrorCode.DATABASE_ERROR);
-//        }
-//    }
+    public PostAccountRes registerAccount(AccountForRegisterDto accountDto) throws BusinessException {
+        String pwd;
+        String email = accountDto.getEmail();
+
+        // 비번 암호화 + 이메일 중복 확인
+        try {
+            pwd = new AES128(pwKey).encrypt(accountDto.getPassword()); // 비번 암호화
+            accountDto.setPassword(pwd);
+        } catch (Exception ignored) {
+            throw new BusinessException(ErrorCode.DUPLICATE_ACCOUNT);
+        }
+
+        Account account = accountDto.toEntity();
+
+        // 회원가입 정보 저장, jwt 생성, 결과 반환(userIdx, jwt)
+        try{
+            accountRepository.save(account); // 일단 데이터 저장
+            String userName = accountRepository.findByEmail(email).get().getName(); // 가입한 회원의 이름 반환
+            return new PostAccountRes(userName); // 요청 결과 반환
+        } catch (DataIntegrityViolationException e){ // 중복 이메일 게정 체크
+            throw new DuplicatedAccountException();
+        }
+        catch(Exception exception){
+            throw new BusinessException(ErrorCode.DATABASE_ERROR);
+        }
+    }
+
 
     public String getCertificationNumber(String email) throws BusinessException{
         String number = "";

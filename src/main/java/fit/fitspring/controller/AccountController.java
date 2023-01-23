@@ -1,6 +1,7 @@
 package fit.fitspring.controller;
 
 import fit.fitspring.controller.dto.account.*;
+import fit.fitspring.controller.mdoel.account.PostAccountRes;
 import fit.fitspring.controller.mdoel.account.PostLoginRes;
 import fit.fitspring.exception.common.BusinessException;
 import fit.fitspring.exception.common.ErrorCode;
@@ -16,6 +17,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import static fit.fitspring.utils.ValidationRegex.*;
 
 
 @Slf4j
@@ -41,48 +44,42 @@ public class AccountController {
      * @Param : AccountForRegisterDto
      * @Response : 200(성공) or 400
      * */
-//    @PostMapping
-//    public ResponseEntity registerUser(@RequestBody AccountForRegisterDto accountDto){
-//        accountService.registerAccount(accountDto);
-//        return ResponseEntity.ok().build();
-//    }
+    @Operation(summary = "회원가입", description = "회원가입(Request)")
+    @PostMapping
+    public BaseResponse<PostAccountRes> registerUser(@RequestBody RegisterReqDto registerDto){
 
-//    @Operation(summary = "회원가입", description = "회원가입(Request)")
-//    @PostMapping
-//    public BaseResponse<PostAccountRes> registerUser(@RequestBody RegisterDto registerDto){
-//
-//        // 이메일, 비밀번호, 이름이 입력 되지 않았을 경우 에러 코드 리턴
-//        if (registerDto.getEmail() == null) {
-//            return new BaseResponse<>(ErrorCode.POST_ACCOUNTS_EMPTY_EMAIL);
-//        }
-//
-//        // 이름이 입력되지 않았을 경우 에러 리턴
-//        if (registerDto.getName() ==null) {
-//            return new BaseResponse<>(ErrorCode.POST_ACCOUNTS_EMPTY_NAME);
-//        }
-//
-//        // 이메일 형식이 맞지 않은 경우 에러 코드 리턴
-//        if (!isRegexEmail(registerDto.getEmail())){
-//            return new BaseResponse<>(ErrorCode.POST_ACCOUNTS_INVALID_EMAIL);
-//        }
-//
-//        // DB에 저장
-//        try {
-//            AccountForRegisterDto accountForRegisterDto = new AccountForRegisterDto(registerDto.getName(), registerDto.getEmail(), registerDto.getPassword(), registerDto.getAccountType());
-//            PostAccountRes postAccountRes = accountService.registerAccount(accountForRegisterDto);
-//            return new BaseResponse<>(postAccountRes);
-//        } catch(BusinessException e){
-//            return new BaseResponse<>(e.getErrorCode());
-//        }
-//
-//        //return ResponseEntity.ok().build();
-//    }
-//
+        // 이메일, 비밀번호, 이름이 입력 되지 않았을 경우 에러 코드 리턴
+        if (registerDto.getEmail() == null) {
+            return new BaseResponse<>(ErrorCode.POST_ACCOUNTS_EMPTY_EMAIL);
+        }
+
+        // 이름이 입력되지 않았을 경우 에러 리턴
+        if (registerDto.getName() ==null) {
+            return new BaseResponse<>(ErrorCode.POST_ACCOUNTS_EMPTY_NAME);
+        }
+
+        // 이메일 형식이 맞지 않은 경우 에러 코드 리턴
+        if (!ValidationRegex.isRegexEmail(registerDto.getEmail())){
+            return new BaseResponse<>(ErrorCode.POST_ACCOUNTS_INVALID_EMAIL);
+        }
+
+        // DB에 저장
+        try {
+            AccountForRegisterDto accountForRegisterDto = new AccountForRegisterDto(registerDto.getName(), registerDto.getEmail(), registerDto.getPassword(), registerDto.getAccountType());
+            PostAccountRes postAccountRes = accountService.registerAccount(accountForRegisterDto);
+            return new BaseResponse<>(postAccountRes);
+        } catch(BusinessException e){
+            return new BaseResponse<>(e.getErrorCode());
+        }
+
+        //return ResponseEntity.ok().build();
+    }
+
     @Operation(summary = "로그인", description = "로그인(Request)")
     @PostMapping("/login")
     public BaseResponse<PostLoginRes> userLogin(@RequestBody LoginReqDto loginDto){
         //이메일 형식이 올바른가?
-        if(ValidationRegex.isRegexEmail(loginDto.getEmail()) == false) {
+        if(isRegexEmail(loginDto.getEmail()) == false) {
             return new BaseResponse<>(ErrorCode.POST_ACCOUNTS_INVALID_EMAIL);
         }
 
