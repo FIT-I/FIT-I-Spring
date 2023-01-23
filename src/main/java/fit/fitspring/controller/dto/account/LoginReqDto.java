@@ -5,7 +5,6 @@ import lombok.*;
 
 @Getter
 @Setter
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Schema(title = "로그인정보")
@@ -15,6 +14,5 @@ public class LoginReqDto {
     private String email;
     @Schema(description = "비밀번호", example = "fiti123!")
     private String password;
-
 
 }
