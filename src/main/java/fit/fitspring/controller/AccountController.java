@@ -1,15 +1,11 @@
 package fit.fitspring.controller;
 
-import fit.fitspring.controller.dto.account.AccountForRegisterDto;
 import fit.fitspring.controller.dto.account.*;
 import fit.fitspring.controller.mdoel.account.PostAccountRes;
 import fit.fitspring.controller.mdoel.account.PostLoginRes;
 import fit.fitspring.exception.common.BusinessException;
 import fit.fitspring.exception.common.ErrorCode;
-import fit.fitspring.controller.mdoel.account.*;
-import static fit.fitspring.utils.ValidationRegex.isRegexEmail;
 
-import fit.fitspring.provider.AccountProvider;
 import fit.fitspring.response.BaseResponse;
 import fit.fitspring.service.AccountService;
 import fit.fitspring.utils.ValidationRegex;
@@ -22,6 +18,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import static fit.fitspring.utils.ValidationRegex.*;
+
 
 @Slf4j
 @RestController
@@ -32,13 +30,13 @@ public class AccountController {
     @Autowired
     private final AccountService accountService;
     @Autowired
-    private final AccountProvider accountProvider;
+    //private final AccountProvider accountProvider;
 
     /* 테스트 용 */
     @Operation(summary = "테스트", description = "테스트")
     @GetMapping("/test")
     public String test(){
-        return "10";
+        return "success";
     }
 
     /**
@@ -46,15 +44,9 @@ public class AccountController {
      * @Param : AccountForRegisterDto
      * @Response : 200(성공) or 400
      * */
-//    @PostMapping
-//    public ResponseEntity registerUser(@RequestBody AccountForRegisterDto accountDto){
-//        accountService.registerAccount(accountDto);
-//        return ResponseEntity.ok().build();
-//    }
-
     @Operation(summary = "회원가입", description = "회원가입(Request)")
     @PostMapping
-    public BaseResponse<PostAccountRes> registerUser(@RequestBody RegisterDto registerDto){
+    public BaseResponse<PostAccountRes> registerUser(@RequestBody RegisterReqDto registerDto){
 
         // 이메일, 비밀번호, 이름이 입력 되지 않았을 경우 에러 코드 리턴
         if (registerDto.getEmail() == null) {
@@ -67,7 +59,7 @@ public class AccountController {
         }
 
         // 이메일 형식이 맞지 않은 경우 에러 코드 리턴
-        if (!isRegexEmail(registerDto.getEmail())){
+        if (!ValidationRegex.isRegexEmail(registerDto.getEmail())){
             return new BaseResponse<>(ErrorCode.POST_ACCOUNTS_INVALID_EMAIL);
         }
 
@@ -84,26 +76,24 @@ public class AccountController {
     }
 
     @Operation(summary = "로그인", description = "로그인(Request)")
-    @PostMapping("log-in")
-    public BaseResponse<PostLoginRes> userLogin(@RequestBody LoginDto loginDto){
+    @PostMapping("/login")
+    public BaseResponse<PostLoginRes> userLogin(@RequestBody LoginReqDto loginDto){
         //이메일 형식이 올바른가?
-        if(ValidationRegex.isRegexEmail(loginDto.getEmail()) == false) {
+        if(isRegexEmail(loginDto.getEmail()) == false) {
             return new BaseResponse<>(ErrorCode.POST_ACCOUNTS_INVALID_EMAIL);
         }
 
         // 이메일이 DB에 존재하는가
-        if(accountProvider.checkEmail(loginDto.getEmail()) == false) {
+        if(accountService.checkEmail(loginDto.getEmail()) == false) {
             return new BaseResponse<>(ErrorCode.ACCOUNT_NOT_FOUND);
         }
 
         try{
-            PostLoginRes postLoginRes = accountProvider.logIn(loginDto.getEmail(), loginDto.getPassword());
+            PostLoginRes postLoginRes = accountService.login(loginDto.getEmail(), loginDto.getPassword());
             return new BaseResponse<>(postLoginRes);
         } catch (BusinessException e){
             return new BaseResponse<>(e.getErrorCode());
         }
-
-        //return ResponseEntity.ok().build();
     }
 
     @Operation(summary = "인증메일전송", description = "인증메일전송(Request/Response)")
