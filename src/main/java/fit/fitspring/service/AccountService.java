@@ -34,6 +34,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.swing.text.html.Option;
 import java.util.List;
 import java.util.Optional;
 
@@ -221,4 +222,16 @@ public class AccountService {
         }
     }
 
+    public String getUserPassword(String email) throws BusinessException{
+        Optional<Account> optional = accountRepository.findByEmail(email);
+        if(optional.isEmpty()){
+            throw new BusinessException(ErrorCode.INVALID_EMAIL);
+        }
+        try{
+            String pwdDecode = new AES128(pwKey).decrypt(optional.get().getPassword());
+            return pwdDecode;
+        } catch (Exception ignored){
+            throw new BusinessException(ErrorCode.INVALID_INPUT);
+        }
+    }
 }

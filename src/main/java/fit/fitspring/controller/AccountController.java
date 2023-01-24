@@ -145,4 +145,14 @@ public class AccountController {
     public ResponseEntity modifyAccountState(@Parameter(description = "상태('A: Active(활성상태), D: Disabled(비활성화 상태), W: Withdrawal(탈퇴한 상태)'")@PathVariable String state){
         return ResponseEntity.ok().build();
     }
+
+    @Operation(summary = "계정 비밀번호 조회", description = "비밀번호 찾기 뷰(인증메일 확인 후) - 계정 비밀번호 조회 API(Request/Response)")
+    @GetMapping("/password/{email}")
+    public BaseResponse<String> registerCustomer(@Parameter(description = "유저 이메일")@PathVariable String email){
+        try {
+            return new BaseResponse<>(accountService.getUserPassword(email));
+        } catch(BusinessException e){
+            return new BaseResponse<>(e.getErrorCode());
+        }
+    }
 }
