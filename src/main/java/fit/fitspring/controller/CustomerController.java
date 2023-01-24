@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.security.Principal;
 import java.util.List;
 
 @Slf4j
@@ -63,47 +64,47 @@ public class CustomerController {
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "찜목록조회(거의완)", description = "찜목록조회(Response)")
+    @Operation(summary = "찜목록조회", description = "찜목록조회(Response)")
     @GetMapping("/wish")
-    public BaseResponse<List<WishDto>> getWishList(Long userIdx){
+    public BaseResponse<List<WishDto>> getWishList(Principal principal){
         try{
             //로그인 구현 후 수정
-            List<WishDto> wishDtoList = customerService.getWishList(userIdx);
+            List<WishDto> wishDtoList = customerService.getWishList(principal);
             return new BaseResponse<>(wishDtoList);
         }catch(BusinessException e){
             return new BaseResponse<>(e.getErrorCode());
         }
     }
 
-    @Operation(summary = "리뷰작성(거의완)", description = "리뷰작성(Request)")
+    @Operation(summary = "리뷰작성", description = "리뷰작성(Request)")
     @PostMapping("/review")
-    public BaseResponse<String> reviewTrainer(Long userIdx, @RequestBody RegisterReviewDto review){
+    public BaseResponse<String> reviewTrainer(Principal principal, @RequestBody RegisterReviewDto review){
         try{
             //로그인 구현 후 수정
-            customerService.registerReview(userIdx, review);
+            customerService.registerReview(principal, review);
             return new BaseResponse<>("리뷰를 작성하였습니다.");
         }catch(BusinessException e){
             return new BaseResponse<>(e.getErrorCode());
         }
     }
 
-    @Operation(summary = "매칭위치설정(거의완)", description = "매칭위치설정(Request)")
+    @Operation(summary = "매칭위치설정", description = "매칭위치설정(Request)")
     @PatchMapping("/location/{location}")
-    public BaseResponse<String> modifyMatchingLocation(Long userIdx, @Parameter(description = "위치")@PathVariable String location){
+    public BaseResponse<String> modifyMatchingLocation(Principal principal, @Parameter(description = "위치")@PathVariable String location){
         try{
             //로그인 구현 후 수정
-            customerService.modifyUserLocation(userIdx, location);
+            customerService.modifyUserLocation(principal, location);
             return new BaseResponse<>("매칭 위치를 변경하였습니다.");
         }catch(BusinessException e){
             return new BaseResponse<>(e.getErrorCode());
         }
     }
 
-    @Operation(summary = "고객 프로필수정(거의완)", description = "프로필수정(Request)")
+    @Operation(summary = "고객 프로필수정", description = "프로필수정(Request)")
     @PatchMapping("/profile/{profile}")
-    public BaseResponse<String> modifyCustomerProfileImage(@Parameter(description = "프로필 문자열")@PathVariable String profile){
+    public BaseResponse<String> modifyCustomerProfileImage(Principal principal, @Parameter(description = "프로필 문자열")@PathVariable String profile){
         try {
-            customerService.modifyCustomerProfile(custIdx, profile);
+            customerService.modifyCustomerProfile(principal, profile);
             return new BaseResponse<>("고객 프로필 이미지를 변경하였습니다.");
         } catch (BusinessException e) {
             return new BaseResponse<>(e.getErrorCode());

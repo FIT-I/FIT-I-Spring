@@ -13,10 +13,12 @@ import fit.fitspring.domain.trainer.*;
 import fit.fitspring.exception.common.BusinessException;
 import fit.fitspring.exception.common.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -108,14 +110,14 @@ public class CommunalService {
     }
 
     @Transactional
-    public MyPageDto getMyPageBriefInformation(Long userIdx) throws BusinessException{
-        Optional<Account> optional = accountRepository.findById(userIdx);
+    public MyPageDto getMyPageBriefInformation(Principal principal) throws BusinessException{
+        Optional<Account> optional = accountRepository.findByEmail(principal.getName());
         if(optional.isEmpty()){
             throw new BusinessException(ErrorCode.INVALID_USERIDX);
         }
         MyPageDto myPageDto = new MyPageDto();
         if(optional.get().getAccountType().equals(AccountType.TRAINER)){
-            Optional<Trainer> optionalT = trainerRepository.findById(userIdx);
+            Optional<Trainer> optionalT = trainerRepository.findById(optional.get().getId());
             if(optionalT.isEmpty()){
                 throw new BusinessException(ErrorCode.INVALID_TRAINERIDX);
             }
@@ -129,7 +131,7 @@ public class CommunalService {
         else{
             myPageDto.setProfile(optional.get().getProfile());
         }
-        myPageDto.setUserIdx(userIdx);
+        myPageDto.setUserIdx(optional.get().getId());
         myPageDto.setUserName(optional.get().getName());
         myPageDto.setProfile(optional.get().getProfile());
         myPageDto.setEmail(optional.get().getEmail());
