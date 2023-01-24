@@ -1,14 +1,11 @@
 package fit.fitspring.controller;
 
 import fit.fitspring.controller.dto.account.*;
-import fit.fitspring.controller.mdoel.account.PostAccountRes;
-import fit.fitspring.controller.mdoel.account.PostLoginRes;
 import fit.fitspring.exception.common.BusinessException;
 import fit.fitspring.exception.common.ErrorCode;
 
 import fit.fitspring.response.BaseResponse;
 import fit.fitspring.service.AccountService;
-import fit.fitspring.utils.ValidationRegex;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -68,7 +65,7 @@ public class AccountController {
 
     @Operation(summary = "로그인", description = "로그인(Request)")
     @PostMapping("/login")
-    public BaseResponse<PostLoginRes> userLogin(@RequestBody LoginReqDto loginDto){
+    public BaseResponse<TokenDto> userLogin(@RequestBody LoginReqDto loginDto){
         //이메일 형식이 올바른가?
         if(isRegexEmail(loginDto.getEmail()) == false) {
             return new BaseResponse<>(ErrorCode.POST_ACCOUNTS_INVALID_EMAIL);
@@ -80,10 +77,21 @@ public class AccountController {
         }
 
         try{
-            PostLoginRes postLoginRes = accountService.login(loginDto.getEmail(), loginDto.getPassword());
+            TokenDto postLoginRes = accountService.login(loginDto.getEmail(), loginDto.getPassword());
             return new BaseResponse<>(postLoginRes);
         } catch (BusinessException e){
             return new BaseResponse<>(e.getErrorCode());
+        }
+    }
+
+    @Operation(summary = "토큰 재발급", description = "accessToken이 만료되었을 때 토큰(accessToken, refreshToken) 재발급")
+    @PostMapping("/reissue")
+    public BaseResponse<TokenDto> reissue(@RequestBody TokenDto reqTokenDto){
+        try {
+            TokenDto tokenDto = accountService.reissue(reqTokenDto.getAccessToken(), reqTokenDto.getRefreshToken());
+            return new BaseResponse<>(tokenDto);
+        } catch (BusinessException e){
+            return new BaseResponse<>(ErrorCode.ISSUE_JWT);
         }
     }
 
@@ -130,8 +138,14 @@ public class AccountController {
 
     @Operation(summary = "로그아웃(미완)", description = "로그아웃")
     @PostMapping("/logout")
-    public ResponseEntity userLogout(){
-        return ResponseEntity.ok().build();
+    public BaseResponse<String> userLogout(@RequestBody TokenDto reqTokenDto){
+        try{
+            accountService.logout(reqTokenDto.getAccessToken(), reqTokenDto.getRefreshToken());
+            return new BaseResponse<>("로그아웃 되었습니다.");
+        } catch(BusinessException e){
+            return new BaseResponse<>(e.getErrorCode());
+        }
+        //return ResponseEntity.ok().build();
     }
 
     @Operation(summary = "계정탈퇴(미완)", description = "계정탈퇴")
@@ -139,6 +153,7 @@ public class AccountController {
     public ResponseEntity userCloseAccount(){
         return ResponseEntity.ok().build();
     }
+
 
     @Operation(summary = "계정상태수정(미완)", description = "계정상태수정(Request)")
     @PatchMapping("/state/{state}")
