@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.security.Principal;
 import java.util.List;
 
 @Slf4j
@@ -42,11 +43,11 @@ public class TrainerController {
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "프로필수정(거의완)", description = "프로필수정(Request)")
+    @Operation(summary = "프로필수정", description = "프로필수정(Request)")
     @PatchMapping(value = "/profile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public BaseResponse<String> modifyTrainerProfileImage(@RequestPart(value = "profileImage") MultipartFile image){
+    public BaseResponse<String> modifyTrainerProfileImage(Principal principal, @RequestPart(value = "profileImage") MultipartFile image){
         try {
-            trainerService.modifyProfile(trainerIdx, image);
+            trainerService.modifyProfile(principal, image);
             return new BaseResponse<>("프로필 이미지를 변경하였습니다.");
         } catch (BusinessException e) {
             return new BaseResponse<>(e.getErrorCode());

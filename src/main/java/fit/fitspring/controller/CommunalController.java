@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.security.Principal;
 import java.util.List;
 
 @Slf4j
@@ -30,7 +31,7 @@ public class CommunalController {
     private final CommunalService communalService;
     private final CustomerService customerService;
 
-    @Operation(summary = "트레이너 정보조회(거의완)", description = "트레이너 정보조회(Request/Response)")
+    @Operation(summary = "트레이너 정보조회", description = "트레이너 정보조회(Request/Response)")
     @GetMapping("/trainer/{trainerIdx}")
     public BaseResponse<TrainerInformationDto> getTrainerInformation(@Parameter(description = "트레이너 식별자")@PathVariable Long trainerIdx){
         try{
@@ -50,11 +51,11 @@ public class CommunalController {
         }
     }
 
-    @Operation(summary = "마이페이지조회(거의완)", description = "마이페이지조회(Request/Response)")
+    @Operation(summary = "마이페이지조회", description = "마이페이지조회(Request/Response)")
     @GetMapping("/mypage")
-    public BaseResponse<MyPageDto> getMyPage(Long userIdx){
+    public BaseResponse<MyPageDto> getMyPage(Principal principal){
         try{
-            return new BaseResponse<>(communalService.getMyPageBriefInformation(userIdx));
+            return new BaseResponse<>(communalService.getMyPageBriefInformation(principal));
         } catch(BusinessException e){
             return new BaseResponse<>(e.getErrorCode());
         }

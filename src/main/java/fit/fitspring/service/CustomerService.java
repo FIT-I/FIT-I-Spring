@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.security.Principal;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -91,8 +92,8 @@ public class CustomerService {
     }
 
     @Transactional
-    public void registerReview(Long userIdx, RegisterReviewDto reviewDto) throws BusinessException {
-        Optional<Account> optionalC = accountRepository.findById(userIdx);
+    public void registerReview(Principal principal, RegisterReviewDto reviewDto) throws BusinessException {
+        Optional<Account> optionalC = accountRepository.findByEmail(principal.getName());
         Optional<Trainer> optionalT = trainerRepository.findById(reviewDto.getTrainerIdx());
         if(optionalC.isEmpty()) {
             throw new BusinessException(ErrorCode.INVALID_USERIDX);
@@ -120,8 +121,8 @@ public class CustomerService {
     }
 
     @Transactional
-    public void modifyUserLocation(Long userIdx, String location) throws BusinessException{
-        Optional<Account> optional = accountRepository.findById(userIdx);
+    public void modifyUserLocation(Principal principal, String location) throws BusinessException{
+        Optional<Account> optional = accountRepository.findByEmail(principal.getName());
         if(optional.isEmpty()){
             throw new BusinessException(ErrorCode.INVALID_USERIDX);
         }
@@ -134,8 +135,8 @@ public class CustomerService {
     }
 
     @Transactional
-    public List<WishDto> getWishList(Long userIdx) throws BusinessException{
-        Optional<Account> optional = accountRepository.findById(userIdx);
+    public List<WishDto> getWishList(Principal principal) throws BusinessException{
+        Optional<Account> optional = accountRepository.findByEmail(principal.getName());
         if(optional.isEmpty()){
             throw new BusinessException(ErrorCode.INVALID_USERIDX);
         }
@@ -156,8 +157,8 @@ public class CustomerService {
         return wishDtoList;
     }
 
-    public void modifyCustomerProfile(Long userIdx, String customerProfile) throws BusinessException {
-        Optional<Account> optional = accountRepository.findById(userIdx);
+    public void modifyCustomerProfile(Principal principal, String customerProfile) throws BusinessException {
+        Optional<Account> optional = accountRepository.findByEmail(principal.getName());
         if(optional.isEmpty()){
             throw new BusinessException(ErrorCode.INVALID_USERIDX);
         }
