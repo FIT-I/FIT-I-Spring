@@ -1,4 +1,4 @@
-/*package fit.fitspring.config;
+package fit.fitspring.config;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
@@ -15,4 +15,4 @@ public class QueryDslConfig {
     public JPAQueryFactory jpaQueryFactory() {
         return new JPAQueryFactory(entityManager);
     }
-}*/
+}

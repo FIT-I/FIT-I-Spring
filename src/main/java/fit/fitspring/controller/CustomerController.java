@@ -1,21 +1,24 @@
 package fit.fitspring.controller;
 
+import fit.fitspring.controller.dto.communal.SliceResDto;
 import fit.fitspring.controller.dto.customer.*;
 import fit.fitspring.exception.common.BusinessException;
 import fit.fitspring.exception.trainer.TrainerException;
 import fit.fitspring.response.BaseResponse;
+import fit.fitspring.service.CommunalService;
 import fit.fitspring.service.CustomerService;
-import io.jsonwebtoken.io.IOException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.security.Principal;
 import java.util.List;
@@ -28,34 +31,35 @@ import java.util.List;
 public class CustomerController {
 
     private final CustomerService customerService;
+    private final CommunalService communalService;
 
-    //로그인한 유저 idx(임의)
-    Long custIdx = 1L;
 
-    @Operation(summary = "트레이너 목록조회(미완)", description = "트레이너 목록조회(Request/Response)")
-    @GetMapping()
-    public ResponseEntity getTrainerList(@RequestBody SearchTrainerDto category){
-        /*List<TrainerDto> trainerDtoList; // 리턴객체
-        trainerDtoList = customerService.getTrainerList(category);*/
-        return ResponseEntity.ok().build();
+    @Operation(summary = "트레이너 목록조회", description = "트레이너 목록조회(Response)")
+    @GetMapping("/trainer-list")
+    public BaseResponse<SliceResDto<TrainerDto>> getTrainerList(@RequestParam String category, @RequestParam(required = false) Long lastTrainerId, @PageableDefault(size=20, sort="recent",direction = Sort.Direction.DESC) Pageable pageable){
+        SliceResDto<TrainerDto> trainerDtoList;
+        trainerDtoList = customerService.getTrainerList(category,lastTrainerId,pageable);
+        return new BaseResponse<>(trainerDtoList);
     }
 
     @Operation(summary = "트레이너 찜하기", description = "트레이너 찜하기(Request)")
     @PostMapping("/{trainerIdx}")
-    public ResponseEntity likeTrainer(@Parameter(description = "유저식별자")@PathVariable Long trainerIdx){
+    public BaseResponse<String> likeTrainer(@Parameter(description = "유저식별자")@PathVariable Long trainerIdx, @AuthenticationPrincipal User user){
+        Long custIdx = communalService.getUserIdxByUser(user);
         if(!customerService.isTrainer(trainerIdx))
-            return ResponseEntity.ok(new TrainerException());
+            return new BaseResponse<>(new TrainerException().getErrorCode());
         customerService.saveLikeTrainer(custIdx, trainerIdx);
-        return ResponseEntity.ok().build();
+        return new BaseResponse<>("트레이너를 찜했습니다.");
     }
 
     @Operation(summary = "트레이너 매칭요청", description = "트레이너 매칭요청(Request)")
     @PostMapping("/matching/{trainerIdx}")
-    public ResponseEntity requestTrainerMatching(@RequestBody MatchingRequestDto matchingRequest ,@PathVariable Long trainerIdx){
+    public BaseResponse<String> requestTrainerMatching(@RequestBody MatchingRequestDto matchingRequest ,@PathVariable Long trainerIdx, @AuthenticationPrincipal User user){
+        Long custIdx = communalService.getUserIdxByUser(user);
         if(!customerService.isTrainer(trainerIdx))
-            return ResponseEntity.ok(new TrainerException());
+            return new BaseResponse<>(new TrainerException().getErrorCode());
         customerService.saveMatchingOrder(custIdx, trainerIdx, matchingRequest);
-        return ResponseEntity.ok().build();
+        return new BaseResponse<>("매칭요청 완료.");
     }
 
     @Operation(summary = "알림설정(미완)", description = "알림설정(Request)")
