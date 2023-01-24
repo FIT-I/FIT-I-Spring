@@ -8,6 +8,8 @@ import fit.fitspring.controller.mdoel.account.PostAccountRes;
 import fit.fitspring.controller.mdoel.account.PostLoginRes;
 import fit.fitspring.domain.account.Account;
 import fit.fitspring.domain.account.AccountRepository;
+import fit.fitspring.domain.account.School;
+import fit.fitspring.domain.account.SchoolRepository;
 import fit.fitspring.domain.trainer.Trainer;
 import fit.fitspring.domain.trainer.TrainerRepository;
 import fit.fitspring.domain.trainer.UserImg;
@@ -33,6 +35,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -47,6 +50,8 @@ public class AccountService {
     private final TokenProvider tokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final TrainerRepository trainerRepository;
+    private final SchoolRepository schoolRepository;
+
     @Value("{user.info.pw.key}") String pwKey;
 
     // 로그인 Service
@@ -129,7 +134,6 @@ public class AccountService {
         }
 
         String pwd;
-        String email = registerDto.getEmail();
         try {
             pwd = new AES128(pwKey).encrypt(registerDto.getPassword());
             registerDto.setPassword(pwd);
@@ -142,7 +146,7 @@ public class AccountService {
         Trainer trainer = new Trainer();
         trainer.setMajor(registerDto.getMajor());
         trainer.setGrade(0);
-        trainer.setSchool("testing"); // 학교 추가 필요
+        trainer.setSchool(convertEmailToSchool(registerDto.getEmail())); // 학교 추가 필요
         trainer.setUser(account);
         // UserImg
         UserImg userImg = new UserImg();
@@ -204,6 +208,16 @@ public class AccountService {
             return accountRepository.findByEmail(email).isPresent();
         } catch (Exception e) {
             throw new BusinessException(ErrorCode.DATABASE_ERROR);
+        }
+    }
+
+    public String convertEmailToSchool(String email){
+        email = email.substring(email.indexOf("@") + 1);
+        Optional<School> optional = schoolRepository.findByEmail(email);
+        if(optional.isEmpty()){
+            return "미처리";
+        } else{
+            return optional.get().getName();
         }
     }
 
