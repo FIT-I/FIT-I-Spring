@@ -2,16 +2,23 @@ package fit.fitspring.service;
 
 import fit.fitspring.config.Secret;
 import fit.fitspring.controller.dto.account.AccountForRegisterDto;
+import fit.fitspring.controller.dto.account.RegisterCustomerDto;
+import fit.fitspring.controller.dto.account.RegisterTrainerDto;
 import fit.fitspring.controller.mdoel.account.PostAccountRes;
 import fit.fitspring.controller.mdoel.account.PostLoginRes;
 import fit.fitspring.domain.account.Account;
 import fit.fitspring.domain.account.AccountRepository;
+import fit.fitspring.domain.trainer.Trainer;
+import fit.fitspring.domain.trainer.TrainerRepository;
+import fit.fitspring.domain.trainer.UserImg;
 import fit.fitspring.exception.common.BusinessException;
 import fit.fitspring.exception.account.DuplicatedAccountException;
 import fit.fitspring.exception.common.ErrorCode;
 import fit.fitspring.jwt.TokenProvider;
+import fit.fitspring.response.BaseResponse;
 import fit.fitspring.utils.AES128;
 import fit.fitspring.utils.S3Uploader;
+import fit.fitspring.utils.ValidationRegex;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +46,7 @@ public class AccountService {
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
+    private final TrainerRepository trainerRepository;
     @Value("{user.info.pw.key}") String pwKey;
 
     // 로그인 Service
@@ -73,31 +81,86 @@ public class AccountService {
         }
     }
 
-    public PostAccountRes registerAccount(AccountForRegisterDto accountDto) throws BusinessException {
+    public String registerCustomer(RegisterCustomerDto registerDto) throws BusinessException {
+
+        // 이메일, 비밀번호, 이름이 입력 되지 않았을 경우 에러 코드 리턴
+        if (registerDto.getEmail() == null) {
+            throw new BusinessException(ErrorCode.POST_ACCOUNTS_EMPTY_EMAIL);
+        }
+        // 이름이 입력되지 않았을 경우 에러 리턴
+        if (registerDto.getName() ==null) {
+            throw new BusinessException(ErrorCode.POST_ACCOUNTS_EMPTY_NAME);
+        }
+        // 이메일 형식이 맞지 않은 경우 에러 코드 리턴
+        if (!ValidationRegex.isRegexEmail(registerDto.getEmail())){
+            throw new BusinessException(ErrorCode.POST_ACCOUNTS_INVALID_EMAIL);
+        }
         String pwd;
-        String email = accountDto.getEmail();
+        String email = registerDto.getEmail();
 
         // 비번 암호화 + 이메일 중복 확인
         try {
-            pwd = new AES128(pwKey).encrypt(accountDto.getPassword()); // 비번 암호화
-            accountDto.setPassword(pwd);
+            pwd = new AES128(pwKey).encrypt(registerDto.getPassword()); // 비번 암호화
+            registerDto.setPassword(pwd);
+        } catch (Exception ignored) {
+            throw new BusinessException(ErrorCode.DUPLICATE_ACCOUNT);
+        }
+        Account account = registerDto.toEntity();
+
+        try{ // 회원가입 정보 저장, jwt 생성, 결과 반환(userIdx, jwt)
+            accountRepository.save(account); // 일단 데이터 저장
+            return (registerDto.getName() + " 님, 환영합니다."); // 가입한 회원의 이름 반환
+        } catch (DataIntegrityViolationException e){ // 중복 이메일 게정 체크
+            throw new DuplicatedAccountException();
+        } catch(Exception exception){
+            throw new BusinessException(ErrorCode.DATABASE_ERROR);
+        }
+    }
+
+    public String registerTrainer(RegisterTrainerDto registerDto) throws BusinessException {
+        if (registerDto.getEmail() == null) {
+            throw new BusinessException(ErrorCode.POST_ACCOUNTS_EMPTY_EMAIL);
+        }
+        if (registerDto.getName() ==null) {
+            throw new BusinessException(ErrorCode.POST_ACCOUNTS_EMPTY_NAME);
+        }
+        if (!ValidationRegex.isRegexEmail(registerDto.getEmail())){
+            throw new BusinessException(ErrorCode.POST_ACCOUNTS_INVALID_EMAIL);
+        }
+
+        String pwd;
+        String email = registerDto.getEmail();
+        try {
+            pwd = new AES128(pwKey).encrypt(registerDto.getPassword());
+            registerDto.setPassword(pwd);
         } catch (Exception ignored) {
             throw new BusinessException(ErrorCode.DUPLICATE_ACCOUNT);
         }
 
-        Account account = accountDto.toEntity();
+        Account account = registerDto.toEntity();
+        // Trainer
+        Trainer trainer = new Trainer();
+        trainer.setMajor(registerDto.getMajor());
+        trainer.setGrade(0);
+        trainer.setSchool("testing"); // 학교 추가 필요
+        trainer.setUser(account);
+        // UserImg
+        UserImg userImg = new UserImg();
+        userImg.setProfile("trainerProfile");
+        userImg.setTrainer(trainer);
 
-        // 회원가입 정보 저장, jwt 생성, 결과 반환(userIdx, jwt)
-        try{
+        trainer.setUserImg(userImg);
+        account.setTrainer(trainer);
+
+        try{ // 회원가입 정보 저장, jwt 생성, 결과 반환(userIdx, jwt)
             accountRepository.save(account); // 일단 데이터 저장
-            String userName = accountRepository.findByEmail(email).get().getName(); // 가입한 회원의 이름 반환
-            return new PostAccountRes(userName); // 요청 결과 반환
         } catch (DataIntegrityViolationException e){ // 중복 이메일 게정 체크
             throw new DuplicatedAccountException();
-        }
-        catch(Exception exception){
+        } catch(Exception exception){
             throw new BusinessException(ErrorCode.DATABASE_ERROR);
         }
+
+        return (registerDto.getName() + " 님, 환영합니다."); // 가입한 회원의 이름 반환
     }
 
 

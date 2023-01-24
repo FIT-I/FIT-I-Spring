@@ -55,7 +55,7 @@ public class Trainer {
     @Column(name = "trainer_grade")
     private float grade;
 
-    @OneToOne(fetch = FetchType.LAZY, mappedBy = "trainer")
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "trainer", cascade = CascadeType.ALL)
     private UserImg userImg;
 
     @Builder.Default

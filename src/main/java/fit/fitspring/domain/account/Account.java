@@ -36,6 +36,9 @@ public class Account implements UserDetails {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Trainer trainer;
+
     @Column(unique = true, name = "user_email")
     private String email;
 
