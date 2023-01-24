@@ -84,7 +84,7 @@ public class Account implements UserDetails {
     @OneToMany(mappedBy = "sender")
     private List<Message> message =  new ArrayList<>();
 
-    @OneToOne
+    @OneToOne(mappedBy = "account")
     private FCMToken fcmToken;
     public void updateName(String name){
         this.name=name;
