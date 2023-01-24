@@ -28,7 +28,7 @@ public class UserImg {
     @Column(name = "profile_img_path")
     private String profile;
 
-    @Column(name = "pack_img_path")
+    @Column(name = "back_img_path")
     private String backGround;
 
     @Builder.Default
@@ -36,4 +36,5 @@ public class UserImg {
     private List<EtcImg> etcImgList = new ArrayList<>();
 
     public void modifyProfile(String profile){ this.profile = profile; }
+    public void modifyBgImg(String bgImg){ this.backGround = bgImg;}
 }

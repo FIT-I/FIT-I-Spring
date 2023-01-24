@@ -14,6 +14,7 @@ import fit.fitspring.exception.common.BusinessException;
 import fit.fitspring.exception.common.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.parameters.P;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -137,5 +138,11 @@ public class CommunalService {
         myPageDto.setEmail(optional.get().getEmail());
         myPageDto.setLocation(optional.get().getLocation());
         return myPageDto;
+    }
+
+    @Transactional
+    public Long getUserIdxByUser(User user){
+        return accountRepository.findByEmail(user.getUsername())
+                .orElseThrow().getId();
     }
 }
