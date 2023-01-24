@@ -44,35 +44,26 @@ public class AccountController {
      * @Param : AccountForRegisterDto
      * @Response : 200(성공) or 400
      * */
-    @Operation(summary = "회원가입", description = "회원가입(Request)")
-    @PostMapping
-    public BaseResponse<PostAccountRes> registerUser(@RequestBody RegisterReqDto registerDto){
-
-        // 이메일, 비밀번호, 이름이 입력 되지 않았을 경우 에러 코드 리턴
-        if (registerDto.getEmail() == null) {
-            return new BaseResponse<>(ErrorCode.POST_ACCOUNTS_EMPTY_EMAIL);
-        }
-
-        // 이름이 입력되지 않았을 경우 에러 리턴
-        if (registerDto.getName() ==null) {
-            return new BaseResponse<>(ErrorCode.POST_ACCOUNTS_EMPTY_NAME);
-        }
-
-        // 이메일 형식이 맞지 않은 경우 에러 코드 리턴
-        if (!ValidationRegex.isRegexEmail(registerDto.getEmail())){
-            return new BaseResponse<>(ErrorCode.POST_ACCOUNTS_INVALID_EMAIL);
-        }
-
+    @Operation(summary = "고객 회원가입", description = "고객 회원가입(Request/Response)")
+    @PostMapping("/customer")
+    public BaseResponse<String> registerCustomer(@RequestBody RegisterCustomerDto registerDto){
         // DB에 저장
         try {
-            AccountForRegisterDto accountForRegisterDto = new AccountForRegisterDto(registerDto.getName(), registerDto.getEmail(), registerDto.getPassword(), registerDto.getAccountType());
-            PostAccountRes postAccountRes = accountService.registerAccount(accountForRegisterDto);
-            return new BaseResponse<>(postAccountRes);
+            return new BaseResponse<>(accountService.registerCustomer(registerDto));
         } catch(BusinessException e){
             return new BaseResponse<>(e.getErrorCode());
         }
+    }
 
-        //return ResponseEntity.ok().build();
+    @Operation(summary = "트레이너 회원가입", description = "트레이너 회원가입(Request/Response)")
+    @PostMapping("/trainer")
+    public BaseResponse<String> registerTrainer(@RequestBody RegisterTrainerDto registerDto){
+        // DB에 저장
+        try {
+            return new BaseResponse<>(accountService.registerTrainer(registerDto));
+        } catch(BusinessException e){
+            return new BaseResponse<>(e.getErrorCode());
+        }
     }
 
     @Operation(summary = "로그인", description = "로그인(Request)")
@@ -153,5 +144,15 @@ public class AccountController {
     @PatchMapping("/state/{state}")
     public ResponseEntity modifyAccountState(@Parameter(description = "상태('A: Active(활성상태), D: Disabled(비활성화 상태), W: Withdrawal(탈퇴한 상태)'")@PathVariable String state){
         return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "계정 비밀번호 조회", description = "비밀번호 찾기 뷰(인증메일 확인 후) - 계정 비밀번호 조회 API(Request/Response)")
+    @GetMapping("/password/{email}")
+    public BaseResponse<String> registerCustomer(@Parameter(description = "유저 이메일")@PathVariable String email){
+        try {
+            return new BaseResponse<>(accountService.getUserPassword(email));
+        } catch(BusinessException e){
+            return new BaseResponse<>(e.getErrorCode());
+        }
     }
 }

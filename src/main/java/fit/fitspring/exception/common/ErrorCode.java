@@ -33,6 +33,7 @@ public enum ErrorCode {
     IS_NOT_TRAINER(false,3008, "트레이너가 아닙니다."),
     INVALID_USERIDX(false, 3009, "잘못된 유저 식별자입니다."),
     INVALID_TRAINERIDX(false, 3010, "잘못된 트레이너 식별자입니다."),
+    INVALID_EMAIL(false, 3009, "존재하지 않는 이메일입니다."),
 
     /*서버, DB 4000*/
     DATABASE_ERROR(false, 4000, "DB에 문제가 발생했습니다."),
