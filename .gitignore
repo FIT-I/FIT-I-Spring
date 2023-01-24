@@ -39,6 +39,7 @@ out/
 ### security ###
 Secret.java
 
-###
-*.properties
+##
 fit-i-b4618-firebase-adminsdk-hlcvo-8612a0e728.json
+*.properties
+

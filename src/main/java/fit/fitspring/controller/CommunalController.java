@@ -30,11 +30,14 @@ public class CommunalController {
     private final CommunalService communalService;
     private final CustomerService customerService;
 
-    @Operation(summary = "트레이너 정보조회(미완)", description = "트레이너 정보조회(Request/Response)")
-    @GetMapping("/trainer/{userIdx}")
-    public ResponseEntity getTrainerInformation(@Parameter(description = "유저식별자")@PathVariable String userIdx){
-        TrainerInformationDto trainerInformationDto = new TrainerInformationDto(); // 리턴객체
-        return ResponseEntity.ok().build();
+    @Operation(summary = "트레이너 정보조회(거의완)", description = "트레이너 정보조회(Request/Response)")
+    @GetMapping("/trainer/{trainerIdx}")
+    public BaseResponse<TrainerInformationDto> getTrainerInformation(@Parameter(description = "트레이너 식별자")@PathVariable Long trainerIdx){
+        try{
+            return new BaseResponse<>(communalService.getTrainerInformation(trainerIdx));
+        } catch(BusinessException e){
+            return new BaseResponse<>(e.getErrorCode());
+        }
     }
 
     @Operation(summary = "트레이너 리뷰목록조회", description = "트레이너 리뷰목록조회(Request/Response)")
@@ -70,9 +73,4 @@ public class CommunalController {
         return new BaseResponse<>(termDtoList);
     }
 
-    @Operation(summary = "프로필수정(미완)", description = "프로필수정(Request)")
-    @PatchMapping("/profile")
-    public ResponseEntity modifyProfileImage(@Parameter(description = "공지사항식별자")@RequestPart(value = "profileImage") MultipartFile image){
-        return ResponseEntity.ok().build();
-    }
 }

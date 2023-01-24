@@ -34,4 +34,6 @@ public class UserImg {
     @Builder.Default
     @OneToMany(mappedBy = "userImg")
     private List<EtcImg> etcImgList = new ArrayList<>();
+
+    public void modifyProfile(String profile){ this.profile = profile; }
 }
