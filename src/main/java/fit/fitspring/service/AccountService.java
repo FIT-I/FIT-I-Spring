@@ -121,6 +121,18 @@ public class AccountService {
     }
 
 
+    public List<Account> findAllByEmails(List<String> emails){
+        return accountRepository.findByEmailIn(emails);
+    }
+
+    public Account findById(Long userId) {
+        return accountRepository.findById(userId).orElseThrow(EntityNotFoundException::new);
+    }
+    public Account getById(Long id){
+        return accountRepository.getReferenceById(id);
+    }
+
+
     // db에 email존재 여부 확인
     public boolean checkEmail(String email) throws BusinessException {
         try{

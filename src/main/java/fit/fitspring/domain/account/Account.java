@@ -1,5 +1,8 @@
 package fit.fitspring.domain.account;
 
+import fit.fitspring.chat.entity.ChatUser;
+import fit.fitspring.chat.entity.Message;
+import fit.fitspring.domain.firebase.FCMToken;
 import fit.fitspring.domain.matching.MatchingOrder;
 import fit.fitspring.domain.matching.WishList;
 import fit.fitspring.domain.review.Review;
@@ -76,6 +79,13 @@ public class Account implements UserDetails {
     @Column(name="user_location")
     private String location;
 
+    @OneToMany(mappedBy = "chatUser")
+    private List<ChatUser> chatUser =  new ArrayList<>();
+    @OneToMany(mappedBy = "sender")
+    private List<Message> message =  new ArrayList<>();
+
+    @OneToOne
+    private FCMToken fcmToken;
     public void updateName(String name){
         this.name=name;
     }
