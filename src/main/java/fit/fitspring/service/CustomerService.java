@@ -1,5 +1,6 @@
 package fit.fitspring.service;
 
+import fit.fitspring.controller.dto.communal.SliceResDto;
 import fit.fitspring.controller.dto.customer.*;
 import fit.fitspring.domain.account.Account;
 import fit.fitspring.domain.account.AccountRepository;
@@ -7,17 +8,16 @@ import fit.fitspring.domain.account.AccountType;
 import fit.fitspring.domain.matching.*;
 import fit.fitspring.domain.review.Review;
 import fit.fitspring.domain.review.ReviewRepository;
-import fit.fitspring.domain.trainer.Trainer;
-import fit.fitspring.domain.trainer.TrainerRepository;
-import fit.fitspring.domain.trainer.UserImg;
-import fit.fitspring.domain.trainer.UserImgRepository;
+import fit.fitspring.domain.trainer.*;
 import fit.fitspring.exception.account.DuplicatedAccountException;
 import fit.fitspring.exception.common.BusinessException;
 import fit.fitspring.exception.common.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -41,6 +41,7 @@ public class CustomerService {
     private final MatchingOrderRepository matchingOrderRepository;
     private final ReviewRepository reviewRepository;
     private final UserImgRepository userImgRepository;
+    private final TrainerCertRepository trainerCertRepository;
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
@@ -48,11 +49,56 @@ public class CustomerService {
     @Value("${cloud.aws.region.static}")
     private String awsStatic;
 
-    /*@Transactional
-    public SliceResDto<TrainerDto> getTrainerList(SearchTrainerDto category){
+    @Transactional
+    public SliceResDto<TrainerDto> getTrainerList(String category, Long lastTrainerId, Pageable pageable){
+        Category category_enum;
+        if(category.equals("pt")){
+            category_enum = Category.PERSONAL_PT;
+        }else if(category.equals("food")){
+            category_enum = Category.FOOD_CHECK;
+        }else if(category.equals("diet")){
+            category_enum = Category.DIET;
+        }else if(category.equals("rehab")){
+            category_enum = Category.REHAB;
+        }else{//pt가 기본값
+            category_enum = Category.PERSONAL_PT;
+        }
+        String sortBy = pageable.getSort().get().findFirst().orElseThrow().getProperty();
+        Sort.Direction direction = pageable.getSort().get().findFirst().orElseThrow().getDirection();
+        Slice<Trainer> sliceTrainerList;
+        if(sortBy.equals("recent")){
+            sliceTrainerList = trainerRepository.findByCategoryOrderByIdeDesc(category_enum, lastTrainerId, pageable);
+        }else if(sortBy.equals("level")){
+            Long lastLevelId;
+            if(lastTrainerId==null)
+                lastLevelId=null;
+            else
+                lastLevelId= trainerRepository.findById(lastTrainerId).orElseThrow().getLevel().getId();
+            sliceTrainerList = trainerRepository.findByCategoryOrderByLevelDesc(category_enum, lastTrainerId,lastLevelId, pageable);
+        }else if(sortBy.equals("price") && direction.isAscending()){
+            Integer lastPrice = null;
+            if(lastTrainerId!=null){
+                lastPrice = trainerRepository.findById(lastTrainerId).orElseThrow().getPriceHour();
+            }
+            sliceTrainerList = trainerRepository.findByCategoryOrderByPriceAsc(category_enum,lastTrainerId,lastPrice,pageable);
+        }else if(sortBy.equals("price") && direction.isDescending()){
+            System.out.println("/////////////////");
+            Integer lastPrice = null;
+            if(lastTrainerId!=null){
+                lastPrice = trainerRepository.findById(lastTrainerId).orElseThrow().getPriceHour();
+            }
+            sliceTrainerList = trainerRepository.findByCategoryOrderByPriceDesc(category_enum,lastTrainerId,lastPrice,pageable);
+        } else{
+            sliceTrainerList = trainerRepository.findByCategoryOrderByIdeDesc(category_enum, lastTrainerId, pageable);
+        }
+        List<TrainerDto> trainerList = new ArrayList<>();
+        for(Trainer trainer : sliceTrainerList){
+            Long certificateNum = trainerCertRepository.countByTrainer(trainer);
+            trainerList.add(new TrainerDto(trainer,certificateNum));
+        }
+        return new SliceResDto<>(sliceTrainerList.getNumberOfElements(), sliceTrainerList.hasNext(), trainerList);
 
-        Slice<Trainer> sliceTrainerList = trainerRepository.findTrainerListOrderByUploadDateDesc(pageable);
-    }*/
+    }
 
     @Transactional
     public boolean isTrainer(Long userIdx){
@@ -165,5 +211,19 @@ public class CustomerService {
         optional.get().setProfile(customerProfile);
         accountRepository.save(optional.get());
     }
+
+    /*@Transactional
+    public Page<TrainerDto> getTrainerList(String category, String sort, Pageable pageable){
+        if(sort.equals("recent")){
+
+        }if(sort.equals("level")){
+
+        }if(sort.equals("price_asc")){
+
+        }if(sort.equals("price_dsc")){
+
+        }
+        return trainerRepository.findAllById(pageable);
+    }*/
 }
 
