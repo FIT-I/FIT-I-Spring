@@ -40,9 +40,6 @@ public class Trainer {
     @Column(name = "trainer_price_hour")
     private int priceHour;
 
-    @Column(name = "trainer_price_add")
-    private int priceAdd;
-
     @Column(name = "trainer_intro")
     private String intro;
 
@@ -70,9 +67,8 @@ public class Trainer {
     @OneToMany(mappedBy = "trainer")
     private List<MatchingOrder> matchingOrderList = new ArrayList<>();
 
-    public void updateInfo(int priceHour, int priceAdd, String intro, String service){
+    public void updateInfo(int priceHour, String intro, String service){
         this.priceHour = priceHour;
-        this.priceAdd = priceAdd;
         this.intro = intro;
         this.service = service;
     }

@@ -6,6 +6,8 @@ import fit.fitspring.domain.trainer.Trainer;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
+
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -33,14 +35,21 @@ public class MatchingOrder extends BaseTimeEntity {
     private Trainer trainer;
 
     @Column(name= "matching_start_at")
-    private String startAt;
+    private LocalDate startAt;
 
     @Column(name= "matching_finish_at")
-    private String finishAt;
+    private LocalDate finishAt;
 
     @Enumerated(EnumType.STRING) @Column(name = "order_pickup")
     private PickUpType pickUpType;
 
     @Column(name = "is_complete")
     private String isComplete;
+
+    public void acceptMatching(){
+        this.isComplete = "ACCEPT";
+    }
+    public void rejectMatching(){
+        this.isComplete = "REJECT";
+    }
 }
