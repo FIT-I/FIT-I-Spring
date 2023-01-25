@@ -1,11 +1,8 @@
 package fit.fitspring.service;
 
-import fit.fitspring.config.Secret;
-import fit.fitspring.controller.dto.account.AccountForRegisterDto;
 import fit.fitspring.controller.dto.account.RegisterCustomerDto;
 import fit.fitspring.controller.dto.account.RegisterTrainerDto;
-import fit.fitspring.controller.mdoel.account.PostAccountRes;
-import fit.fitspring.controller.mdoel.account.PostLoginRes;
+import fit.fitspring.controller.dto.account.TokenDto;
 import fit.fitspring.domain.account.Account;
 import fit.fitspring.domain.account.AccountRepository;
 import fit.fitspring.domain.account.School;
@@ -17,7 +14,7 @@ import fit.fitspring.exception.common.BusinessException;
 import fit.fitspring.exception.account.DuplicatedAccountException;
 import fit.fitspring.exception.common.ErrorCode;
 import fit.fitspring.jwt.TokenProvider;
-import fit.fitspring.response.BaseResponse;
+import fit.fitspring.jwt.RedisUtil;
 import fit.fitspring.utils.AES128;
 import fit.fitspring.utils.S3Uploader;
 import fit.fitspring.utils.ValidationRegex;
@@ -26,17 +23,21 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import javax.swing.text.html.Option;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -52,11 +53,14 @@ public class AccountService {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final TrainerRepository trainerRepository;
     private final SchoolRepository schoolRepository;
+    @Autowired
+    private final RedisTemplate redisTemplate;
+    //private final RedisUtil redisUtil;
 
     @Value("{user.info.pw.key}") String pwKey;
 
     // 로그인 Service
-    public PostLoginRes login(String email, String password) {
+    public TokenDto login(String email, String password) {
         // 0. 비밀번호 풀기
         String pwdEncode = accountRepository.findByEmail(email).get().getPassword();
         String pwdDecode;
@@ -79,8 +83,8 @@ public class AccountService {
             Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
 
             // 3. 인증 정보를 바탕으로 JWT 토큰 생성
-            String jwt = tokenProvider.createToken(authentication);
-            return new PostLoginRes(jwt);
+            TokenDto jwt = tokenProvider.createToken(authentication);
+            return jwt;
         }
         else{
             throw new BusinessException(ErrorCode.FAILED_TO_LOGIN);
@@ -233,5 +237,29 @@ public class AccountService {
         } catch (Exception ignored){
             throw new BusinessException(ErrorCode.INVALID_INPUT);
         }
+    }
+
+    // 토큰 재발급
+    public TokenDto reissue(String reqAccessToken, String reqRefreshToken){
+        if (!tokenProvider.validateToken(reqRefreshToken)) {
+            throw new BusinessException(ErrorCode.INVALID_JWT);
+        }
+        Authentication authentication = tokenProvider.getAuthentication(reqAccessToken);
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        return tokenProvider.createToken(authentication);
+    }
+
+
+    //로그아웃
+    public void logout(String accessToken, String refreshToken){
+//        redisUtil.setBlackList(accessToken, "accessToken", 1800);
+//        redisUtil.setBlackList(refreshToken, "refreshToken", 60400);
+        Long expirationAccess = tokenProvider.getExpiration(accessToken);
+        Long expirationRefresh = tokenProvider.getExpiration(refreshToken);
+
+        redisTemplate.opsForValue().set(accessToken, "logout", expirationAccess, TimeUnit.MILLISECONDS);
+        redisTemplate.opsForValue().set(refreshToken, "logout", expirationRefresh, TimeUnit.MILLISECONDS);
     }
 }

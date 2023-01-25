@@ -20,6 +20,7 @@ public enum ErrorCode {
     UNSUPPORTED_JWT(false, 2006, "지원되지 않는 JWT 토큰입니다."),
     ILLEGAL_JWT(false, 2007, "JWT 토큰이 잘못되었습니다."),
     INVALID_JWT(false, 2008, "유효하지 않은 JWT 토큰입니다."),
+    ISSUE_JWT(false, 2009, "JWT 토큰 재발급에 실패했습니다."),
 
 
     /*유저 3000*/
