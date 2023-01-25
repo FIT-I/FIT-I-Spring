@@ -84,7 +84,7 @@ public class AccountController {
         }
     }
 
-    @Operation(summary = "토큰 재발급(미완)", description = "accessToken이 만료되었을 때 토큰(accessToken, refreshToken) 재발급")
+    @Operation(summary = "토큰 재발급(수정 중)", description = "accessToken이 만료되었을 때 토큰(accessToken, refreshToken) 재발급")
     @PostMapping("/reissue")
     public BaseResponse<TokenDto> reissue(@RequestBody TokenDto reqTokenDto){
         try {
