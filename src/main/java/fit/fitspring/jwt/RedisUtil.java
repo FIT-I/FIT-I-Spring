@@ -1,4 +1,4 @@
-//package fit.fitspring.jwt;
+package fit.fitspring.jwt;
 //
 //import org.springframework.beans.factory.annotation.Qualifier;
 //import org.springframework.data.redis.core.RedisTemplate;
@@ -56,3 +56,7 @@
 //        return redisBlackListTemplate.hasKey(key);
 //    }
 //}
+
+public class RedisUtil{
+
+}
