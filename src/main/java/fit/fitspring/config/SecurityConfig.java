@@ -8,6 +8,7 @@ import fit.fitspring.jwt.TokenProvider;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -23,12 +24,14 @@ import org.springframework.web.filter.CorsFilter;
 @Configuration
 public class SecurityConfig {
     private final TokenProvider tokenProvider;
+    private final RedisTemplate redisTemplate;
     //private final CorsFilter corsFilter;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
 
     public SecurityConfig(
             TokenProvider tokenProvider,
+            RedisTemplate redisTemplate,
             //CorsFilter corsFilter,
             JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint,
             JwtAccessDeniedHandler jwtAccessDeniedHandler
@@ -37,6 +40,7 @@ public class SecurityConfig {
         //this.corsFilter = corsFilter;
         this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
         this.jwtAccessDeniedHandler = jwtAccessDeniedHandler;
+        this.redisTemplate = redisTemplate;
     }
 
     @Bean
@@ -75,7 +79,7 @@ public class SecurityConfig {
                 .anyRequest().authenticated()
 
                 .and()
-                .apply(new JwtSecurityConfig(tokenProvider));
+                .apply(new JwtSecurityConfig(tokenProvider, redisTemplate));
 
         return httpSecurity.build();
     }

@@ -25,12 +25,14 @@ public class JwtFilter extends GenericFilterBean {
     private static final Logger logger = LoggerFactory.getLogger(JwtFilter.class);
     public static final String AUTHORIZATION_HEADER = "Authorization";
     private TokenProvider tokenProvider;
-    @Autowired
-    private RedisConfig redisConfig;
 
     @Autowired
-    public JwtFilter(TokenProvider tokenProvider) {
+    private final RedisTemplate redisTemplate;
+
+    @Autowired
+    public JwtFilter(TokenProvider tokenProvider, RedisTemplate redisTemplate) {
         this.tokenProvider = tokenProvider;
+        this.redisTemplate = redisTemplate;
     }
 
     @Override
@@ -43,7 +45,7 @@ public class JwtFilter extends GenericFilterBean {
         // 2. validation으로 유효성 검사
         if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) { // 유효성 검증 코드에 돌려보기
             // 2-1. Redis에 해당 access Token 로그아웃 여부 확인
-            String isLogout = (String) redisConfig.opsForValue().get(jwt);
+            String isLogout = (String) redisTemplate.opsForValue().get(jwt);
 
             // 2-2. 로그아웃 상태가 아니라면 토큰이 정상적으로 작동
             if (ObjectUtils.isEmpty(isLogout)){

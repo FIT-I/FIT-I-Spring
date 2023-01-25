@@ -63,7 +63,7 @@ public class AccountController {
         }
     }
 
-    @Operation(summary = "로그인", description = "로그인(Request)")
+    @Operation(summary = "로그인", description = "로그인(Request) accessToken, requestToken 발급")
     @PostMapping("/login")
     public BaseResponse<TokenDto> userLogin(@RequestBody LoginReqDto loginDto){
         //이메일 형식이 올바른가?
@@ -84,7 +84,7 @@ public class AccountController {
         }
     }
 
-    @Operation(summary = "토큰 재발급", description = "accessToken이 만료되었을 때 토큰(accessToken, refreshToken) 재발급")
+    @Operation(summary = "토큰 재발급(미완)", description = "accessToken이 만료되었을 때 토큰(accessToken, refreshToken) 재발급")
     @PostMapping("/reissue")
     public BaseResponse<TokenDto> reissue(@RequestBody TokenDto reqTokenDto){
         try {
@@ -136,7 +136,7 @@ public class AccountController {
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "로그아웃(미완)", description = "로그아웃")
+    @Operation(summary = "로그아웃", description = "로그아웃")
     @PostMapping("/logout")
     public BaseResponse<String> userLogout(@RequestBody TokenDto reqTokenDto){
         try{

@@ -23,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -35,6 +36,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
@@ -51,7 +53,9 @@ public class AccountService {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final TrainerRepository trainerRepository;
     private final SchoolRepository schoolRepository;
-    private final RedisUtil redisUtil;
+    @Autowired
+    private final RedisTemplate redisTemplate;
+    //private final RedisUtil redisUtil;
 
     @Value("{user.info.pw.key}") String pwKey;
 
@@ -250,7 +254,12 @@ public class AccountService {
 
     //로그아웃
     public void logout(String accessToken, String refreshToken){
-        redisUtil.setBlackList(accessToken, "accessToken", 1800);
-        redisUtil.setBlackList(refreshToken, "refreshToken", 60400);
+//        redisUtil.setBlackList(accessToken, "accessToken", 1800);
+//        redisUtil.setBlackList(refreshToken, "refreshToken", 60400);
+        Long expirationAccess = tokenProvider.getExpiration(accessToken);
+        Long expirationRefresh = tokenProvider.getExpiration(refreshToken);
+
+        redisTemplate.opsForValue().set(accessToken, "logout", expirationAccess, TimeUnit.MILLISECONDS);
+        redisTemplate.opsForValue().set(refreshToken, "logout", expirationRefresh, TimeUnit.MILLISECONDS);
     }
 }

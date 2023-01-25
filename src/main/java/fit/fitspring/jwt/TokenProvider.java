@@ -10,7 +10,9 @@ import io.jsonwebtoken.security.Keys;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -32,19 +34,20 @@ public class TokenProvider implements InitializingBean {
     private final String secret;
     private final long accessTokenValidityInMilliseconds;
     private final long refreshTokenValidityInMilliseconds;
-    private final RedisUtil redisUtil;
+    @Autowired
+    private final RedisTemplate redisTemplate;
     private Key key;
 
     public TokenProvider(
             @Value("${jwt.secret}") String secret,
             @Value("${jwt.token-validity-in-seconds}") long accessTokenValidityInSeconds,
             @Value("${jwt.refresh-token-validity-in-seconds}") long refreshTokenValidityInMilliseconds,
-            RedisUtil redisUtil) {
+            RedisTemplate redisTemplate) {
 
         this.secret = secret;
         this.accessTokenValidityInMilliseconds = accessTokenValidityInSeconds * 48 * 30; // 1달 - test를 위해 길게 잡음
         this.refreshTokenValidityInMilliseconds = refreshTokenValidityInMilliseconds * 48 * 30; // 1주 * 48 (약 1년)
-        this.redisUtil = redisUtil;
+        this.redisTemplate = redisTemplate;
     }
 
     @Override
@@ -104,7 +107,10 @@ public class TokenProvider implements InitializingBean {
     public boolean validateToken(String token) {
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
-            if (redisUtil.hasKeyBlackList(token)) {
+//            if (redisUtil.hasKeyBlackList(token)) {
+//                throw new BusinessException(ErrorCode.ACCOUNT_NOT_FOUND);
+//            }
+            if (redisTemplate.hasKey(token)) {
                 throw new BusinessException(ErrorCode.ACCOUNT_NOT_FOUND);
             }
             return true;
@@ -122,5 +128,19 @@ public class TokenProvider implements InitializingBean {
             logger.info("JWT 토큰이 잘못되었습니다.");
         }
         return false;
+    }
+
+    // 토큰 만료 시간 확인
+    public Long getExpiration(String accessToken) {
+        Date expiration = Jwts
+                .parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(accessToken)
+                .getBody()
+                .getExpiration();
+
+        Long now = new Date().getTime();
+        return (expiration.getTime() - now);
     }
 }
