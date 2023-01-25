@@ -5,4 +5,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface TrainerCertRepository extends JpaRepository<TrainerCert, Long> {
+    Long countByTrainer(Trainer trainer);
 }

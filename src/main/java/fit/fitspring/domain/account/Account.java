@@ -2,6 +2,7 @@ package fit.fitspring.domain.account;
 
 import fit.fitspring.chat.entity.ChatUser;
 import fit.fitspring.chat.entity.Message;
+import fit.fitspring.domain.BaseTimeEntity;
 import fit.fitspring.domain.firebase.FCMToken;
 import fit.fitspring.domain.matching.MatchingOrder;
 import fit.fitspring.domain.matching.WishList;
@@ -31,7 +32,7 @@ import java.util.List;
             @Index(name = "userIdx", columnList = "user_idx")
         }
 )
-public class Account implements UserDetails {
+public class Account extends BaseTimeEntity implements UserDetails {
     @Column(name="user_idx")
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
