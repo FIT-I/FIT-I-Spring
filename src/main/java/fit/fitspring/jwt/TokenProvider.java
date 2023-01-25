@@ -1,14 +1,18 @@
 package fit.fitspring.jwt;
 
+import fit.fitspring.controller.dto.account.TokenDto;
 import fit.fitspring.exception.common.BusinessException;
 import fit.fitspring.exception.common.ErrorCode;
+//import fit.fitspring.jwt.RedisUtil;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -28,13 +32,22 @@ public class TokenProvider implements InitializingBean {
     private final Logger logger = LoggerFactory.getLogger(TokenProvider.class);
     private static final String AUTHORITIES_KEY = "auth";
     private final String secret;
-    private final long tokenValidityInMilliseconds;
+    private final long accessTokenValidityInMilliseconds;
+    private final long refreshTokenValidityInMilliseconds;
+    @Autowired
+    private final RedisTemplate redisTemplate;
     private Key key;
 
     public TokenProvider(
-            @Value("${jwt.secret}") String secret, @Value("${jwt.token-validity-in-seconds}") long tokenValidityInSeconds) {
+            @Value("${jwt.secret}") String secret,
+            @Value("${jwt.token-validity-in-seconds}") long accessTokenValidityInSeconds,
+            @Value("${jwt.refresh-token-validity-in-seconds}") long refreshTokenValidityInMilliseconds,
+            RedisTemplate redisTemplate) {
+
         this.secret = secret;
-        this.tokenValidityInMilliseconds = tokenValidityInSeconds * 24 * 60 * 60 * 1000; // 1일
+        this.accessTokenValidityInMilliseconds = accessTokenValidityInSeconds * 48 * 30; // 1달 - test를 위해 길게 잡음
+        this.refreshTokenValidityInMilliseconds = refreshTokenValidityInMilliseconds * 48 * 30; // 1주 * 48 (약 1년)
+        this.redisTemplate = redisTemplate;
     }
 
     @Override
@@ -44,20 +57,31 @@ public class TokenProvider implements InitializingBean {
     }
 
     // 토큰 생성
-    public String createToken(Authentication authentication) {
+    public TokenDto createToken(Authentication authentication) {
         String authorities = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
 
         long now = (new Date()).getTime();
-        Date validity = new Date(now + this.tokenValidityInMilliseconds);
+        Date accessTokenValidity = new Date(now + this.accessTokenValidityInMilliseconds);
+        Date refreshTokenValidity = new Date(now + this.refreshTokenValidityInMilliseconds);
 
-        return Jwts.builder()
+
+        String accessToken = Jwts.builder()
                 .setSubject(authentication.getName())
                 .claim(AUTHORITIES_KEY, authorities)
                 .signWith(key, SignatureAlgorithm.HS512)
-                .setExpiration(validity)
+                .setExpiration(accessTokenValidity)
                 .compact();
+
+        String refreshToken = Jwts.builder()
+                .setSubject(authentication.getName())
+                .claim(AUTHORITIES_KEY, authorities)
+                .signWith(key, SignatureAlgorithm.HS512)
+                .setExpiration(refreshTokenValidity)
+                .compact();
+
+        return new TokenDto(accessToken, refreshToken);
     }
 
     //인증 객체 반환
@@ -83,6 +107,12 @@ public class TokenProvider implements InitializingBean {
     public boolean validateToken(String token) {
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+//            if (redisUtil.hasKeyBlackList(token)) {
+//                throw new BusinessException(ErrorCode.ACCOUNT_NOT_FOUND);
+//            }
+            if (redisTemplate.hasKey(token)) {
+                throw new BusinessException(ErrorCode.ACCOUNT_NOT_FOUND);
+            }
             return true;
         } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
             //throw new BusinessException(ErrorCode.WRONG_JWT);
@@ -98,5 +128,19 @@ public class TokenProvider implements InitializingBean {
             logger.info("JWT 토큰이 잘못되었습니다.");
         }
         return false;
+    }
+
+    // 토큰 만료 시간 확인
+    public Long getExpiration(String accessToken) {
+        Date expiration = Jwts
+                .parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(accessToken)
+                .getBody()
+                .getExpiration();
+
+        Long now = new Date().getTime();
+        return (expiration.getTime() - now);
     }
 }
