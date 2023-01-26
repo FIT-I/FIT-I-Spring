@@ -33,7 +33,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -261,5 +263,28 @@ public class AccountService {
 
         redisTemplate.opsForValue().set(accessToken, "logout", expirationAccess, TimeUnit.MILLISECONDS);
         redisTemplate.opsForValue().set(refreshToken, "logout", expirationRefresh, TimeUnit.MILLISECONDS);
+    }
+
+    @Transactional
+    public String deleteAccount(Principal principal){
+        Optional<Account> account = accountRepository.findByEmail(principal.getName());
+        if(account.isEmpty()){
+            throw new BusinessException(ErrorCode.INVALID_USERIDX);
+        }
+
+        // on(Active), off(Inactive) 상태 확인하기
+        String status = accountRepository.findByEmail(principal.getName()).get().getUserState();
+        try{
+            if(status.equals("D")){
+                return "이미 탈퇴한 계정입니다.";
+            }
+            else {
+                account.get().modifyState("D");
+                return principal.getName() + " 계정이 탈퇴되었습니다.";
+            }
+        } catch(Exception e){
+            throw new BusinessException(ErrorCode.DB_MODIFY_ERROR);
+        }
+
     }
 }

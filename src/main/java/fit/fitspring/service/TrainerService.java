@@ -115,11 +115,11 @@ public class TrainerService {
         String status = accountRepository.findByEmail(principal.getName()).get().getUserState();
         try{
             if(status.equals("A")){
-                account.get().modifyMatchingState("I");
+                account.get().modifyState("I");
                 return "off";
             }
             else {
-                account.get().modifyMatchingState("A");
+                account.get().modifyState("A");
                 return "on";
             }
         } catch(Exception e){
