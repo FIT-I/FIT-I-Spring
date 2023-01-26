@@ -82,7 +82,6 @@ public class CustomerService {
             }
             sliceTrainerList = trainerRepository.findByCategoryOrderByPriceAsc(category_enum,lastTrainerId,lastPrice,pageable);
         }else if(sortBy.equals("price") && direction.isDescending()){
-            System.out.println("/////////////////");
             Integer lastPrice = null;
             if(lastTrainerId!=null){
                 lastPrice = trainerRepository.findById(lastTrainerId).orElseThrow().getPriceHour();
@@ -125,7 +124,7 @@ public class CustomerService {
         Account customer = accountRepository.getReferenceById(custIdx);
         Trainer trainer = trainerRepository.getReferenceById(trainerIdx);
         PickUpType pickUpType;
-        if(request.getType().equals("customer_go")){
+        if(request.getType().equals("CUSTOMER_GO")){
             pickUpType = PickUpType.CUSTOMER_GO;
         }else{
             pickUpType = PickUpType.TRAINER_GO;
@@ -133,7 +132,7 @@ public class CustomerService {
         MatchingOrder matchingOrder = MatchingOrder.builder()
                 .customer(customer).trainer(trainer)
                 .startAt(request.getStartAt()).finishAt(request.getFinishAt())
-                .pickUpType(pickUpType).isComplete("N").build();
+                .pickUpType(pickUpType).isComplete("NONE").build();
         matchingOrderRepository.save(matchingOrder);
     }
 
