@@ -39,7 +39,7 @@ public class TrainerService {
         trainer.updateInfo(req.getCostHour(), req.getIntro(), req.getServiceDetail() );
     }
 
-    public void modifyProfile(Principal principal, MultipartFile profileImg) throws BusinessException, IOException {
+    public void modifyTrainerProfile(Principal principal, MultipartFile profileImg) throws BusinessException, IOException {
         Optional<Account> optionalA = accountRepository.findByEmail(principal.getName());
         if(optionalA.isEmpty()){
             throw new BusinessException(ErrorCode.INVALID_USERIDX);
@@ -74,6 +74,20 @@ public class TrainerService {
             String userEctImgUrl = s3Uploader.upload(image, "ectImg");
             EtcImg ectImg = EtcImg.builder().userImg(trainer.getUserImg()).etcImg(userEctImgUrl).build();
             etcImgRepository.save(ectImg);
+        }
+    }
+
+    public void deleteTrainerProfile(Principal principal) throws BusinessException{
+        Optional<Account> optional = accountRepository.findByEmail(principal.getName());
+        if(optional.isEmpty()){
+            throw new BusinessException(ErrorCode.INVALID_USERIDX);
+        }
+        UserImg userImg = optional.get().getTrainer().getUserImg();
+        try{
+            userImg.modifyProfile("trainerProfile");
+            userImgRepository.save(userImg);
+        } catch (Exception e){
+            throw new BusinessException(ErrorCode.DB_MODIFY_ERROR);
         }
     }
 }
