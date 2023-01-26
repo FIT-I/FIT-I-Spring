@@ -84,7 +84,7 @@ public class AccountController {
         }
     }
 
-    @Operation(summary = "토큰 재발급(수정 중)", description = "accessToken이 만료되었을 때 토큰(accessToken, refreshToken) 재발급")
+    @Operation(summary = "토큰 재발급(미완)", description = "accessToken이 만료되었을 때 토큰(accessToken, refreshToken) 재발급")
     @PostMapping("/reissue")
     public BaseResponse<TokenDto> reissue(@RequestBody TokenDto reqTokenDto){
         try {
@@ -154,6 +154,12 @@ public class AccountController {
         return ResponseEntity.ok().build();
     }
 
+
+    @Operation(summary = "계정상태수정(미완)", description = "계정상태수정(Request)")
+    @PatchMapping("/state/{state}")
+    public ResponseEntity modifyAccountState(@Parameter(description = "상태('A: Active(활성상태), D: Disabled(비활성화 상태), W: Withdrawal(탈퇴한 상태)'")@PathVariable String state){
+        return ResponseEntity.ok().build();
+    }
 
     @Operation(summary = "계정 비밀번호 조회", description = "비밀번호 찾기 뷰(인증메일 확인 후) - 계정 비밀번호 조회 API(Request/Response)")
     @GetMapping("/password/{email}")
