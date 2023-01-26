@@ -64,14 +64,9 @@ public class CommunalService {
         List<Review> reviewList = optional.get().getReviewList();
         List<ReviewDto> reviewDtoList = new ArrayList<>();
         for(Review i : reviewList){
-            Optional<UserImg> userImg = userImgRepository.findByTrainer(optional.get());
-            String image = "none";
-            if (userImg.isPresent()){
-                image = userImg.get().getProfile();
-            }
             ReviewDto reviewDto = new ReviewDto();
             reviewDto.setName(i.getCustomer().getName());
-            reviewDto.setProfile(image);
+            reviewDto.setProfile(i.getCustomer().getProfile());
             reviewDto.setGrade(i.getGrade());
             reviewDto.setContents(i.getContent());
             reviewDtoList.add(reviewDto);
