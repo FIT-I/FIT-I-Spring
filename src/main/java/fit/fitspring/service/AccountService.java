@@ -1,5 +1,6 @@
 package fit.fitspring.service;
 
+import fit.fitspring.controller.dto.account.ModifyPassword;
 import fit.fitspring.controller.dto.account.RegisterCustomerDto;
 import fit.fitspring.controller.dto.account.RegisterTrainerDto;
 import fit.fitspring.controller.dto.account.TokenDto;
@@ -286,5 +287,24 @@ public class AccountService {
             throw new BusinessException(ErrorCode.DB_MODIFY_ERROR);
         }
 
+    }
+
+    @Transactional
+    public void modifyPassword(Principal principal, ModifyPassword pwdM){
+        Optional<Account> account = accountRepository.findByEmail(principal.getName());
+        if(account.isEmpty()){
+            throw new BusinessException(ErrorCode.INVALID_USERIDX);
+        }
+
+        try{
+            // 1. 비밀번호 변경
+            String pwdEncode = new AES128(pwKey).encrypt(pwdM.getPassword());
+            account.get().modifyPassword(pwdEncode);
+
+            // 2. 기존의 인증 객체 삭제하기 - 로그아웃과 유사
+            logout(pwdM.getAccessToken(), pwdM.getRefreshToken());
+        } catch(Exception e) {
+            throw new BusinessException(ErrorCode.DB_MODIFY_ERROR);
+        }
     }
 }

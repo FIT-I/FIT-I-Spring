@@ -96,6 +96,7 @@ public class Account extends BaseTimeEntity implements UserDetails {
     public void modifyLocation(String location){ this.location = location; }
     public void modifyProfile(String profile){ this.profile = profile; }
     public void modifyState(String status){this.userState = status;}
+    public void modifyPassword(String pwd){this.password = pwd;}
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
