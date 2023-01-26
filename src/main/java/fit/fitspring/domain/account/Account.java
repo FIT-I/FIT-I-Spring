@@ -131,4 +131,11 @@ public class Account extends BaseTimeEntity implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
+    public void alarmOff(){
+        this.alarmState = "off";
+    }
+    public void alarmOn(){
+        this.alarmState = "on";
+    }
 }

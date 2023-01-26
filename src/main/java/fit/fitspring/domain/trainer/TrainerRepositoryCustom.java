@@ -7,7 +7,7 @@ public interface TrainerRepositoryCustom {
     /**
      * 해당 카테고리의 트레이너 리스트 실시간 순으로 페이징 처리해서 받아줌
      */
-    Slice<Trainer> findByCategoryOrderByIdeDesc(Category category, Long lastTrainerId, Pageable pageable);
+    Slice<Trainer> findByCategoryOrderByIdDesc(Category category, Long lastTrainerId, Pageable pageable);
 
     /**
      * 해당 카테고리의 트레이너 리스트 레벨 순으로 페이징 처리해서 받아줌

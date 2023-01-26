@@ -32,7 +32,7 @@ public class MatchingController {
     private final CommunalService communalService;
     private final MatchingService matchingService;
 
-    @Operation(summary = "고객의 매칭목록조회(테스트 필요)", description = "고객의 매칭목록조회(Response)")
+    @Operation(summary = "고객의 매칭목록조회", description = "고객의 매칭목록조회(Response)")
     @GetMapping("/customer")
     public BaseResponse<List<MatchingListForCust>> getCustomerMatchingList(@AuthenticationPrincipal User user){
         Long custIdx = communalService.getUserIdxByUser(user);
@@ -44,7 +44,7 @@ public class MatchingController {
         }
     }
 
-    @Operation(summary = "트레이너의 매칭목록조회(테스트 필요)", description = "트레이너의 매칭목록조회(Response)")
+    @Operation(summary = "트레이너의 매칭목록조회", description = "트레이너의 매칭목록조회(Response)")
     @GetMapping("/trainer")
     public BaseResponse<List<MatchingListForTrainer>> getTrainerMatchingList(@AuthenticationPrincipal User user){
         Long trainerIdx = communalService.getUserIdxByUser(user);
@@ -56,7 +56,7 @@ public class MatchingController {
         }
     }
 
-    @Operation(summary = "매칭정보조회(테스트 필요)", description = "매칭정보조회(Response)")
+    @Operation(summary = "매칭정보조회", description = "매칭정보조회(Response)")
     @GetMapping("/{matchingIdx}")
     public BaseResponse<MatchingInfo> getMatchingInformation(@Parameter(description = "매칭신청식별자")@PathVariable Long matchingIdx){
         try{

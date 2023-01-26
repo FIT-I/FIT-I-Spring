@@ -24,6 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static fit.fitspring.exception.common.ErrorCode.*;
+
 @Service
 @RequiredArgsConstructor
 public class CommunalService {
@@ -64,14 +66,9 @@ public class CommunalService {
         List<Review> reviewList = optional.get().getReviewList();
         List<ReviewDto> reviewDtoList = new ArrayList<>();
         for(Review i : reviewList){
-            Optional<UserImg> userImg = userImgRepository.findByTrainer(optional.get());
-            String image = "none";
-            if (userImg.isPresent()){
-                image = userImg.get().getProfile();
-            }
             ReviewDto reviewDto = new ReviewDto();
             reviewDto.setName(i.getCustomer().getName());
-            reviewDto.setProfile(image);
+            reviewDto.setProfile(i.getCustomer().getProfile());
             reviewDto.setGrade(i.getGrade());
             reviewDto.setContents(i.getContent());
             reviewDtoList.add(reviewDto);
@@ -143,6 +140,6 @@ public class CommunalService {
     @Transactional
     public Long getUserIdxByUser(User user){
         return accountRepository.findByEmail(user.getUsername())
-                .orElseThrow().getId();
+                .orElseThrow(()-> new BusinessException(WRONG_JWT)).getId();
     }
 }

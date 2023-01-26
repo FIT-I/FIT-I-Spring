@@ -14,22 +14,18 @@ import fit.fitspring.exception.common.BusinessException;
 import fit.fitspring.exception.common.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.security.Principal;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+
+import static fit.fitspring.exception.common.ErrorCode.*;
 
 @RequiredArgsConstructor
 @Service
@@ -67,7 +63,7 @@ public class CustomerService {
         Sort.Direction direction = pageable.getSort().get().findFirst().orElseThrow().getDirection();
         Slice<Trainer> sliceTrainerList;
         if(sortBy.equals("recent")){
-            sliceTrainerList = trainerRepository.findByCategoryOrderByIdeDesc(category_enum, lastTrainerId, pageable);
+            sliceTrainerList = trainerRepository.findByCategoryOrderByIdDesc(category_enum, lastTrainerId, pageable);
         }else if(sortBy.equals("level")){
             Long lastLevelId;
             if(lastTrainerId==null)
@@ -88,7 +84,7 @@ public class CustomerService {
             }
             sliceTrainerList = trainerRepository.findByCategoryOrderByPriceDesc(category_enum,lastTrainerId,lastPrice,pageable);
         } else{
-            sliceTrainerList = trainerRepository.findByCategoryOrderByIdeDesc(category_enum, lastTrainerId, pageable);
+            sliceTrainerList = trainerRepository.findByCategoryOrderByIdDesc(category_enum, lastTrainerId, pageable);
         }
         List<TrainerDto> trainerList = new ArrayList<>();
         for(Trainer trainer : sliceTrainerList){
@@ -115,14 +111,31 @@ public class CustomerService {
     public void saveLikeTrainer(Long custIdx, Long trainerIdx){
         Account customer = accountRepository.getReferenceById(custIdx);
         Trainer trainer = trainerRepository.getReferenceById(trainerIdx);
+        if(wishListRepository.existsByCustomerAndTrainer(customer,trainer)){
+            throw new BusinessException(ALREADY_LIKE);
+        }
         WishList wishList = WishList.builder().customer(customer).trainer(trainer).build();
         wishListRepository.save(wishList);
+    }
+
+    @Transactional
+    public void undoLikeTrainer(Long custIdx, Long trainerIdx){
+        Account customer = accountRepository.getReferenceById(custIdx);
+        Trainer trainer = trainerRepository.getReferenceById(trainerIdx);
+        if(!wishListRepository.existsByCustomerAndTrainer(customer,trainer)){
+            return;
+        }
+        WishList wishList = wishListRepository.findByCustomerAndTrainer(customer,trainer).orElseThrow();
+        wishListRepository.delete(wishList);
     }
 
     @Transactional
     public void saveMatchingOrder(Long custIdx, Long trainerIdx, MatchingRequestDto request){
         Account customer = accountRepository.getReferenceById(custIdx);
         Trainer trainer = trainerRepository.getReferenceById(trainerIdx);
+        if(matchingOrderRepository.existsByCustomerAndTrainer(customer, trainer)){
+            throw new BusinessException(ALREADY_MATCHING);
+        }
         PickUpType pickUpType;
         if(request.getType().equals("CUSTOMER_GO")){
             pickUpType = PickUpType.CUSTOMER_GO;
@@ -189,13 +202,9 @@ public class CustomerService {
         List<WishDto> wishDtoList = new ArrayList<>();
         for(WishList i : wishList){
             Trainer trainer = i.getTrainer();
-            Optional<UserImg> userImg = userImgRepository.findByTrainer(trainer);
-            String image = "none";
-            if (userImg.isPresent()){
-                image = userImg.get().getProfile();
-            }
+            UserImg userImg = optional.get().getTrainer().getUserImg();
             WishDto wishDto = new WishDto(trainer.getId(), trainer.getUser().getName(),
-                    image, trainer.getGrade(), i.getTrainer().getSchool(),
+                    userImg.getProfile(), trainer.getGrade(), i.getTrainer().getSchool(),
                     i.getCreatedDate().toLocalDate());
             wishDtoList.add(wishDto);
         }
@@ -210,19 +219,15 @@ public class CustomerService {
         optional.get().setProfile(customerProfile);
         accountRepository.save(optional.get());
     }
-
-    /*@Transactional
-    public Page<TrainerDto> getTrainerList(String category, String sort, Pageable pageable){
-        if(sort.equals("recent")){
-
-        }if(sort.equals("level")){
-
-        }if(sort.equals("price_asc")){
-
-        }if(sort.equals("price_dsc")){
-
-        }
-        return trainerRepository.findAllById(pageable);
-    }*/
+    @Transactional
+    public void notificationOff(Long userIdx){
+        Account user = accountRepository.findById(userIdx).orElseThrow();
+        user.alarmOff();
+    }
+    @Transactional
+    public void notificationOn(Long userIdx){
+        Account user = accountRepository.findById(userIdx).orElseThrow();
+        user.alarmOn();
+    }
 }
 

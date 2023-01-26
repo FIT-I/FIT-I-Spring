@@ -21,6 +21,8 @@ import java.io.IOException;
 import java.security.Principal;
 import java.util.Optional;
 
+import static fit.fitspring.exception.common.ErrorCode.*;
+
 @RequiredArgsConstructor
 @Service
 public class TrainerService {
@@ -39,24 +41,20 @@ public class TrainerService {
         trainer.updateInfo(req.getCostHour(), req.getIntro(), req.getServiceDetail() );
     }
 
-    public void modifyProfile(Principal principal, MultipartFile profileImg) throws BusinessException, IOException {
+    public void modifyTrainerProfile(Principal principal, MultipartFile profileImg) throws BusinessException, IOException {
         Optional<Account> optionalA = accountRepository.findByEmail(principal.getName());
         if(optionalA.isEmpty()){
             throw new BusinessException(ErrorCode.INVALID_USERIDX);
         }
-        Optional<Trainer> optionalT = trainerRepository.findById(optionalA.get().getId());
-        if(optionalT.isEmpty()){
-            throw new BusinessException(ErrorCode.INVALID_TRAINERIDX);
-        }
-        Optional<UserImg> userImg = userImgRepository.findByTrainer(optionalT.get());
-        if(!profileImg.isEmpty()){
+        UserImg userImg = optionalA.get().getTrainer().getUserImg();
+        try{
             String userProfileUrl = s3Uploader.upload(profileImg, "profile");
-            userImg.get().modifyProfile(userProfileUrl);
-            userImgRepository.save(userImg.get());
+            userImg.modifyProfile(userProfileUrl);
+            userImgRepository.save(userImg);
+        } catch (Exception e){
+            throw new BusinessException(ErrorCode.AWS_S3UPLOADER_ERROR);
         }
     }
-
-
 
     @Transactional
     public void modifyTrainerBgImage(Long trainerIdx, MultipartFile image) throws BusinessException, IOException {
@@ -102,5 +100,29 @@ public class TrainerService {
         } catch(Exception e){
             throw new BusinessException(ErrorCode.DB_MODIFY_ERROR);
         }
+    }
+
+    public void deleteTrainerProfile(Principal principal) throws BusinessException{
+        Optional<Account> optional = accountRepository.findByEmail(principal.getName());
+        if(optional.isEmpty()){
+            throw new BusinessException(ErrorCode.INVALID_USERIDX);
+        }
+        UserImg userImg = optional.get().getTrainer().getUserImg();
+        try{
+            userImg.modifyProfile("trainerProfile");
+            userImgRepository.save(userImg);
+        } catch (Exception e){
+            throw new BusinessException(ErrorCode.DB_MODIFY_ERROR);
+        }
+    }
+
+    @Transactional
+    public void deleteEtcImg(Long trainerIdx, Long etcImgIdx) throws BusinessException {
+        Trainer trainer = trainerRepository.getReferenceById(trainerIdx);
+        EtcImg etcImg = etcImgRepository.findById(etcImgIdx).orElseThrow(()-> new BusinessException(NOT_FOUND_IMG));
+        if(etcImg.getUserImg().getTrainer()!=trainer){
+            throw new BusinessException(PERMISSION_DENIED);
+        }
+        etcImgRepository.delete(etcImg);
     }
 }
