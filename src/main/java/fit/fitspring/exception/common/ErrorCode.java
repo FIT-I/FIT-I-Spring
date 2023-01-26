@@ -42,14 +42,15 @@ public enum ErrorCode {
     DB_MODIFY_ERROR(false, 4002, "데이터 수정 오류가 발생하였습니다."),
 
 
-    /*매칭 5000*/
+    /*매칭, 좋아요 5000*/
     MATCHING_NOT_FOUND(false, 5000, "해당 매칭을 찾을 수 없습니다."),
     REJECTED_MATCHING(false, 5001, "거절된 매칭입니다."),
     INVALID_DATE_FORMAT(false, 5002, "매칭 날짜 형식이 잘못되었습니다."),
     PERMISSION_DENIED(false, 5003, "권한이 없습니다."),
     ALREADY_MATCHING(false, 5004, "이미 매칭신청했던 트레이너 입니다."),
+    ALREADY_LIKE(false,5005, "이미 찜한 트레이너입니다."),
 
-    /* 사진 */
+    /* 사진 6000*/
     NOT_FOUND_IMG(false, 6001, "해당 사진이 존재하지 않습니다."),
 
 
