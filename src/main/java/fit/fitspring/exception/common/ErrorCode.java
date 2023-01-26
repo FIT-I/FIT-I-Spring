@@ -50,7 +50,11 @@ public enum ErrorCode {
     ALREADY_MATCHING(false, 5004, "이미 매칭신청했던 트레이너 입니다."),
 
     /* 사진 */
-    NOT_FOUND_IMG(false, 6001, "해당 사진이 존재하지 않습니다.")
+    NOT_FOUND_IMG(false, 6001, "해당 사진이 존재하지 않습니다."),
+
+
+    /*AWS 7000*/
+    AWS_S3UPLOADER_ERROR(false, 7001, "aws s3 이미지 업로드 오류가 발생하였습니다.")
     ;
 
     private final boolean isSuccess;

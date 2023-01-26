@@ -194,13 +194,9 @@ public class CustomerService {
         List<WishDto> wishDtoList = new ArrayList<>();
         for(WishList i : wishList){
             Trainer trainer = i.getTrainer();
-            Optional<UserImg> userImg = userImgRepository.findByTrainer(trainer);
-            String image = "none";
-            if (userImg.isPresent()){
-                image = userImg.get().getProfile();
-            }
+            UserImg userImg = optional.get().getTrainer().getUserImg();
             WishDto wishDto = new WishDto(trainer.getId(), trainer.getUser().getName(),
-                    image, trainer.getGrade(), i.getTrainer().getSchool(),
+                    userImg.getProfile(), trainer.getGrade(), i.getTrainer().getSchool(),
                     i.getCreatedDate().toLocalDate());
             wishDtoList.add(wishDto);
         }

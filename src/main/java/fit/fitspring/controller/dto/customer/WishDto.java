@@ -13,7 +13,7 @@ public class WishDto {
     private Long trainerIdx;
     @Schema(description = "트레이너 이름", example = "이름")
     private String trainerName;
-    @Schema(description = "트레이너 프로필이미지", example = "1.jpg(설정된 프로필이 없다면 none)")
+    @Schema(description = "트레이너 프로필이미지", example = "1.jpg(기본 프로필은 'trainerProfile'로 설정)")
     private String trainerProfile;
     @Schema(description = "트레이너 평점", example = "4.3")
     private float trainerGrade;
