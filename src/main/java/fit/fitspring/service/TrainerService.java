@@ -81,8 +81,26 @@ public class TrainerService {
         }
     }
 
-//    public String modifyMatchingStatus(String accessToken){
-//
-//        return "";
-//    }
+    @Transactional
+    public String modifyMatching(Principal principal){
+        Optional<Account> account = accountRepository.findByEmail(principal.getName());
+        if(account.isEmpty()){
+            throw new BusinessException(ErrorCode.INVALID_USERIDX);
+        }
+
+        // on(Active), off(Inactive) 상태 확인하기
+        String status = accountRepository.findByEmail(principal.getName()).get().getUserState();
+        try{
+            if(status.equals("A")){
+                account.get().modifyMatchingState("I");
+                return "off";
+            }
+            else {
+                account.get().modifyMatchingState("A");
+                return "on";
+            }
+        } catch(Exception e){
+            throw new BusinessException(ErrorCode.DB_MODIFY_ERROR);
+        }
+    }
 }
