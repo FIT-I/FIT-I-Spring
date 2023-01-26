@@ -44,19 +44,15 @@ public class TrainerService {
         if(optionalA.isEmpty()){
             throw new BusinessException(ErrorCode.INVALID_USERIDX);
         }
-        Optional<Trainer> optionalT = trainerRepository.findById(optionalA.get().getId());
-        if(optionalT.isEmpty()){
-            throw new BusinessException(ErrorCode.INVALID_TRAINERIDX);
-        }
-        Optional<UserImg> userImg = userImgRepository.findByTrainer(optionalT.get());
-        if(!profileImg.isEmpty()){
+        UserImg userImg = optionalA.get().getTrainer().getUserImg();
+        try{
             String userProfileUrl = s3Uploader.upload(profileImg, "profile");
-            userImg.get().modifyProfile(userProfileUrl);
-            userImgRepository.save(userImg.get());
+            userImg.modifyProfile(userProfileUrl);
+            userImgRepository.save(userImg);
+        } catch (Exception e){
+            throw new BusinessException(ErrorCode.AWS_S3UPLOADER_ERROR);
         }
     }
-
-
 
     @Transactional
     public void modifyTrainerBgImage(Long trainerIdx, MultipartFile image) throws BusinessException, IOException {
