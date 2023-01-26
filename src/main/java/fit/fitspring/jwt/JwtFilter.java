@@ -1,8 +1,6 @@
 package fit.fitspring.jwt;
 
 
-import fit.fitspring.config.RedisConfig;
-import fit.fitspring.jwt.RedisUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +23,6 @@ public class JwtFilter extends GenericFilterBean {
     private static final Logger logger = LoggerFactory.getLogger(JwtFilter.class);
     public static final String AUTHORIZATION_HEADER = "Authorization";
     private TokenProvider tokenProvider;
-
     @Autowired
     private final RedisTemplate redisTemplate;
 
