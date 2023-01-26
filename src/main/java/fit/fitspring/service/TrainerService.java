@@ -21,6 +21,8 @@ import java.io.IOException;
 import java.security.Principal;
 import java.util.Optional;
 
+import static fit.fitspring.exception.common.ErrorCode.*;
+
 @RequiredArgsConstructor
 @Service
 public class TrainerService {
@@ -79,5 +81,15 @@ public class TrainerService {
             EtcImg ectImg = EtcImg.builder().userImg(trainer.getUserImg()).etcImg(userEctImgUrl).build();
             etcImgRepository.save(ectImg);
         }
+    }
+
+    @Transactional
+    public void deleteEtcImg(Long trainerIdx, Long etcImgIdx) throws BusinessException {
+        Trainer trainer = trainerRepository.getReferenceById(trainerIdx);
+        EtcImg etcImg = etcImgRepository.findById(etcImgIdx).orElseThrow(()-> new BusinessException(NOT_FOUND_IMG));
+        if(etcImg.getUserImg().getTrainer()!=trainer){
+            throw new BusinessException(PERMISSION_DENIED);
+        }
+        etcImgRepository.delete(etcImg);
     }
 }

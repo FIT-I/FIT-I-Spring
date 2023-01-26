@@ -31,6 +31,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import static fit.fitspring.exception.common.ErrorCode.*;
+
 @RequiredArgsConstructor
 @Service
 public class CustomerService {
@@ -67,7 +69,7 @@ public class CustomerService {
         Sort.Direction direction = pageable.getSort().get().findFirst().orElseThrow().getDirection();
         Slice<Trainer> sliceTrainerList;
         if(sortBy.equals("recent")){
-            sliceTrainerList = trainerRepository.findByCategoryOrderByIdeDesc(category_enum, lastTrainerId, pageable);
+            sliceTrainerList = trainerRepository.findByCategoryOrderByIdDesc(category_enum, lastTrainerId, pageable);
         }else if(sortBy.equals("level")){
             Long lastLevelId;
             if(lastTrainerId==null)
@@ -88,7 +90,7 @@ public class CustomerService {
             }
             sliceTrainerList = trainerRepository.findByCategoryOrderByPriceDesc(category_enum,lastTrainerId,lastPrice,pageable);
         } else{
-            sliceTrainerList = trainerRepository.findByCategoryOrderByIdeDesc(category_enum, lastTrainerId, pageable);
+            sliceTrainerList = trainerRepository.findByCategoryOrderByIdDesc(category_enum, lastTrainerId, pageable);
         }
         List<TrainerDto> trainerList = new ArrayList<>();
         for(Trainer trainer : sliceTrainerList){
@@ -123,6 +125,9 @@ public class CustomerService {
     public void saveMatchingOrder(Long custIdx, Long trainerIdx, MatchingRequestDto request){
         Account customer = accountRepository.getReferenceById(custIdx);
         Trainer trainer = trainerRepository.getReferenceById(trainerIdx);
+        if(matchingOrderRepository.existsByCustomerAndTrainer(customer, trainer)){
+            throw new BusinessException(ALREADY_MATCHING);
+        }
         PickUpType pickUpType;
         if(request.getType().equals("CUSTOMER_GO")){
             pickUpType = PickUpType.CUSTOMER_GO;
@@ -211,18 +216,5 @@ public class CustomerService {
         accountRepository.save(optional.get());
     }
 
-    /*@Transactional
-    public Page<TrainerDto> getTrainerList(String category, String sort, Pageable pageable){
-        if(sort.equals("recent")){
-
-        }if(sort.equals("level")){
-
-        }if(sort.equals("price_asc")){
-
-        }if(sort.equals("price_dsc")){
-
-        }
-        return trainerRepository.findAllById(pageable);
-    }*/
 }
 
