@@ -6,14 +6,19 @@ import fit.fitspring.exception.common.ErrorCode;
 
 import fit.fitspring.response.BaseResponse;
 import fit.fitspring.service.AccountService;
+import fit.fitspring.service.CommunalService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.security.Principal;
 
 import static fit.fitspring.utils.ValidationRegex.*;
 
@@ -24,10 +29,11 @@ import static fit.fitspring.utils.ValidationRegex.*;
 @RequestMapping("/api/accounts")
 @RequiredArgsConstructor
 public class AccountController {
-    @Autowired
+
     private final AccountService accountService;
-    @Autowired
-    //private final AccountProvider accountProvider;
+    private final CommunalService communalService;
+
+
 
     /* 테스트 용 */
     @Operation(summary = "테스트", description = "테스트")
@@ -148,10 +154,15 @@ public class AccountController {
         //return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "계정탈퇴(미완)", description = "계정탈퇴")
+    @Operation(summary = "계정탈퇴", description = "user 테이블의 user_state를 D로 변경한다. (D는 Delete를 의미한다.)")
     @PatchMapping("/close")
-    public ResponseEntity userCloseAccount(){
-        return ResponseEntity.ok().build();
+    public BaseResponse<String> userCloseAccount(Principal principal){
+        try{
+            String result = accountService.deleteAccount(principal);
+            return new BaseResponse<>(result);
+        } catch (BusinessException e){
+            return new BaseResponse<>(e.getErrorCode());
+        }
     }
 
 
