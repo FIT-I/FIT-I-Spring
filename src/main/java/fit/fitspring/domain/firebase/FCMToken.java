@@ -16,6 +16,5 @@ public class FCMToken {
     private String token;
 
     @OneToOne
-    @JoinColumn(name = "account_id")
     private Account account;
 }
