@@ -1,7 +1,6 @@
 package fit.fitspring.service;
 
-import fit.fitspring.controller.dto.communal.TrainerInformationDto;
-import fit.fitspring.controller.dto.customer.UpdateTrainerInfoReq;
+import fit.fitspring.controller.dto.trainer.UpdateTrainerInfoReq;
 import fit.fitspring.domain.trainer.*;
 import fit.fitspring.domain.account.Account;
 import fit.fitspring.domain.account.AccountRepository;
@@ -21,7 +20,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.Optional;
-import java.util.PrimitiveIterator;
 
 @RequiredArgsConstructor
 @Service
@@ -38,7 +36,7 @@ public class TrainerService {
         Trainer trainer = trainerRepository.findById(trainerIdx)
                 .orElseThrow(TrainerException::new);
         trainer.getUser().updateName(req.getName());
-        trainer.updateInfo(req.getCostHour(), req.getCostAdd(), req.getIntro(), req.getServiceDetail() );
+        trainer.updateInfo(req.getCostHour(), req.getIntro(), req.getServiceDetail() );
     }
 
     public void modifyProfile(Principal principal, MultipartFile profileImg) throws BusinessException, IOException {

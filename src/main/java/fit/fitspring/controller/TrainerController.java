@@ -1,7 +1,6 @@
 package fit.fitspring.controller;
 
-import fit.fitspring.controller.dto.communal.TrainerInformationDto;
-import fit.fitspring.controller.dto.customer.UpdateTrainerInfoReq;
+import fit.fitspring.controller.dto.trainer.UpdateTrainerInfoReq;
 import fit.fitspring.exception.common.BusinessException;
 import fit.fitspring.exception.trainer.TrainerException;
 import fit.fitspring.response.BaseResponse;
@@ -10,12 +9,10 @@ import fit.fitspring.service.CustomerService;
 import fit.fitspring.service.TrainerService;
 import io.jsonwebtoken.io.IOException;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
