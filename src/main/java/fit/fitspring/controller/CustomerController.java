@@ -59,6 +59,19 @@ public class CustomerController {
             return new BaseResponse<>(e.getErrorCode());
         }
     }
+    @Operation(summary = "트레이너 찜하기 취소", description = "트레이너 찜하기 취소(Request)")
+    @DeleteMapping("/{trainerIdx}")
+    public BaseResponse<String> undoLikeTrainer(@Parameter(description = "유저식별자")@PathVariable Long trainerIdx, @AuthenticationPrincipal User user){
+        try {
+            Long custIdx = communalService.getUserIdxByUser(user);
+            if(!customerService.isTrainer(trainerIdx))
+                return new BaseResponse<>(new TrainerException().getErrorCode());
+            customerService.undoLikeTrainer(custIdx, trainerIdx);
+            return new BaseResponse<>("트레이너 찜하기 취소.");
+        }catch(BusinessException e){
+            return new BaseResponse<>(e.getErrorCode());
+        }
+    }
 
     @Operation(summary = "트레이너 매칭요청", description = "트레이너 매칭요청(Request)")
     @PostMapping("/matching/{trainerIdx}")

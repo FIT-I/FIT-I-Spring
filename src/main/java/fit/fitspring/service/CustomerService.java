@@ -14,20 +14,14 @@ import fit.fitspring.exception.common.BusinessException;
 import fit.fitspring.exception.common.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.security.Principal;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -117,8 +111,22 @@ public class CustomerService {
     public void saveLikeTrainer(Long custIdx, Long trainerIdx){
         Account customer = accountRepository.getReferenceById(custIdx);
         Trainer trainer = trainerRepository.getReferenceById(trainerIdx);
+        if(wishListRepository.existsByCustomerAndTrainer(customer,trainer)){
+            throw new BusinessException(ALREADY_LIKE);
+        }
         WishList wishList = WishList.builder().customer(customer).trainer(trainer).build();
         wishListRepository.save(wishList);
+    }
+
+    @Transactional
+    public void undoLikeTrainer(Long custIdx, Long trainerIdx){
+        Account customer = accountRepository.getReferenceById(custIdx);
+        Trainer trainer = trainerRepository.getReferenceById(trainerIdx);
+        if(!wishListRepository.existsByCustomerAndTrainer(customer,trainer)){
+            return;
+        }
+        WishList wishList = wishListRepository.findByCustomerAndTrainer(customer,trainer).orElseThrow();
+        wishListRepository.delete(wishList);
     }
 
     @Transactional
