@@ -19,12 +19,12 @@ public class TrainerRepositoryImpl implements TrainerRepositoryCustom{
     private final QLevel level = QLevel.level;
 
     @Override
-    public Slice<Trainer> findByCategoryOrderByIdeDesc(Category category, Long lastTrainerId, Pageable pageable) {
+    public Slice<Trainer> findByCategoryOrderByIdDesc(Category category, Long lastTrainerId, Pageable pageable) {
         List<Trainer> trainerList = queryFactory.selectFrom(trainer)
                 .where(
                         lastTrainerId(lastTrainerId),
-
-                        trainer.category.eq(category)
+                        trainer.category.eq(category),
+                        trainer.user.userState.eq("A")
                 )
                 .orderBy(trainer.id.desc())
                 .limit(pageable.getPageSize()+1)
@@ -39,7 +39,8 @@ public class TrainerRepositoryImpl implements TrainerRepositoryCustom{
         List<Trainer> trainerList = queryFactory.selectFrom(trainer)
                 .where(
                     cursorLevelAndTrainerId(lastTrainerId, lastLevelId),
-                        trainer.category.eq(category)
+                        trainer.category.eq(category),
+                        trainer.user.userState.eq("A")
                 )
                 .orderBy(level.id.asc(), trainer.id.desc())
                 .limit(pageable.getPageSize()+1)
@@ -52,7 +53,8 @@ public class TrainerRepositoryImpl implements TrainerRepositoryCustom{
         List<Trainer> trainerList = queryFactory.selectFrom(trainer)
                 .where(
                         cursorCostAndTrainerId(lastTrainerId, lastPrice, Sort.Direction.DESC),
-                        trainer.category.eq(category)
+                        trainer.category.eq(category),
+                        trainer.user.userState.eq("A")
                 )
                 .orderBy(trainer.priceHour.desc(),trainer.id.desc())
                 .limit(pageable.getPageSize()+1)
@@ -65,7 +67,8 @@ public class TrainerRepositoryImpl implements TrainerRepositoryCustom{
         List<Trainer> trainerList = queryFactory.selectFrom(trainer)
                 .where(
                         cursorCostAndTrainerId(lastTrainerId, lastPrice, Sort.Direction.ASC),
-                        trainer.category.eq(category)
+                        trainer.category.eq(category),
+                        trainer.user.userState.eq("A")
                 )
                 .orderBy(trainer.priceHour.asc(),trainer.id.desc())
                 .limit(pageable.getPageSize()+1)

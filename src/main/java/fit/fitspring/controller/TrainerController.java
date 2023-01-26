@@ -75,7 +75,7 @@ public class TrainerController {
 
     @Operation(summary = "트레이너 사진 및 자격증 추가", description = "기타 사진 및 자격증 사진(Request)")
     @PostMapping(value = "/etcimg", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public BaseResponse<String> modifyTrainerBgImage(@RequestPart(value = "ectImage") List<MultipartFile> imageList, @AuthenticationPrincipal User user){
+    public BaseResponse<String> modifyTrainerEtcImage(@RequestPart(value = "ectImage") List<MultipartFile> imageList, @AuthenticationPrincipal User user){
         Long trainerIdx = communalService.getUserIdxByUser(user);
         try {
             for(MultipartFile image : imageList){
@@ -95,6 +95,18 @@ public class TrainerController {
         try {
             trainerService.deleteTrainerProfile(principal);
             return new BaseResponse<>("프로필 이미지를 삭제하였습니다.");
+        } catch (BusinessException e) {
+            return new BaseResponse<>(e.getErrorCode());
+        }
+    }
+
+    @Operation(summary = "트레이너 사진 및 자격증 삭제", description = "기타 사진 및 자격증 사진(Request)")
+    @DeleteMapping(value = "/etcimg/{etcImgIdx}")
+    public BaseResponse<String> deleteTrainerEtcImage(@PathVariable Long etcImgIdx, @AuthenticationPrincipal User user){
+        Long trainerIdx = communalService.getUserIdxByUser(user);
+        try {
+            trainerService.deleteEtcImg(trainerIdx, etcImgIdx);
+            return new BaseResponse<>("기타 사진을 삭제하였습니다.");
         } catch (BusinessException e) {
             return new BaseResponse<>(e.getErrorCode());
         }

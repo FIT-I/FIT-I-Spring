@@ -47,9 +47,14 @@ public enum ErrorCode {
     REJECTED_MATCHING(false, 5001, "거절된 매칭입니다."),
     INVALID_DATE_FORMAT(false, 5002, "매칭 날짜 형식이 잘못되었습니다."),
     PERMISSION_DENIED(false, 5003, "권한이 없습니다."),
+    ALREADY_MATCHING(false, 5004, "이미 매칭신청했던 트레이너 입니다."),
 
-    /*AWS 6000*/
-    AWS_S3UPLOADER_ERROR(false, 6001, "aws s3 이미지 업로드 오류가 발생하였습니다.")
+    /* 사진 */
+    NOT_FOUND_IMG(false, 6001, "해당 사진이 존재하지 않습니다."),
+
+
+    /*AWS 7000*/
+    AWS_S3UPLOADER_ERROR(false, 7001, "aws s3 이미지 업로드 오류가 발생하였습니다.")
     ;
 
     private final boolean isSuccess;

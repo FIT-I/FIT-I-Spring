@@ -58,7 +58,11 @@ public class CustomerController {
         Long custIdx = communalService.getUserIdxByUser(user);
         if(!customerService.isTrainer(trainerIdx))
             return new BaseResponse<>(new TrainerException().getErrorCode());
-        customerService.saveMatchingOrder(custIdx, trainerIdx, matchingRequest);
+        try{
+            customerService.saveMatchingOrder(custIdx, trainerIdx, matchingRequest);
+        }catch(BusinessException e){
+            return new BaseResponse<>(e.getErrorCode());
+        }
         return new BaseResponse<>("매칭요청 완료.");
     }
 

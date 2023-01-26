@@ -21,6 +21,8 @@ import java.io.IOException;
 import java.security.Principal;
 import java.util.Optional;
 
+import static fit.fitspring.exception.common.ErrorCode.*;
+
 @RequiredArgsConstructor
 @Service
 public class TrainerService {
@@ -77,6 +79,7 @@ public class TrainerService {
         }
     }
 
+    @Transactional
     public void deleteTrainerProfile(Principal principal) throws BusinessException{
         Optional<Account> optional = accountRepository.findByEmail(principal.getName());
         if(optional.isEmpty()){
@@ -89,5 +92,15 @@ public class TrainerService {
         } catch (Exception e){
             throw new BusinessException(ErrorCode.DB_MODIFY_ERROR);
         }
+    }
+
+    @Transactional
+    public void deleteEtcImg(Long trainerIdx, Long etcImgIdx) throws BusinessException {
+        Trainer trainer = trainerRepository.getReferenceById(trainerIdx);
+        EtcImg etcImg = etcImgRepository.findById(etcImgIdx).orElseThrow(()-> new BusinessException(NOT_FOUND_IMG));
+        if(etcImg.getUserImg().getTrainer()!=trainer){
+            throw new BusinessException(PERMISSION_DENIED);
+        }
+        etcImgRepository.delete(etcImg);
     }
 }
