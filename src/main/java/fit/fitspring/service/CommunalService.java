@@ -24,6 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static fit.fitspring.exception.common.ErrorCode.*;
+
 @Service
 @RequiredArgsConstructor
 public class CommunalService {
@@ -138,6 +140,6 @@ public class CommunalService {
     @Transactional
     public Long getUserIdxByUser(User user){
         return accountRepository.findByEmail(user.getUsername())
-                .orElseThrow().getId();
+                .orElseThrow(()-> new BusinessException(WRONG_JWT)).getId();
     }
 }

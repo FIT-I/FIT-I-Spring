@@ -211,6 +211,15 @@ public class CustomerService {
         optional.get().setProfile(customerProfile);
         accountRepository.save(optional.get());
     }
-
+    @Transactional
+    public void notificationOff(Long userIdx){
+        Account user = accountRepository.findById(userIdx).orElseThrow();
+        user.alarmOff();
+    }
+    @Transactional
+    public void notificationOn(Long userIdx){
+        Account user = accountRepository.findById(userIdx).orElseThrow();
+        user.alarmOn();
+    }
 }
 

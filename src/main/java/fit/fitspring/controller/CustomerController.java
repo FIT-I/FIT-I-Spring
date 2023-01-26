@@ -37,39 +37,67 @@ public class CustomerController {
     @Operation(summary = "트레이너 목록조회", description = "트레이너 목록조회(Response)")
     @GetMapping("/trainer-list")
     public BaseResponse<SliceResDto<TrainerDto>> getTrainerList(@RequestParam String category, @RequestParam(required = false) Long lastTrainerId, @PageableDefault(size=20, sort="recent",direction = Sort.Direction.DESC) Pageable pageable){
-        SliceResDto<TrainerDto> trainerDtoList;
-        trainerDtoList = customerService.getTrainerList(category,lastTrainerId,pageable);
-        return new BaseResponse<>(trainerDtoList);
+        try {
+            SliceResDto<TrainerDto> trainerDtoList;
+            trainerDtoList = customerService.getTrainerList(category, lastTrainerId, pageable);
+            return new BaseResponse<>(trainerDtoList);
+        }catch(BusinessException e){
+            return new BaseResponse<>(e.getErrorCode());
+        }
     }
 
     @Operation(summary = "트레이너 찜하기", description = "트레이너 찜하기(Request)")
     @PostMapping("/{trainerIdx}")
     public BaseResponse<String> likeTrainer(@Parameter(description = "유저식별자")@PathVariable Long trainerIdx, @AuthenticationPrincipal User user){
-        Long custIdx = communalService.getUserIdxByUser(user);
-        if(!customerService.isTrainer(trainerIdx))
-            return new BaseResponse<>(new TrainerException().getErrorCode());
-        customerService.saveLikeTrainer(custIdx, trainerIdx);
-        return new BaseResponse<>("트레이너를 찜했습니다.");
+        try {
+            Long custIdx = communalService.getUserIdxByUser(user);
+            if(!customerService.isTrainer(trainerIdx))
+                return new BaseResponse<>(new TrainerException().getErrorCode());
+            customerService.saveLikeTrainer(custIdx, trainerIdx);
+            return new BaseResponse<>("트레이너를 찜했습니다.");
+        }catch(BusinessException e){
+            return new BaseResponse<>(e.getErrorCode());
+        }
     }
 
     @Operation(summary = "트레이너 매칭요청", description = "트레이너 매칭요청(Request)")
     @PostMapping("/matching/{trainerIdx}")
     public BaseResponse<String> requestTrainerMatching(@RequestBody MatchingRequestDto matchingRequest ,@PathVariable Long trainerIdx, @AuthenticationPrincipal User user){
-        Long custIdx = communalService.getUserIdxByUser(user);
-        if(!customerService.isTrainer(trainerIdx))
-            return new BaseResponse<>(new TrainerException().getErrorCode());
-        try{
-            customerService.saveMatchingOrder(custIdx, trainerIdx, matchingRequest);
+        try {
+            Long custIdx = communalService.getUserIdxByUser(user);
+            if (!customerService.isTrainer(trainerIdx))
+                return new BaseResponse<>(new TrainerException().getErrorCode());
+            try {
+                customerService.saveMatchingOrder(custIdx, trainerIdx, matchingRequest);
+            } catch (BusinessException e) {
+                return new BaseResponse<>(e.getErrorCode());
+            }
+            return new BaseResponse<>("매칭요청 완료.");
         }catch(BusinessException e){
             return new BaseResponse<>(e.getErrorCode());
         }
-        return new BaseResponse<>("매칭요청 완료.");
     }
-
-    @Operation(summary = "알림설정(미완)", description = "알림설정(Request)")
-    @PatchMapping("/notification/{notIdx}")
-    public ResponseEntity setNotification(@Parameter(description = "알람설정('on' or 'off'")@PathVariable Integer notIdx){
-        return ResponseEntity.ok().build();
+    @Operation(summary = "알림 on", description = "알림 on으로 설정")
+    @PatchMapping("/notification/on")
+    public BaseResponse<String> notificationOn(@AuthenticationPrincipal User user){
+        try {
+            Long userIdx = communalService.getUserIdxByUser(user);
+            customerService.notificationOn(userIdx);
+            return new BaseResponse<>("알림 on.");
+        }catch(BusinessException e){
+            return new BaseResponse<>(e.getErrorCode());
+        }
+    }
+    @Operation(summary = "알림 off", description = "알림 off로 설정")
+    @PatchMapping("/notification/off")
+    public BaseResponse<String> notificationOff(@AuthenticationPrincipal User user){
+        try {
+            Long userIdx = communalService.getUserIdxByUser(user);
+            customerService.notificationOff(userIdx);
+            return new BaseResponse<>("알림 off.");
+        }catch(BusinessException e){
+            return new BaseResponse<>(e.getErrorCode());
+        }
     }
 
     @Operation(summary = "찜목록조회", description = "찜목록조회(Response)")
