@@ -91,4 +91,18 @@ public class TrainerController {
             return new BaseResponse<>("IO Exception Error");
         }
     }
+
+//    @Operation(summary = "내 매칭 관리(미완)", description = "트레이너의 내 매칭 관리 on/off(Request)")
+//    @PatchMapping("/matching-status")
+//    public BaseResponse<String> modifyAccountState(@AuthenticationPrincipal User user){
+//        try{
+//            // 계정 활성화가 되었습니다. 계정 비활성화가 되었습니다. 계정 탈퇴가 되었습니다.
+//            String matchingStatus = trainerService.modifyMatchingStatus();
+//            return new BaseResponse<>(matchingStatus);
+//        } catch(BusinessException e) {
+//            return new BaseResponse<>("error");
+//        }
+//
+//        //return ResponseEntity.ok().build();
+//    }
 }

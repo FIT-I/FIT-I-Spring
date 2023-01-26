@@ -82,4 +82,9 @@ public class TrainerService {
             etcImgRepository.save(ectImg);
         }
     }
+
+//    public String modifyMatchingStatus(String accessToken){
+//
+//        return "";
+//    }
 }
