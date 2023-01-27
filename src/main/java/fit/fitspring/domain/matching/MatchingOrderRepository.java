@@ -12,5 +12,5 @@ import java.util.List;
 public interface MatchingOrderRepository extends JpaRepository<MatchingOrder, Long> {
     List<MatchingOrder> findAllByCustomerAndIsCompleteLikeOrderByIdDesc(@Param("customer")Account customer,@Param("isComplete") String isComplete);
     List<MatchingOrder> findAllByTrainerAndIsCompleteLikeOrderByIdDesc(@Param("trainer")Trainer trainer,@Param("isComplete")String isComplete);
-    Boolean existsByCustomerAndTrainer(Account customer, Trainer trainer);
+    Boolean existsByCustomerAndTrainer(@Param("customer")Account customer, @Param("trainer")Trainer trainer);
 }
