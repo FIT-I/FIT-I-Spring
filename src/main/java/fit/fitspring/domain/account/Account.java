@@ -1,5 +1,6 @@
 package fit.fitspring.domain.account;
 
+import fit.fitspring.chat.entity.ChatBlock;
 import fit.fitspring.chat.entity.ChatUser;
 import fit.fitspring.chat.entity.Message;
 import fit.fitspring.domain.BaseTimeEntity;
@@ -87,6 +88,9 @@ public class Account extends BaseTimeEntity implements UserDetails {
     private List<ChatUser> chatUser =  new ArrayList<>();
     @OneToMany(mappedBy = "sender")
     private List<Message> message =  new ArrayList<>();
+
+    @OneToMany(mappedBy = "receiver")
+    private List<ChatBlock> blockUsers =  new ArrayList<>();
 
     @OneToOne(mappedBy = "account")
     private FCMToken fcmToken;

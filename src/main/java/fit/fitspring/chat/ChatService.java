@@ -62,14 +62,28 @@ public class ChatService {
 
     public List<ChatRoomAndUserDto> findAllRoomsByUserId(Long userId) {
         Account account = accountService.findById(userId);
+        List<Long> blockIds = account.getBlockUsers().stream()
+                .map(block -> block.getSender().getId()).toList();
         return account.getChatUser().stream()
+                .filter(cu -> {
+                    List<Long> idInRoom = cu.getChatRoom().getChatUser().stream()
+                            .map(ChatUser::getId).toList();
+                    return !hasToBlock(blockIds, idInRoom);
+                })
                 .map(chatUser -> toDto(chatUser.getChatRoom())).toList();
     }
+
+    private boolean hasToBlock(List<Long> blockCriteriaId, List<Long> userIdInRoom) {
+        boolean containBlockId = blockCriteriaId.stream()
+                .anyMatch(userIdInRoom::contains);
+        return userIdInRoom.size() == 2 && containBlockId;
+    }
+
     public ChatRoom getById(Long id){
         return chatRoomRepository.getReferenceById(id);
     }
 
-    private ChatRoomAndUserDto toDto(ChatRoom chatRoom){
+    private ChatRoomAndUserDto toDto(ChatRoom chatRoom) {
         ChatRoomAndUserDto dto = ChatRoomAndUserDto.builder()
                 .roomId(chatRoom.getId() == null ? null : chatRoom.getId())
                 .roomName(chatRoom.getRoomName())
