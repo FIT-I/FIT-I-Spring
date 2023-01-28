@@ -63,7 +63,7 @@ public class ChatController {
     @Operation(summary = "메시지 차단 (미완)")
     @PostMapping("/block/{userId}")
     public BaseResponse<String> blockUser(@Parameter(description = "대상 유저의 메세지를 차단합니다")@PathVariable Long userId) {
-        //chatService.blockUser(userId);
+        chatService.blockUser(userId);
         return new BaseResponse<String>("해당 유저 차단에 성공했습니다.");
     }
 }
