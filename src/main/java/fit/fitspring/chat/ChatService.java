@@ -96,7 +96,7 @@ public class ChatService {
     }
 
     public void blockUser(Long blockId) {
-        Long currentId = SecurityUtil.getCurrentAccountId();
+        Long currentId = SecurityUtil. getLoginUserId();
         ChatBlock block = ChatBlock.builder()
                 .receiver(accountService.getById(currentId))
                 .sender(accountService.getById(blockId))
