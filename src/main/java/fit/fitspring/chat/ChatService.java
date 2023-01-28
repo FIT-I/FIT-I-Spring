@@ -1,12 +1,11 @@
 package fit.fitspring.chat;
 
 import fit.fitspring.chat.dto.ChatRoomAndUserDto;
-import fit.fitspring.chat.entity.ChatRoom;
-import fit.fitspring.chat.entity.ChatRoomRepository;
-import fit.fitspring.chat.entity.ChatUser;
+import fit.fitspring.chat.entity.*;
 import fit.fitspring.domain.account.Account;
 import fit.fitspring.exception.account.AccountNotFoundException;
 import fit.fitspring.service.AccountService;
+import fit.fitspring.utils.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.units.qual.A;
@@ -22,6 +21,7 @@ import java.util.stream.Collectors;
 public class ChatService {
     private final AccountService accountService;
     private final ChatRoomRepository chatRoomRepository;
+    private final ChatBlockRepository chatBlockRepository;
     //private Map<Long, ChatRoom> chatRooms;
 
     /*
@@ -83,7 +83,7 @@ public class ChatService {
         return chatRoomRepository.getReferenceById(id);
     }
 
-    private ChatRoomAndUserDto toDto(ChatRoom chatRoom) {
+    private ChatRoomAndUserDto toDto(ChatRoom chatRoom){
         ChatRoomAndUserDto dto = ChatRoomAndUserDto.builder()
                 .roomId(chatRoom.getId() == null ? null : chatRoom.getId())
                 .roomName(chatRoom.getRoomName())
@@ -93,5 +93,14 @@ public class ChatService {
                         .collect(Collectors.toList()))
                 .build();
         return dto;
+    }
+
+    public void blockUser(Long blockId) {
+        Long currentId = SecurityUtil.getCurrentAccountId();
+        ChatBlock block = ChatBlock.builder()
+                .receiver(accountService.getById(currentId))
+                .sender(accountService.getById(blockId))
+                .build();
+        chatBlockRepository.save(block);
     }
 }

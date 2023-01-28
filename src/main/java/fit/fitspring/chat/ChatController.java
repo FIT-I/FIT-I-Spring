@@ -4,6 +4,7 @@ import fit.fitspring.chat.dto.ChatRoomAndUserDto;
 import fit.fitspring.chat.entity.ChatMessageDto;
 import fit.fitspring.chat.entity.ChatRoom;
 import fit.fitspring.chat.entity.MessageDto;
+import fit.fitspring.response.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -57,5 +58,12 @@ public class ChatController {
     public List<MessageDto> getMessagesAfterOf(@PathVariable Long roomId,
                                                @Parameter(description = "마지막으로 받은 메세지 Id")@PathVariable Long messageId) {
         return messageService.findAfterOf(roomId, messageId);
+    }
+
+    @Operation(summary = "메시지 차단 (미완)")
+    @PostMapping("/block/{userId}")
+    public BaseResponse<String> blockUser(@Parameter(description = "대상 유저의 메세지를 차단합니다")@PathVariable Long userId) {
+        //chatService.blockUser(userId);
+        return new BaseResponse<String>("해당 유저 차단에 성공했습니다.");
     }
 }
