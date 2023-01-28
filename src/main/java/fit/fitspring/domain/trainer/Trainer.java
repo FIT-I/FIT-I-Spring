@@ -72,4 +72,8 @@ public class Trainer {
         this.intro = intro;
         this.service = service;
     }
+
+    public void modifyCategory(Category category){
+        this.category = category;
+    }
 }

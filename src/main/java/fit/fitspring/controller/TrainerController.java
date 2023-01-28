@@ -1,5 +1,6 @@
 package fit.fitspring.controller;
 
+import fit.fitspring.controller.dto.trainer.CategoryReq;
 import fit.fitspring.controller.dto.trainer.UpdateTrainerInfoReq;
 import fit.fitspring.exception.common.BusinessException;
 import fit.fitspring.exception.trainer.TrainerException;
@@ -78,8 +79,8 @@ public class TrainerController {
     @Operation(summary = "트레이너 사진 및 자격증 추가", description = "기타 사진 및 자격증 사진(Request)")
     @PostMapping(value = "/etcimg", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public BaseResponse<String> modifyTrainerEtcImage(@RequestPart(value = "ectImage") List<MultipartFile> imageList, @AuthenticationPrincipal User user){
-        Long trainerIdx = communalService.getUserIdxByUser(user);
         try {
+            Long trainerIdx = communalService.getUserIdxByUser(user);
             for(MultipartFile image : imageList){
                 trainerService.addTrainerEctImage(trainerIdx, image);
             }
@@ -121,6 +122,17 @@ public class TrainerController {
             // 계정 활성화가 되었습니다. 계정 비활성화가 되었습니다. 계정 탈퇴가 되었습니다.
             String status = trainerService.modifyMatching(principal);
             return new BaseResponse<>("나의 매칭 관리가 " + status + " 되었습니다.");
+        } catch(BusinessException e) {
+            return new BaseResponse<>(e.getErrorCode());
+        }
+    }
+    @Operation(summary = "트레이너 카테고리 수정", description = "트레이너 카테고리 수정(Request)")
+    @PatchMapping("/category")
+    public BaseResponse<String> modifyCategory(@RequestBody CategoryReq categoryReq, @AuthenticationPrincipal User user){
+        try{
+            Long trainerIdx = communalService.getUserIdxByUser(user);
+            trainerService.modifyCategory(trainerIdx, categoryReq.getCategory());
+            return new BaseResponse<>("카테고리가 변경되었습니다.");
         } catch(BusinessException e) {
             return new BaseResponse<>(e.getErrorCode());
         }
