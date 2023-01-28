@@ -9,9 +9,11 @@ import fit.fitspring.service.CommunalService;
 import fit.fitspring.service.CustomerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -33,10 +35,9 @@ public class CustomerController {
     private final CustomerService customerService;
     private final CommunalService communalService;
 
-
     @Operation(summary = "트레이너 목록조회", description = "트레이너 목록조회(Response)")
     @GetMapping("/trainer-list")
-    public BaseResponse<SliceResDto<TrainerDto>> getTrainerList(@RequestParam String category, @RequestParam(required = false) Long lastTrainerId, @PageableDefault(size=20, sort="recent",direction = Sort.Direction.DESC) Pageable pageable){
+    public BaseResponse<SliceResDto<TrainerDto>> getTrainerList(@Parameter(description = "트레이너의 카테고리 값(pt/food/diet/rehab)", in = ParameterIn.QUERY)@RequestParam String category, @Parameter(description = "마지막으로 조회된 trainerId값(첫 조회시 값 필요 없음)", in = ParameterIn.QUERY)@RequestParam(required = false) Long lastTrainerId, @ParameterObject@PageableDefault(size=20, sort="recent",direction = Sort.Direction.DESC)Pageable pageable){
         try {
             SliceResDto<TrainerDto> trainerDtoList;
             trainerDtoList = customerService.getTrainerList(category, lastTrainerId, pageable);
@@ -48,7 +49,7 @@ public class CustomerController {
 
     @Operation(summary = "트레이너 찜하기", description = "트레이너 찜하기(Request)")
     @PostMapping("/{trainerIdx}")
-    public BaseResponse<String> likeTrainer(@Parameter(description = "유저식별자")@PathVariable Long trainerIdx, @AuthenticationPrincipal User user){
+    public BaseResponse<String> likeTrainer(@Parameter(description = "트레이너 식별자", in = ParameterIn.PATH)@PathVariable Long trainerIdx, @AuthenticationPrincipal User user){
         try {
             Long custIdx = communalService.getUserIdxByUser(user);
             if(!customerService.isTrainer(trainerIdx))
@@ -61,7 +62,7 @@ public class CustomerController {
     }
     @Operation(summary = "트레이너 찜하기 취소", description = "트레이너 찜하기 취소(Request)")
     @DeleteMapping("/{trainerIdx}")
-    public BaseResponse<String> undoLikeTrainer(@Parameter(description = "유저식별자")@PathVariable Long trainerIdx, @AuthenticationPrincipal User user){
+    public BaseResponse<String> undoLikeTrainer(@Parameter(description = "트레이너 식별자", in = ParameterIn.PATH)@PathVariable Long trainerIdx, @AuthenticationPrincipal User user){
         try {
             Long custIdx = communalService.getUserIdxByUser(user);
             if(!customerService.isTrainer(trainerIdx))
@@ -75,7 +76,7 @@ public class CustomerController {
 
     @Operation(summary = "트레이너 매칭요청", description = "트레이너 매칭요청(Request)")
     @PostMapping("/matching/{trainerIdx}")
-    public BaseResponse<String> requestTrainerMatching(@RequestBody MatchingRequestDto matchingRequest ,@PathVariable Long trainerIdx, @AuthenticationPrincipal User user){
+    public BaseResponse<String> requestTrainerMatching(@RequestBody MatchingRequestDto matchingRequest ,@Parameter(description = "트레이너 식별자", in = ParameterIn.PATH)@PathVariable Long trainerIdx, @AuthenticationPrincipal User user){
         try {
             Long custIdx = communalService.getUserIdxByUser(user);
             if (!customerService.isTrainer(trainerIdx))

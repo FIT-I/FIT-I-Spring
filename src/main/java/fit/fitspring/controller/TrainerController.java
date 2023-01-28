@@ -9,6 +9,8 @@ import fit.fitspring.service.CustomerService;
 import fit.fitspring.service.TrainerService;
 import io.jsonwebtoken.io.IOException;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -102,7 +104,7 @@ public class TrainerController {
 
     @Operation(summary = "트레이너 사진 및 자격증 삭제", description = "기타 사진 및 자격증 사진(Request)")
     @DeleteMapping(value = "/etcimg/{etcImgIdx}")
-    public BaseResponse<String> deleteTrainerEtcImage(@PathVariable Long etcImgIdx, @AuthenticationPrincipal User user){
+    public BaseResponse<String> deleteTrainerEtcImage(@Parameter(description = "기타 사진의 식별자", in = ParameterIn.PATH)@PathVariable Long etcImgIdx, @AuthenticationPrincipal User user){
         Long trainerIdx = communalService.getUserIdxByUser(user);
         try {
             trainerService.deleteEtcImg(trainerIdx, etcImgIdx);
