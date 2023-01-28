@@ -126,4 +126,20 @@ public class TrainerService {
             throw new BusinessException(ErrorCode.DB_MODIFY_ERROR);
         }
     }
+
+    @Transactional
+    public void modifyCategory(Long trainerIdx, String categoryStr) throws BusinessException {
+        Trainer trainer = trainerRepository.findById(trainerIdx).orElseThrow(()-> new BusinessException(ACCOUNT_NOT_FOUND));
+        Category category = Category.PERSONAL_PT;
+        if(categoryStr.equals("pt")){
+            category=Category.PERSONAL_PT;
+        }else if(categoryStr.equals("food")){
+            category=Category.FOOD_CHECK;
+        }else if(categoryStr.equals("diet")){
+            category=Category.DIET;
+        }else if(categoryStr.equals("rehab")){
+            category=Category.REHAB;
+        }
+        trainer.modifyCategory(category);
+    }
 }

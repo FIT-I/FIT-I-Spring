@@ -12,6 +12,7 @@ import fit.fitspring.service.CommunalService;
 import fit.fitspring.service.MatchingService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -58,7 +59,7 @@ public class MatchingController {
 
     @Operation(summary = "매칭정보조회", description = "매칭정보조회(Response)")
     @GetMapping("/{matchingIdx}")
-    public BaseResponse<MatchingInfo> getMatchingInformation(@Parameter(description = "매칭신청식별자")@PathVariable Long matchingIdx){
+    public BaseResponse<MatchingInfo> getMatchingInformation(@Parameter(description = "매칭신청식별자", in = ParameterIn.PATH)@PathVariable Long matchingIdx){
         try{
             return new BaseResponse<>(matchingService.getMatchingInfo(matchingIdx));
         }catch(BusinessException e){
@@ -66,24 +67,24 @@ public class MatchingController {
         }
     }
 
-    @Operation(summary = "매칭 수락", description = "")
+    @Operation(summary = "매칭 수락", description = "매칭 수락하기")
     @PatchMapping("/{matchingIdx}/accept")
-    public BaseResponse<String> MatchingAccept(@Parameter(description = "매칭식별자")@PathVariable Long matchingIdx, @AuthenticationPrincipal User user){
+    public BaseResponse<String> MatchingAccept(@Parameter(description = "매칭식별자", in = ParameterIn.PATH)@PathVariable Long matchingIdx, @AuthenticationPrincipal User user){
         Long trainerIdx = communalService.getUserIdxByUser(user);
         try{
             matchingService.matchingAccept(trainerIdx, matchingIdx);
-            return new BaseResponse<>("매칭이 수락되었습니다.");
+            return new BaseResponse<>("매칭을 수락하였습니다.");
         }catch(BusinessException e){
             return new BaseResponse<>(e.getErrorCode());
         }
     }
-    @Operation(summary = "매칭 거절", description = "")
+    @Operation(summary = "매칭 거절", description = "매칭 거절하기")
     @PatchMapping("/{matchingIdx}/reject")
     public BaseResponse<String> MatchingReject(@Parameter(description = "매칭식별자")@PathVariable Long matchingIdx, @AuthenticationPrincipal User user){
         Long trainerIdx = communalService.getUserIdxByUser(user);
         try{
             matchingService.matchingReject(trainerIdx, matchingIdx);
-            return new BaseResponse<>("매칭이 거절되었습니다.");
+            return new BaseResponse<>("매칭을 거절하였습니다.");
         }catch(BusinessException e){
             return new BaseResponse<>(e.getErrorCode());
         }

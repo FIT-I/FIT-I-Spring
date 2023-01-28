@@ -14,15 +14,13 @@ import java.time.LocalDate;
 @Schema(title = "트레이너매칭요청")
 public class MatchingRequestDto {
 
-    /*@Schema(description = "서비스명", example = "식단관리")
-    private String category;*/
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    @Schema(description = "매칭시작일", example = "2023-01-25")
+    @Schema(description = "매칭시작일(yyyy-MM-dd 포맷으로 넘겨주세요)", example = "2023-01-25")
     private LocalDate startAt;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    @Schema(description = "매칭종료일", example = "2023-01-30")
+    @Schema(description = "매칭종료일(yyyy-MM-dd 포맷으로 넘겨주세요)", example = "2023-01-30")
     private LocalDate finishAt;
-    @Schema(description = "픽업형태", example = "CUSTOMER_GO")
+    @Schema(description = "픽업형태(CUSTOMER_GO / TRAINER_GO)", example = "CUSTOMER_GO")
     private String type;
 
     public MatchingRequestDto(LocalDate startAt, LocalDate finishAt, String type) {

@@ -26,7 +26,7 @@ public class MatchingListForCust {
     private Float grade;
     @Schema(description = "보낸 날짜", example = "2023.01.25")
     private String orderDate;
-    @Schema(description = "보낸 날짜(몇일 전)", example = "2(일전)")
+    @Schema(description = "보낸 날짜(몇일 전인지)", example = "2")
     private int orderDateGap;
 
     public MatchingListForCust(MatchingOrder entity, String orderDate, int orderDateGap) {
