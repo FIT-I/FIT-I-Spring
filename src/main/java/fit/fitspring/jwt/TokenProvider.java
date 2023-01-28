@@ -1,9 +1,13 @@
 package fit.fitspring.jwt;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import fit.fitspring.controller.dto.account.AccountSessionDto;
 import fit.fitspring.controller.dto.account.TokenDto;
 import fit.fitspring.exception.common.BusinessException;
 import fit.fitspring.exception.common.ErrorCode;
 //import fit.fitspring.jwt.RedisUtil;
+import fit.fitspring.utils.AccountAdapter;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -28,7 +32,6 @@ import java.util.stream.Collectors;
 
 @Component
 public class TokenProvider implements InitializingBean {
-
     private final Logger logger = LoggerFactory.getLogger(TokenProvider.class);
     private static final String AUTHORITIES_KEY = "auth";
     private final String secret;
@@ -57,7 +60,9 @@ public class TokenProvider implements InitializingBean {
     }
 
     // 토큰 생성
-    public TokenDto createToken(Authentication authentication) {
+    public TokenDto createToken(Authentication authentication) throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+
         String authorities = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
@@ -67,15 +72,20 @@ public class TokenProvider implements InitializingBean {
         Date refreshTokenValidity = new Date(now + this.refreshTokenValidityInMilliseconds);
 
 
+
+        AccountAdapter adapter= (AccountAdapter) authentication.getPrincipal();
+        String subject = objectMapper.writeValueAsString(adapter.getUser());
         String accessToken = Jwts.builder()
-                .setSubject(authentication.getName())
+        //        .setSubject(authentication.getName())
+                .setSubject(subject)
                 .claim(AUTHORITIES_KEY, authorities)
                 .signWith(key, SignatureAlgorithm.HS512)
                 .setExpiration(accessTokenValidity)
                 .compact();
 
         String refreshToken = Jwts.builder()
-                .setSubject(authentication.getName())
+                //.setSubject(authentication.getName())
+                .setSubject(subject)
                 .claim(AUTHORITIES_KEY, authorities)
                 .signWith(key, SignatureAlgorithm.HS512)
                 .setExpiration(refreshTokenValidity)
