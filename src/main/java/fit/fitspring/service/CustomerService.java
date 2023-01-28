@@ -202,9 +202,9 @@ public class CustomerService {
         List<WishDto> wishDtoList = new ArrayList<>();
         for(WishList i : wishList){
             Trainer trainer = i.getTrainer();
-            UserImg userImg = optional.get().getTrainer().getUserImg();
+            UserImg userImg = trainer.getUserImg();
             WishDto wishDto = new WishDto(trainer.getId(), trainer.getUser().getName(),
-                    userImg.getProfile(), trainer.getGrade(), i.getTrainer().getSchool(),
+                    userImg.getProfile(), trainer.getGrade(), trainer.getSchool(),
                     i.getCreatedDate().toLocalDate());
             wishDtoList.add(wishDto);
         }
