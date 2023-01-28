@@ -33,7 +33,6 @@ public class MessageService {
         ChatRoom chatRoom = chatService.findById(message.getRoomId());
         sendToSocket(message); // socket 전송
         messageRepository.save(toEntity(message, chatRoom)); // db 저장
-        // TODO Firebase
         sendToAlert(message, chatRoom);
     }
     private void sendToAlert(ChatMessageDto message, ChatRoom chatRoom) throws IOException {

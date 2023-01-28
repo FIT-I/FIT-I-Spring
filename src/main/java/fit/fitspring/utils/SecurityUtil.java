@@ -1,42 +1,49 @@
 package fit.fitspring.utils;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import fit.fitspring.controller.dto.account.AccountSessionDto;
 import fit.fitspring.domain.account.AccountRepository;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.access.AuthorizationServiceException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 
 
 public class SecurityUtil {
 
-    private static final Logger logger = LoggerFactory.getLogger(SecurityUtil.class);
-    private static AccountRepository accountRepository;
-
-    private SecurityUtil(AccountRepository accountRepository) { this.accountRepository = accountRepository; }
-
-
-
-    // api 호출 시, 어떤 account에서 api를 요청했는지 조회하는 코드 : user_idx 반환
-    public static Long getCurrentAccountId() {
-        final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        final String email;
-        if (authentication == null || authentication.getName() == null){
-            throw new RuntimeException("No authentication information.");
+    public static AccountSessionDto getLoginUser() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if ("anonymousUser".equals(principal)) {
+            return null;
         }
-
-        email = authentication.getName();
-
-        return accountRepository.findByEmail(email).get().getId();
+        return toDto(principal);
     }
 
+    public static Long getLoginUserId() {
+        AccountSessionDto loginUser = getLoginUser();
+        return loginUser != null ? loginUser.getId() : null;
+    }
 
-    // api 호출 시, 어떤 account에서 api를 요청했는지 조회하는 코드 : user_email 반환
-    public static String getCurrentAccountEmail() {
-        final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || authentication.getName() == null){
-            throw new RuntimeException("No authentication information.");
+    /**
+     * 현재 로그인한 사용자가 userId가 아니면 AuthorizationServiceException 을 던진다.
+     */
+    public static void checkUser(Long userId) throws AuthorizationServiceException {
+        if (!userId.equals(getLoginUserId())) {
+            throw new AuthorizationServiceException(userId +" 는 해당 영역에 접근할 수 없습니다.");
         }
-        return authentication.getName();
+    }
+    private static AccountSessionDto toDto(Object principal) {
+        ObjectMapper mapper = new ObjectMapper();
+        User user = (User) principal;
+
+        try {
+            return mapper.readValue(user.getUsername(), AccountSessionDto.class);
+        } catch (JsonProcessingException e){
+            return null;
+        }
     }
 }

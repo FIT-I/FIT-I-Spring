@@ -1,9 +1,7 @@
 package fit.fitspring.service;
 
-import fit.fitspring.controller.dto.account.ModifyPassword;
-import fit.fitspring.controller.dto.account.RegisterCustomerDto;
-import fit.fitspring.controller.dto.account.RegisterTrainerDto;
-import fit.fitspring.controller.dto.account.TokenDto;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import fit.fitspring.controller.dto.account.*;
 import fit.fitspring.domain.account.Account;
 import fit.fitspring.domain.account.AccountRepository;
 import fit.fitspring.domain.account.School;
@@ -11,6 +9,7 @@ import fit.fitspring.domain.account.SchoolRepository;
 import fit.fitspring.domain.trainer.Trainer;
 import fit.fitspring.domain.trainer.TrainerRepository;
 import fit.fitspring.domain.trainer.UserImg;
+import fit.fitspring.exception.account.AccountNotFoundException;
 import fit.fitspring.exception.common.BusinessException;
 import fit.fitspring.exception.account.DuplicatedAccountException;
 import fit.fitspring.exception.common.ErrorCode;
@@ -63,9 +62,11 @@ public class AccountService {
     @Value("{user.info.pw.key}") String pwKey;
 
     // 로그인 Service
-    public TokenDto login(String email, String password) {
+    public TokenDto login(String email, String password) throws JsonProcessingException {
         // 0. 비밀번호 풀기
-        String pwdEncode = accountRepository.findByEmail(email).get().getPassword();
+        Account account = accountRepository.findByEmail(email)
+                .orElseThrow(AccountNotFoundException::new);
+        String pwdEncode = account.getPassword();
         String pwdDecode;
 
         try{
@@ -243,7 +244,7 @@ public class AccountService {
     }
 
     // 토큰 재발급
-    public TokenDto reissue(String reqAccessToken, String reqRefreshToken){
+    public TokenDto reissue(String reqAccessToken, String reqRefreshToken) throws JsonProcessingException {
         if (!tokenProvider.validateToken(reqRefreshToken)) {
             throw new BusinessException(ErrorCode.INVALID_JWT);
         }

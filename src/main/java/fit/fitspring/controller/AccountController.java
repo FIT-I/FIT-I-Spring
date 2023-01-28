@@ -1,5 +1,6 @@
 package fit.fitspring.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import fit.fitspring.controller.dto.account.*;
 import fit.fitspring.exception.common.BusinessException;
 import fit.fitspring.exception.common.ErrorCode;
@@ -71,22 +72,24 @@ public class AccountController {
 
     @Operation(summary = "로그인", description = "로그인(Request) accessToken, requestToken 발급")
     @PostMapping("/login")
-    public BaseResponse<TokenDto> userLogin(@RequestBody LoginReqDto loginDto){
+    public BaseResponse<TokenDto> userLogin(@RequestBody LoginReqDto loginDto) {
         //이메일 형식이 올바른가?
-        if(isRegexEmail(loginDto.getEmail()) == false) {
+        if (isRegexEmail(loginDto.getEmail()) == false) {
             return new BaseResponse<>(ErrorCode.POST_ACCOUNTS_INVALID_EMAIL);
         }
 
         // 이메일이 DB에 존재하는가
-        if(accountService.checkEmail(loginDto.getEmail()) == false) {
+        if (accountService.checkEmail(loginDto.getEmail()) == false) {
             return new BaseResponse<>(ErrorCode.ACCOUNT_NOT_FOUND);
         }
 
-        try{
+        try {
             TokenDto postLoginRes = accountService.login(loginDto.getEmail(), loginDto.getPassword());
             return new BaseResponse<>(postLoginRes);
-        } catch (BusinessException e){
+        } catch (BusinessException e) {
             return new BaseResponse<>(e.getErrorCode());
+        } catch (JsonProcessingException e){
+           return new BaseResponse<>(ErrorCode.WRONG_JWT);
         }
     }
 
@@ -96,7 +99,7 @@ public class AccountController {
         try {
             TokenDto tokenDto = accountService.reissue(reqTokenDto.getAccessToken(), reqTokenDto.getRefreshToken());
             return new BaseResponse<>(tokenDto);
-        } catch (BusinessException e){
+        } catch (BusinessException | JsonProcessingException e){
             return new BaseResponse<>(ErrorCode.ISSUE_JWT);
         }
     }
