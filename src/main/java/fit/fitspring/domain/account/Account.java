@@ -50,7 +50,7 @@ public class Account extends BaseTimeEntity implements UserDetails {
     @Column(name="user_pwd")
     private String password;
 
-    @ColumnDefault("customerProfile1")
+    @ColumnDefault("'customerProfile1'")
     @Column(name = "user_profile")
     private String profile;
 
@@ -73,11 +73,11 @@ public class Account extends BaseTimeEntity implements UserDetails {
     @OneToMany(mappedBy = "customer")
     private List<WishList> wishListList = new ArrayList<>();
 
-    @ColumnDefault("off")
+    @ColumnDefault("'off'")
     @Column(name="user_alarm_state")
     private String alarmState;
 
-    @ColumnDefault("A")
+    @ColumnDefault("'A'")
     @Column(name="user_state")
     private String userState;
 
