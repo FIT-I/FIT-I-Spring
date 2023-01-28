@@ -1,12 +1,11 @@
 package fit.fitspring.chat;
 
 import fit.fitspring.chat.dto.ChatRoomAndUserDto;
-import fit.fitspring.chat.entity.ChatRoom;
-import fit.fitspring.chat.entity.ChatRoomRepository;
-import fit.fitspring.chat.entity.ChatUser;
+import fit.fitspring.chat.entity.*;
 import fit.fitspring.domain.account.Account;
 import fit.fitspring.exception.account.AccountNotFoundException;
 import fit.fitspring.service.AccountService;
+import fit.fitspring.utils.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.units.qual.A;
@@ -22,6 +21,7 @@ import java.util.stream.Collectors;
 public class ChatService {
     private final AccountService accountService;
     private final ChatRoomRepository chatRoomRepository;
+    private final ChatBlockRepository chatBlockRepository;
     //private Map<Long, ChatRoom> chatRooms;
 
     /*
@@ -62,9 +62,23 @@ public class ChatService {
 
     public List<ChatRoomAndUserDto> findAllRoomsByUserId(Long userId) {
         Account account = accountService.findById(userId);
+        List<Long> blockIds = account.getBlockUsers().stream()
+                .map(block -> block.getSender().getId()).toList();
         return account.getChatUser().stream()
+                .filter(cu -> {
+                    List<Long> idInRoom = cu.getChatRoom().getChatUser().stream()
+                            .map(ChatUser::getId).toList();
+                    return !hasToBlock(blockIds, idInRoom);
+                })
                 .map(chatUser -> toDto(chatUser.getChatRoom())).toList();
     }
+
+    private boolean hasToBlock(List<Long> blockCriteriaId, List<Long> userIdInRoom) {
+        boolean containBlockId = blockCriteriaId.stream()
+                .anyMatch(userIdInRoom::contains);
+        return userIdInRoom.size() == 2 && containBlockId;
+    }
+
     public ChatRoom getById(Long id){
         return chatRoomRepository.getReferenceById(id);
     }
@@ -79,5 +93,14 @@ public class ChatService {
                         .collect(Collectors.toList()))
                 .build();
         return dto;
+    }
+
+    public void blockUser(Long blockId) {
+        Long currentId = SecurityUtil.getCurrentAccountId();
+        ChatBlock block = ChatBlock.builder()
+                .receiver(accountService.getById(currentId))
+                .sender(accountService.getById(blockId))
+                .build();
+        chatBlockRepository.save(block);
     }
 }

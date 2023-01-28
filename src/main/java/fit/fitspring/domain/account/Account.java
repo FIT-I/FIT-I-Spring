@@ -1,5 +1,6 @@
 package fit.fitspring.domain.account;
 
+import fit.fitspring.chat.entity.ChatBlock;
 import fit.fitspring.chat.entity.ChatUser;
 import fit.fitspring.chat.entity.Message;
 import fit.fitspring.domain.BaseTimeEntity;
@@ -49,7 +50,7 @@ public class Account extends BaseTimeEntity implements UserDetails {
     @Column(name="user_pwd")
     private String password;
 
-    @ColumnDefault("customerProfile1")
+    @ColumnDefault("'customerProfile1'")
     @Column(name = "user_profile")
     private String profile;
 
@@ -72,11 +73,11 @@ public class Account extends BaseTimeEntity implements UserDetails {
     @OneToMany(mappedBy = "customer")
     private List<WishList> wishListList = new ArrayList<>();
 
-    @ColumnDefault("off")
+    @ColumnDefault("'off'")
     @Column(name="user_alarm_state")
     private String alarmState;
 
-    @ColumnDefault("A")
+    @ColumnDefault("'A'")
     @Column(name="user_state")
     private String userState;
 
@@ -87,6 +88,9 @@ public class Account extends BaseTimeEntity implements UserDetails {
     private List<ChatUser> chatUser =  new ArrayList<>();
     @OneToMany(mappedBy = "sender")
     private List<Message> message =  new ArrayList<>();
+
+    @OneToMany(mappedBy = "receiver")
+    private List<ChatBlock> blockUsers =  new ArrayList<>();
 
     @OneToOne(mappedBy = "account")
     private FCMToken fcmToken;
