@@ -268,21 +268,17 @@ public class AccountService {
     }
 
     @Transactional
-    public String deleteAccount(Principal principal){
-        Optional<Account> account = accountRepository.findByEmail(principal.getName());
-        if(account.isEmpty()){
-            throw new BusinessException(ErrorCode.INVALID_USERIDX);
-        }
-
+    public String deleteAccount(Long userIdx){
         // on(Active), off(Inactive) 상태 확인하기
-        String status = accountRepository.findByEmail(principal.getName()).get().getUserState();
+        Account user = accountRepository.findById(userIdx).orElseThrow();
+        String status = accountRepository.findById(userIdx).get().getUserState();
         try{
             if(status.equals("D")){
                 return "이미 탈퇴한 계정입니다.";
             }
             else {
-                account.get().modifyState("D");
-                return principal.getName() + " 계정이 탈퇴되었습니다.";
+                user.modifyState("D");
+                return accountRepository.findById(userIdx).get().getEmail() + " 계정이 탈퇴되었습니다.";
             }
         } catch(Exception e){
             throw new BusinessException(ErrorCode.DB_MODIFY_ERROR);
