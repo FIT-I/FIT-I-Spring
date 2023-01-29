@@ -12,6 +12,7 @@ import fit.fitspring.exception.common.BusinessException;
 import fit.fitspring.exception.common.ErrorCode;
 import fit.fitspring.exception.trainer.TrainerException;
 import fit.fitspring.utils.S3Uploader;
+import fit.fitspring.utils.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,8 +42,8 @@ public class TrainerService {
         trainer.updateInfo(req.getCostHour(), req.getIntro(), req.getServiceDetail() );
     }
 
-    public void modifyTrainerProfile(Principal principal, MultipartFile profileImg) throws BusinessException, IOException {
-        Optional<Account> optionalA = accountRepository.findByEmail(principal.getName());
+    public void modifyTrainerProfile(MultipartFile profileImg) throws BusinessException, IOException {
+        Optional<Account> optionalA = accountRepository.findById(SecurityUtil.getLoginUserId());
         if(optionalA.isEmpty()){
             throw new BusinessException(ErrorCode.INVALID_USERIDX);
         }
@@ -80,8 +81,8 @@ public class TrainerService {
     }
 
     @Transactional
-    public void deleteTrainerProfile(Principal principal) throws BusinessException{
-        Optional<Account> optional = accountRepository.findByEmail(principal.getName());
+    public void deleteTrainerProfile() throws BusinessException{
+        Optional<Account> optional = accountRepository.findById(SecurityUtil.getLoginUserId());
         if(optional.isEmpty()){
             throw new BusinessException(ErrorCode.INVALID_USERIDX);
         }

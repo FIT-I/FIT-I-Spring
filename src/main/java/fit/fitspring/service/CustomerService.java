@@ -12,6 +12,7 @@ import fit.fitspring.domain.trainer.*;
 import fit.fitspring.exception.account.DuplicatedAccountException;
 import fit.fitspring.exception.common.BusinessException;
 import fit.fitspring.exception.common.ErrorCode;
+import fit.fitspring.utils.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
@@ -150,8 +151,8 @@ public class CustomerService {
     }
 
     @Transactional
-    public void registerReview(Principal principal, RegisterReviewDto reviewDto) throws BusinessException {
-        Optional<Account> optionalC = accountRepository.findByEmail(principal.getName());
+    public void registerReview(RegisterReviewDto reviewDto) throws BusinessException {
+        Optional<Account> optionalC = accountRepository.findById(SecurityUtil.getLoginUserId());
         Optional<Trainer> optionalT = trainerRepository.findById(reviewDto.getTrainerIdx());
         if(optionalC.isEmpty()) {
             throw new BusinessException(ErrorCode.INVALID_USERIDX);
@@ -179,8 +180,8 @@ public class CustomerService {
     }
 
     @Transactional
-    public void modifyUserLocation(Principal principal, String location) throws BusinessException{
-        Optional<Account> optional = accountRepository.findByEmail(principal.getName());
+    public void modifyUserLocation(String location) throws BusinessException{
+        Optional<Account> optional = accountRepository.findById(SecurityUtil.getLoginUserId());
         if(optional.isEmpty()){
             throw new BusinessException(ErrorCode.INVALID_USERIDX);
         }
@@ -193,8 +194,8 @@ public class CustomerService {
     }
 
     @Transactional
-    public List<WishDto> getWishList(Principal principal) throws BusinessException{
-        Optional<Account> optional = accountRepository.findByEmail(principal.getName());
+    public List<WishDto> getWishList() throws BusinessException{
+        Optional<Account> optional = accountRepository.findById(SecurityUtil.getLoginUserId());
         if(optional.isEmpty()){
             throw new BusinessException(ErrorCode.INVALID_USERIDX);
         }
@@ -211,8 +212,8 @@ public class CustomerService {
         return wishDtoList;
     }
 
-    public void modifyCustomerProfile(Principal principal, String customerProfile) throws BusinessException {
-        Optional<Account> optional = accountRepository.findByEmail(principal.getName());
+    public void modifyCustomerProfile(String customerProfile) throws BusinessException {
+        Optional<Account> optional = accountRepository.findById(SecurityUtil.getLoginUserId());
         if(optional.isEmpty()){
             throw new BusinessException(ErrorCode.INVALID_USERIDX);
         }

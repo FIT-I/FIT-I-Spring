@@ -53,9 +53,9 @@ public class CommunalController {
 
     @Operation(summary = "마이페이지조회", description = "마이페이지조회(Request/Response)")
     @GetMapping("/mypage")
-    public BaseResponse<MyPageDto> getMyPage(Principal principal){
+    public BaseResponse<MyPageDto> getMyPage(){
         try{
-            return new BaseResponse<>(communalService.getMyPageBriefInformation(principal));
+            return new BaseResponse<>(communalService.getMyPageBriefInformation());
         } catch(BusinessException e){
             return new BaseResponse<>(e.getErrorCode());
         }

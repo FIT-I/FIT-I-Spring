@@ -12,6 +12,7 @@ import fit.fitspring.domain.review.Review;
 import fit.fitspring.domain.trainer.*;
 import fit.fitspring.exception.common.BusinessException;
 import fit.fitspring.exception.common.ErrorCode;
+import fit.fitspring.utils.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.parameters.P;
 import org.springframework.security.core.userdetails.User;
@@ -108,8 +109,8 @@ public class CommunalService {
     }
 
     @Transactional
-    public MyPageDto getMyPageBriefInformation(Principal principal) throws BusinessException{
-        Optional<Account> optional = accountRepository.findByEmail(principal.getName());
+    public MyPageDto getMyPageBriefInformation() throws BusinessException{
+        Optional<Account> optional = accountRepository.findById(SecurityUtil.getLoginUserId());
         if(optional.isEmpty()){
             throw new BusinessException(ErrorCode.INVALID_USERIDX);
         }
@@ -119,19 +120,13 @@ public class CommunalService {
             if(optionalT.isEmpty()){
                 throw new BusinessException(ErrorCode.INVALID_TRAINERIDX);
             }
-            Optional<UserImg> userImg = userImgRepository.findByTrainer(optionalT.get());
-            String image = "none";
-            if (userImg.isPresent()){
-                image = userImg.get().getProfile();
-            }
-            myPageDto.setProfile(image);
+            myPageDto.setProfile(optionalT.get().getUserImg().getProfile());
         }
         else{
             myPageDto.setProfile(optional.get().getProfile());
         }
         myPageDto.setUserIdx(optional.get().getId());
         myPageDto.setUserName(optional.get().getName());
-        myPageDto.setProfile(optional.get().getProfile());
         myPageDto.setEmail(optional.get().getEmail());
         myPageDto.setLocation(optional.get().getLocation());
         return myPageDto;
