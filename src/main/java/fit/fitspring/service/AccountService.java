@@ -63,11 +63,16 @@ public class AccountService {
 
     // 로그인 Service
     public TokenDto login(String email, String password) throws JsonProcessingException {
-        // 0. 비밀번호 풀기
+        // 0-1. 비밀번호 풀기
         Account account = accountRepository.findByEmail(email)
                 .orElseThrow(AccountNotFoundException::new);
         String pwdEncode = account.getPassword();
         String pwdDecode;
+
+        // 0-2. 탈퇴 계정인지 확인하기
+        if (account.getUserState().equals("D")){
+            throw new BusinessException(ErrorCode.DELETE_ACCOUNT);
+        }
 
         try{
             // 비번 암호 풀기
