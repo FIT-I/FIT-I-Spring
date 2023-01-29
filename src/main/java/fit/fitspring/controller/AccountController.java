@@ -142,9 +142,10 @@ public class AccountController {
 
     @Operation(summary = "비밀번호변경", description = "비밀번호가 변경되면 필연적으로 인증객체도 변경되기 때문에 다시 로그인을 해야 합니다.")
     @PatchMapping("/password")
-    public BaseResponse<String> modifyPassword(Principal principal, @RequestBody ModifyPassword pwdM){
+    public BaseResponse<String> modifyPassword(@RequestBody ModifyPassword pwdM){
         try {
-            accountService.modifyPassword(principal, pwdM);
+            Long userIdx = SecurityUtil.getLoginUserId();
+            accountService.modifyPassword(userIdx, pwdM);
             return new BaseResponse<>("비밀번호가 변경되었습니다. 다시 로그인해주세요.");
         } catch(BusinessException e){
             return new BaseResponse<>(e.getErrorCode());

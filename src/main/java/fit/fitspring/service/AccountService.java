@@ -287,16 +287,12 @@ public class AccountService {
     }
 
     @Transactional
-    public void modifyPassword(Principal principal, ModifyPassword pwdM){
-        Optional<Account> account = accountRepository.findByEmail(principal.getName());
-        if(account.isEmpty()){
-            throw new BusinessException(ErrorCode.INVALID_USERIDX);
-        }
-
+    public void modifyPassword(Long userIdx, ModifyPassword pwdM){
+        Account user = accountRepository.findById(userIdx).orElseThrow();
         try{
             // 1. 비밀번호 변경
             String pwdEncode = new AES128(pwKey).encrypt(pwdM.getPassword());
-            account.get().modifyPassword(pwdEncode);
+            user.modifyPassword(pwdEncode);
 
             // 2. 기존의 인증 객체 삭제하기 - 로그아웃과 유사
             logout(pwdM.getAccessToken(), pwdM.getRefreshToken());
