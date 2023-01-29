@@ -8,6 +8,7 @@ import fit.fitspring.exception.common.ErrorCode;
 import fit.fitspring.response.BaseResponse;
 import fit.fitspring.service.AccountService;
 import fit.fitspring.service.CommunalService;
+import fit.fitspring.utils.SecurityUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -164,9 +165,10 @@ public class AccountController {
 
     @Operation(summary = "계정탈퇴", description = "user 테이블의 user_state를 D로 변경한다. (D는 Delete를 의미한다.)")
     @PatchMapping("/close")
-    public BaseResponse<String> userCloseAccount(Principal principal){
+    public BaseResponse<String> userCloseAccount(){
         try{
-            String result = accountService.deleteAccount(principal);
+            Long userIdx = SecurityUtil.getLoginUserId();
+            String result = accountService.deleteAccount(userIdx);
             return new BaseResponse<>(result);
         } catch (BusinessException e){
             return new BaseResponse<>(e.getErrorCode());
