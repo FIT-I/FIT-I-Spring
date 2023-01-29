@@ -118,10 +118,11 @@ public class TrainerController {
 
     @Operation(summary = "내 매칭 관리 on/off", description = "내 매칭관리가 on이었다면 off로, off 였다면 on으로 바뀜")
     @PatchMapping("/mymatching")
-    public BaseResponse<String> myMatching(Principal principal){
+    public BaseResponse<String> myMatching(){
         try{
             // 계정 활성화가 되었습니다. 계정 비활성화가 되었습니다. 계정 탈퇴가 되었습니다.
-            String status = trainerService.modifyMatching(principal);
+            Long userIdx = SecurityUtil.getLoginUserId();
+            String status = trainerService.modifyMatching(userIdx);
             return new BaseResponse<>("나의 매칭 관리가 " + status + " 되었습니다.");
         } catch(BusinessException e) {
             return new BaseResponse<>(e.getErrorCode());
