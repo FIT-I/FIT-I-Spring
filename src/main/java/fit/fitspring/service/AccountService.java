@@ -6,9 +6,7 @@ import fit.fitspring.domain.account.Account;
 import fit.fitspring.domain.account.AccountRepository;
 import fit.fitspring.domain.account.School;
 import fit.fitspring.domain.account.SchoolRepository;
-import fit.fitspring.domain.trainer.Trainer;
-import fit.fitspring.domain.trainer.TrainerRepository;
-import fit.fitspring.domain.trainer.UserImg;
+import fit.fitspring.domain.trainer.*;
 import fit.fitspring.exception.account.AccountNotFoundException;
 import fit.fitspring.exception.common.BusinessException;
 import fit.fitspring.exception.account.DuplicatedAccountException;
@@ -55,6 +53,7 @@ public class AccountService {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final TrainerRepository trainerRepository;
     private final SchoolRepository schoolRepository;
+    private final LevelRepository levelRepository;
     @Autowired
     private final RedisTemplate redisTemplate;
     //private final RedisUtil redisUtil;
@@ -100,6 +99,7 @@ public class AccountService {
         }
     }
 
+    @Transactional
     public String registerCustomer(RegisterCustomerDto registerDto) throws BusinessException {
 
         // 이메일, 비밀번호, 이름이 입력 되지 않았을 경우 에러 코드 리턴
@@ -136,6 +136,7 @@ public class AccountService {
         }
     }
 
+    @Transactional
     public String registerTrainer(RegisterTrainerDto registerDto) throws BusinessException {
         if (registerDto.getEmail() == null) {
             throw new BusinessException(ErrorCode.POST_ACCOUNTS_EMPTY_EMAIL);
@@ -160,8 +161,13 @@ public class AccountService {
         Trainer trainer = new Trainer();
         trainer.setMajor(registerDto.getMajor());
         trainer.setGrade(0);
-        trainer.setSchool(convertEmailToSchool(registerDto.getEmail())); // 학교 추가 필요
+        trainer.setSchool(convertEmailToSchool(registerDto.getEmail()));
         trainer.setUser(account);
+        Optional<Level> optional = levelRepository.findById(1L);
+        if(optional.isEmpty()){
+            throw new BusinessException(ErrorCode.NO_EXIST_LEVEL_DATA);
+        }
+        trainer.setLevel(optional.get());
         // UserImg
         UserImg userImg = new UserImg();
         userImg.setProfile("trainerProfile");
