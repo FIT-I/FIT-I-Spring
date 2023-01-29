@@ -118,10 +118,10 @@ public class CustomerController {
 
     @Operation(summary = "찜목록조회", description = "찜목록조회(Response)")
     @GetMapping("/wish")
-    public BaseResponse<List<WishDto>> getWishList(Principal principal){
+    public BaseResponse<List<WishDto>> getWishList(){
         try{
             //로그인 구현 후 수정
-            List<WishDto> wishDtoList = customerService.getWishList(principal);
+            List<WishDto> wishDtoList = customerService.getWishList();
             return new BaseResponse<>(wishDtoList);
         }catch(BusinessException e){
             return new BaseResponse<>(e.getErrorCode());
@@ -130,10 +130,10 @@ public class CustomerController {
 
     @Operation(summary = "리뷰작성", description = "리뷰작성(Request)")
     @PostMapping("/review")
-    public BaseResponse<String> reviewTrainer(Principal principal, @RequestBody RegisterReviewDto review){
+    public BaseResponse<String> reviewTrainer(@RequestBody RegisterReviewDto review){
         try{
             //로그인 구현 후 수정
-            customerService.registerReview(principal, review);
+            customerService.registerReview(review);
             return new BaseResponse<>("리뷰를 작성하였습니다.");
         }catch(BusinessException e){
             return new BaseResponse<>(e.getErrorCode());
@@ -142,10 +142,10 @@ public class CustomerController {
 
     @Operation(summary = "매칭위치설정", description = "매칭위치설정(Request)")
     @PatchMapping("/location/{location}")
-    public BaseResponse<String> modifyMatchingLocation(Principal principal, @Parameter(description = "위치")@PathVariable String location){
+    public BaseResponse<String> modifyMatchingLocation(@Parameter(description = "위치")@PathVariable String location){
         try{
             //로그인 구현 후 수정
-            customerService.modifyUserLocation(principal, location);
+            customerService.modifyUserLocation(location);
             return new BaseResponse<>("매칭 위치를 변경하였습니다.");
         }catch(BusinessException e){
             return new BaseResponse<>(e.getErrorCode());
@@ -154,9 +154,9 @@ public class CustomerController {
 
     @Operation(summary = "고객 프로필수정", description = "프로필수정(Request)")
     @PatchMapping("/profile/{profile}")
-    public BaseResponse<String> modifyCustomerProfileImage(Principal principal, @Parameter(description = "프로필 문자열")@PathVariable String profile){
+    public BaseResponse<String> modifyCustomerProfileImage(@Parameter(description = "프로필 문자열")@PathVariable String profile){
         try {
-            customerService.modifyCustomerProfile(principal, profile);
+            customerService.modifyCustomerProfile(profile);
             return new BaseResponse<>("고객 프로필 이미지를 변경하였습니다.");
         } catch (BusinessException e) {
             return new BaseResponse<>(e.getErrorCode());

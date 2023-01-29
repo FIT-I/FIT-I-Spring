@@ -52,9 +52,9 @@ public class TrainerController {
 
     @Operation(summary = "트레이너 프로필수정", description = "트레이너 프로필수정(Request)")
     @PatchMapping(value = "/profile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public BaseResponse<String> modifyTrainerProfileImage(Principal principal, @RequestPart(value = "profileImage") MultipartFile image){
+    public BaseResponse<String> modifyTrainerProfileImage(@RequestPart(value = "profileImage") MultipartFile image){
         try {
-            trainerService.modifyTrainerProfile(principal, image);
+            trainerService.modifyTrainerProfile(image);
             return new BaseResponse<>("프로필 이미지를 변경하였습니다.");
         } catch (BusinessException e) {
             return new BaseResponse<>(e.getErrorCode());
@@ -95,9 +95,9 @@ public class TrainerController {
 
     @Operation(summary = "트레이너 프로필 삭제", description = "트레이너 프로필 삭제(Request)")
     @DeleteMapping("/profile")
-    public BaseResponse<String> deleteTrainerProfile(Principal principal){
+    public BaseResponse<String> deleteTrainerProfile(){
         try {
-            trainerService.deleteTrainerProfile(principal);
+            trainerService.deleteTrainerProfile();
             return new BaseResponse<>("프로필 이미지를 삭제하였습니다.");
         } catch (BusinessException e) {
             return new BaseResponse<>(e.getErrorCode());
