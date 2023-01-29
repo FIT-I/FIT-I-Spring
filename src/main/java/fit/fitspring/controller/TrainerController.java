@@ -8,6 +8,7 @@ import fit.fitspring.response.BaseResponse;
 import fit.fitspring.service.CommunalService;
 import fit.fitspring.service.CustomerService;
 import fit.fitspring.service.TrainerService;
+import fit.fitspring.utils.SecurityUtil;
 import io.jsonwebtoken.io.IOException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -40,8 +41,8 @@ public class TrainerController {
 
     @Operation(summary = "트레이너 정보수정", description = "트레이너 정보수정(Request)")
     @PutMapping("/information")
-    public BaseResponse<String> modifyTrainerInformation(@RequestBody UpdateTrainerInfoReq req, @AuthenticationPrincipal User user){
-        Long trainerIdx = communalService.getUserIdxByUser(user);
+    public BaseResponse<String> modifyTrainerInformation(@RequestBody UpdateTrainerInfoReq req){
+        Long trainerIdx = SecurityUtil.getLoginUserId();
         if(!customerService.isTrainer(trainerIdx)){
             return new BaseResponse<>(new TrainerException().getErrorCode());
         }
@@ -64,8 +65,8 @@ public class TrainerController {
 
     @Operation(summary = "트레이너 배경화면수정", description = "배경화면(Request)")
     @PatchMapping(value = "/bgimg", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public BaseResponse<String> modifyTrainerBgImage(@RequestPart(value = "backgroundImage") MultipartFile image, @AuthenticationPrincipal User user){
-        Long trainerIdx = communalService.getUserIdxByUser(user);
+    public BaseResponse<String> modifyTrainerBgImage(@RequestPart(value = "backgroundImage") MultipartFile image){
+        Long trainerIdx = SecurityUtil.getLoginUserId();
         try {
             trainerService.modifyTrainerBgImage(trainerIdx, image);
             return new BaseResponse<>("배경 이미지를 변경하였습니다.");
@@ -78,9 +79,9 @@ public class TrainerController {
 
     @Operation(summary = "트레이너 사진 및 자격증 추가", description = "기타 사진 및 자격증 사진(Request)")
     @PostMapping(value = "/etcimg", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public BaseResponse<String> modifyTrainerEtcImage(@RequestPart(value = "ectImage") List<MultipartFile> imageList, @AuthenticationPrincipal User user){
+    public BaseResponse<String> modifyTrainerEtcImage(@RequestPart(value = "ectImage") List<MultipartFile> imageList){
         try {
-            Long trainerIdx = communalService.getUserIdxByUser(user);
+            Long trainerIdx =SecurityUtil.getLoginUserId();
             for(MultipartFile image : imageList){
                 trainerService.addTrainerEctImage(trainerIdx, image);
             }
@@ -105,8 +106,8 @@ public class TrainerController {
 
     @Operation(summary = "트레이너 사진 및 자격증 삭제", description = "기타 사진 및 자격증 사진(Request)")
     @DeleteMapping(value = "/etcimg/{etcImgIdx}")
-    public BaseResponse<String> deleteTrainerEtcImage(@Parameter(description = "기타 사진의 식별자", in = ParameterIn.PATH)@PathVariable Long etcImgIdx, @AuthenticationPrincipal User user){
-        Long trainerIdx = communalService.getUserIdxByUser(user);
+    public BaseResponse<String> deleteTrainerEtcImage(@Parameter(description = "기타 사진의 식별자", in = ParameterIn.PATH)@PathVariable Long etcImgIdx){
+        Long trainerIdx = SecurityUtil.getLoginUserId();
         try {
             trainerService.deleteEtcImg(trainerIdx, etcImgIdx);
             return new BaseResponse<>("기타 사진을 삭제하였습니다.");
@@ -128,9 +129,9 @@ public class TrainerController {
     }
     @Operation(summary = "트레이너 카테고리 수정", description = "트레이너 카테고리 수정(Request)")
     @PatchMapping("/category")
-    public BaseResponse<String> modifyCategory(@RequestBody CategoryReq categoryReq, @AuthenticationPrincipal User user){
+    public BaseResponse<String> modifyCategory(@RequestBody CategoryReq categoryReq){
         try{
-            Long trainerIdx = communalService.getUserIdxByUser(user);
+            Long trainerIdx = SecurityUtil.getLoginUserId();
             trainerService.modifyCategory(trainerIdx, categoryReq.getCategory());
             return new BaseResponse<>("카테고리가 변경되었습니다.");
         } catch(BusinessException e) {

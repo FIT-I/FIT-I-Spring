@@ -136,10 +136,4 @@ public class CommunalService {
         myPageDto.setLocation(optional.get().getLocation());
         return myPageDto;
     }
-
-    @Transactional
-    public Long getUserIdxByUser(User user){
-        return accountRepository.findByEmail(user.getUsername())
-                .orElseThrow(()-> new BusinessException(WRONG_JWT)).getId();
-    }
 }
