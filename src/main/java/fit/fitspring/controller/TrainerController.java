@@ -1,5 +1,6 @@
 package fit.fitspring.controller;
 
+import fit.fitspring.controller.dto.communal.TrainerInformationDto;
 import fit.fitspring.controller.dto.trainer.CategoryReq;
 import fit.fitspring.controller.dto.trainer.UpdateTrainerInfoReq;
 import fit.fitspring.exception.common.BusinessException;
@@ -136,6 +137,17 @@ public class TrainerController {
             trainerService.modifyCategory(trainerIdx, categoryReq.getCategory());
             return new BaseResponse<>("카테고리가 변경되었습니다.");
         } catch(BusinessException e) {
+            return new BaseResponse<>(e.getErrorCode());
+        }
+    }
+
+    @Operation(summary = "트레이너 개인정보조회", description = "트레이너용 로그인된 계정의 개인정보 조회(Request/Response)")
+    @GetMapping("/information")
+    public BaseResponse<TrainerInformationDto> getTrainerInformation(){
+        try{
+            Long trainerIdx = SecurityUtil.getLoginUserId();
+            return new BaseResponse<>(communalService.getTrainerInformation(trainerIdx));
+        } catch(BusinessException e){
             return new BaseResponse<>(e.getErrorCode());
         }
     }

@@ -41,6 +41,7 @@ public enum ErrorCode {
     DATABASE_ERROR(false, 4000, "DB에 문제가 발생했습니다."),
     DB_INSERT_ERROR(false, 4001, "데이터 저장 오류가 발생하였습니다."),
     DB_MODIFY_ERROR(false, 4002, "데이터 수정 오류가 발생하였습니다."),
+    NO_EXIST_LEVEL_DATA(false, 6001, "DB에 LEVEL 데이터가 존재하지 않습니다."),
 
 
     /*매칭, 좋아요 5000*/
