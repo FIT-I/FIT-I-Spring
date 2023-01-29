@@ -7,6 +7,7 @@ import fit.fitspring.exception.trainer.TrainerException;
 import fit.fitspring.response.BaseResponse;
 import fit.fitspring.service.CommunalService;
 import fit.fitspring.service.CustomerService;
+import fit.fitspring.utils.SecurityUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -49,9 +50,9 @@ public class CustomerController {
 
     @Operation(summary = "트레이너 찜하기", description = "트레이너 찜하기(Request)")
     @PostMapping("/{trainerIdx}")
-    public BaseResponse<String> likeTrainer(@Parameter(description = "트레이너 식별자", in = ParameterIn.PATH)@PathVariable Long trainerIdx, @AuthenticationPrincipal User user){
+    public BaseResponse<String> likeTrainer(@Parameter(description = "트레이너 식별자", in = ParameterIn.PATH)@PathVariable Long trainerIdx){
         try {
-            Long custIdx = communalService.getUserIdxByUser(user);
+            Long custIdx = SecurityUtil.getLoginUserId();
             if(!customerService.isTrainer(trainerIdx))
                 return new BaseResponse<>(new TrainerException().getErrorCode());
             customerService.saveLikeTrainer(custIdx, trainerIdx);
@@ -62,9 +63,9 @@ public class CustomerController {
     }
     @Operation(summary = "트레이너 찜하기 취소", description = "트레이너 찜하기 취소(Request)")
     @DeleteMapping("/{trainerIdx}")
-    public BaseResponse<String> undoLikeTrainer(@Parameter(description = "트레이너 식별자", in = ParameterIn.PATH)@PathVariable Long trainerIdx, @AuthenticationPrincipal User user){
+    public BaseResponse<String> undoLikeTrainer(@Parameter(description = "트레이너 식별자", in = ParameterIn.PATH)@PathVariable Long trainerIdx){
         try {
-            Long custIdx = communalService.getUserIdxByUser(user);
+            Long custIdx = SecurityUtil.getLoginUserId();
             if(!customerService.isTrainer(trainerIdx))
                 return new BaseResponse<>(new TrainerException().getErrorCode());
             customerService.undoLikeTrainer(custIdx, trainerIdx);
@@ -76,9 +77,10 @@ public class CustomerController {
 
     @Operation(summary = "트레이너 매칭요청", description = "트레이너 매칭요청(Request)")
     @PostMapping("/matching/{trainerIdx}")
-    public BaseResponse<String> requestTrainerMatching(@RequestBody MatchingRequestDto matchingRequest ,@Parameter(description = "트레이너 식별자", in = ParameterIn.PATH)@PathVariable Long trainerIdx, @AuthenticationPrincipal User user){
+    public BaseResponse<String> requestTrainerMatching(@RequestBody MatchingRequestDto matchingRequest ,
+                                                       @Parameter(description = "트레이너 식별자", in = ParameterIn.PATH)@PathVariable Long trainerIdx){
         try {
-            Long custIdx = communalService.getUserIdxByUser(user);
+            Long custIdx = SecurityUtil.getLoginUserId();
             if (!customerService.isTrainer(trainerIdx))
                 return new BaseResponse<>(new TrainerException().getErrorCode());
             try {
@@ -93,9 +95,9 @@ public class CustomerController {
     }
     @Operation(summary = "알림 on", description = "알림 on으로 설정")
     @PatchMapping("/notification/on")
-    public BaseResponse<String> notificationOn(@AuthenticationPrincipal User user){
+    public BaseResponse<String> notificationOn(){
         try {
-            Long userIdx = communalService.getUserIdxByUser(user);
+            Long userIdx = SecurityUtil.getLoginUserId();
             customerService.notificationOn(userIdx);
             return new BaseResponse<>("알림 on.");
         }catch(BusinessException e){
@@ -104,9 +106,9 @@ public class CustomerController {
     }
     @Operation(summary = "알림 off", description = "알림 off로 설정")
     @PatchMapping("/notification/off")
-    public BaseResponse<String> notificationOff(@AuthenticationPrincipal User user){
+    public BaseResponse<String> notificationOff(){
         try {
-            Long userIdx = communalService.getUserIdxByUser(user);
+            Long userIdx = SecurityUtil.getLoginUserId();
             customerService.notificationOff(userIdx);
             return new BaseResponse<>("알림 off.");
         }catch(BusinessException e){

@@ -10,6 +10,7 @@ import fit.fitspring.exception.common.BusinessException;
 import fit.fitspring.response.BaseResponse;
 import fit.fitspring.service.CommunalService;
 import fit.fitspring.service.MatchingService;
+import fit.fitspring.utils.SecurityUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -21,6 +22,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Security;
 import java.util.List;
 
 @Slf4j
@@ -35,8 +37,8 @@ public class MatchingController {
 
     @Operation(summary = "고객의 매칭목록조회", description = "고객의 매칭목록조회(Response)")
     @GetMapping("/customer")
-    public BaseResponse<List<MatchingListForCust>> getCustomerMatchingList(@AuthenticationPrincipal User user){
-        Long custIdx = communalService.getUserIdxByUser(user);
+    public BaseResponse<List<MatchingListForCust>> getCustomerMatchingList(){
+        Long custIdx = SecurityUtil.getLoginUserId();
         try{
             List<MatchingListForCust> matchingList = matchingService.getMatchingListForCust(custIdx);
             return new BaseResponse<>(matchingList);
@@ -47,8 +49,8 @@ public class MatchingController {
 
     @Operation(summary = "트레이너의 매칭목록조회", description = "트레이너의 매칭목록조회(Response)")
     @GetMapping("/trainer")
-    public BaseResponse<List<MatchingListForTrainer>> getTrainerMatchingList(@AuthenticationPrincipal User user){
-        Long trainerIdx = communalService.getUserIdxByUser(user);
+    public BaseResponse<List<MatchingListForTrainer>> getTrainerMatchingList(){
+        Long trainerIdx = SecurityUtil.getLoginUserId();
         try{
             List<MatchingListForTrainer> matchingList = matchingService.getMatchingListForTrainer(trainerIdx);
             return new BaseResponse<>(matchingList);
@@ -69,8 +71,8 @@ public class MatchingController {
 
     @Operation(summary = "매칭 수락", description = "매칭 수락하기")
     @PatchMapping("/{matchingIdx}/accept")
-    public BaseResponse<String> MatchingAccept(@Parameter(description = "매칭식별자", in = ParameterIn.PATH)@PathVariable Long matchingIdx, @AuthenticationPrincipal User user){
-        Long trainerIdx = communalService.getUserIdxByUser(user);
+    public BaseResponse<String> MatchingAccept(@Parameter(description = "매칭식별자", in = ParameterIn.PATH)@PathVariable Long matchingIdx){
+        Long trainerIdx = SecurityUtil.getLoginUserId();
         try{
             matchingService.matchingAccept(trainerIdx, matchingIdx);
             return new BaseResponse<>("매칭을 수락하였습니다.");
@@ -80,8 +82,8 @@ public class MatchingController {
     }
     @Operation(summary = "매칭 거절", description = "매칭 거절하기")
     @PatchMapping("/{matchingIdx}/reject")
-    public BaseResponse<String> MatchingReject(@Parameter(description = "매칭식별자")@PathVariable Long matchingIdx, @AuthenticationPrincipal User user){
-        Long trainerIdx = communalService.getUserIdxByUser(user);
+    public BaseResponse<String> MatchingReject(@Parameter(description = "매칭식별자")@PathVariable Long matchingIdx){
+        Long trainerIdx = SecurityUtil.getLoginUserId();
         try{
             matchingService.matchingReject(trainerIdx, matchingIdx);
             return new BaseResponse<>("매칭을 거절하였습니다.");
