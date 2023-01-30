@@ -106,6 +106,7 @@ public class CommunalService {
         }
         trainerInfo.setImageList(imageList);
         trainerInfo.setMatching_state(optional.get().getUser().getUserState().equals("A"));
+        trainerInfo.setCategory(optional.get().getCategory());
         return trainerInfo;
     }
 

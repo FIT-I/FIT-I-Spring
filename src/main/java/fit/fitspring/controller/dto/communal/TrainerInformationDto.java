@@ -1,5 +1,6 @@
 package fit.fitspring.controller.dto.communal;
 
+import fit.fitspring.domain.trainer.Category;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -38,4 +39,6 @@ public class TrainerInformationDto {
     private List<String> imageList;
     @Schema(description = "매칭 관리(on/off)", example = "true")
     private boolean matching_state;
+    @Schema(description = "카테고리", example = "개인 PT")
+    private Category category;
 }
