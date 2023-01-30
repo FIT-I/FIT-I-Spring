@@ -72,6 +72,7 @@ public class CommunalService {
             reviewDto.setProfile(i.getCustomer().getProfile());
             reviewDto.setGrade(i.getGrade());
             reviewDto.setContents(i.getContent());
+            reviewDto.setCreatedAt(i.getCreatedDate().toLocalDate());
             reviewDtoList.add(reviewDto);
         }
         return reviewDtoList;
