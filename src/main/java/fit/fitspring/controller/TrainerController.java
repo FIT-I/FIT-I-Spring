@@ -42,13 +42,14 @@ public class TrainerController {
 
     @Operation(summary = "트레이너 정보수정", description = "트레이너 정보수정(Request)")
     @PutMapping("/information")
-    public BaseResponse<String> modifyTrainerInformation(@RequestBody UpdateTrainerInfoReq req){
+    public BaseResponse<TrainerInformationDto> modifyTrainerInformation(@RequestBody UpdateTrainerInfoReq req){
         Long trainerIdx = SecurityUtil.getLoginUserId();
         if(!customerService.isTrainer(trainerIdx)){
             return new BaseResponse<>(new TrainerException().getErrorCode());
         }
         trainerService.updateTrainerInfo(trainerIdx, req);
-        return new BaseResponse<>("트레이너 정보를 수정하였습니다.");
+        TrainerInformationDto trainerInformationDto = communalService.getTrainerInformation(trainerIdx);
+        return new BaseResponse<>(trainerInformationDto);
     }
 
     @Operation(summary = "트레이너 프로필수정", description = "트레이너 프로필수정(Request)")
