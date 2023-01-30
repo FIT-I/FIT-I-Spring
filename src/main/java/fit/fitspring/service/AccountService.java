@@ -162,6 +162,7 @@ public class AccountService {
         trainer.setMajor(registerDto.getMajor());
         trainer.setGrade(0);
         trainer.setSchool(convertEmailToSchool(registerDto.getEmail()));
+        trainer.setCategory(Category.PERSONAL_PT);
         trainer.setUser(account);
         Optional<Level> optional = levelRepository.findById(1L);
         if(optional.isEmpty()){
