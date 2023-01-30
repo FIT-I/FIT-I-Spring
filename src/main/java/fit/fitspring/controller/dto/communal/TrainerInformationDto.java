@@ -36,5 +36,6 @@ public class TrainerInformationDto {
     private List<ReviewDto> reviewDto;
     @Schema(description = "사진및자격증리스트", example = "1.jpg")
     private List<String> imageList;
-
+    @Schema(description = "매칭 관리(on/off)", example = "true")
+    private boolean matching_state;
 }
