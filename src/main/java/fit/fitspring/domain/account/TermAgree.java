@@ -36,6 +36,6 @@ public class TermAgree extends BaseTimeEntity implements Serializable {
     private Term term;
 
     @Column(name = "agree")
-    private String agree;
+    private Boolean agree;
 
 }

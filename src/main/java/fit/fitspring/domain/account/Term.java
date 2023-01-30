@@ -24,5 +24,5 @@ public class Term {
     private String detail;
 
     @Column(name = "term_required")
-    private String required;
+    private Boolean required;
 }
