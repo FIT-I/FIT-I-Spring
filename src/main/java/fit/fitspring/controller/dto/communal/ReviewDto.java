@@ -5,6 +5,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.time.LocalDate;
+
 @Getter
 @Setter
 @ToString
@@ -18,11 +20,11 @@ public class ReviewDto {
     @Schema(description = "평점", example = "4.3")
     private int grade;
     @Schema(description = "작성일", example = "2023.01.10")
-    private String createdAt;
+    private LocalDate createdAt;
     @Schema(description = "내용", example = "좋아요")
     private String contents;
 
-    public ReviewDto(String name, String profile, int grade, String createdAt, String contents) {
+    public ReviewDto(String name, String profile, int grade, LocalDate createdAt, String contents) {
         this.name = name;
         this.profile = profile;
         this.grade = grade;

@@ -72,6 +72,7 @@ public class CommunalService {
             reviewDto.setProfile(i.getCustomer().getProfile());
             reviewDto.setGrade(i.getGrade());
             reviewDto.setContents(i.getContent());
+            reviewDto.setCreatedAt(i.getCreatedDate().toLocalDate());
             reviewDtoList.add(reviewDto);
         }
         return reviewDtoList;
@@ -106,6 +107,7 @@ public class CommunalService {
         }
         trainerInfo.setImageList(imageList);
         trainerInfo.setMatching_state(optional.get().getUser().getUserState().equals("A"));
+        trainerInfo.setCategory(optional.get().getCategory());
         return trainerInfo;
     }
 
