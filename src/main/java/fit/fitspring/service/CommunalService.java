@@ -159,8 +159,9 @@ public class CommunalService {
         }
         List<TermAgree> termList = termAgreeRepository.findAllByUser(optional.get());
         String terms = "";
+        int count = 1;
         for(TermAgree i : termList){
-            terms += i.getTerm().getName() + " " + i.getTerm().getDetail();
+            terms += Integer.toString(count) + "." + i.getTerm().getName() + ":" + i.getTerm().getDetail() + " ";
         }
         return terms;
     }
