@@ -23,6 +23,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
+import org.json.JSONObject;
 
 import java.security.Key;
 import java.util.Arrays;
@@ -152,5 +153,20 @@ public class TokenProvider implements InitializingBean {
 
         Long now = new Date().getTime();
         return (expiration.getTime() - now);
+    }
+
+    // 토큰에서 회원 정보 추출하기
+    public String getEmail(String accessToken){
+        String subject =  Jwts
+                .parser()
+                .setSigningKey(key)
+                .parseClaimsJws(accessToken)
+                .getBody()
+                .getSubject();
+
+        JSONObject parser = new JSONObject(subject);
+        String email = parser.getString("email");
+
+        return email;
     }
 }
