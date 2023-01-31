@@ -134,7 +134,7 @@ public class AccountController {
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "이용약관수락(미완)", description = "이용약관수락")
+    @Operation(summary = "이용약관수락", description = "(입력값) 각 약관에 대하여 동의 항목은 true, 비동의 항목은 false로 주시면 됩니다. (반환값) true: 필수 약관에 모두 동의, false: 필수 약관에 동의하지 않은 항목이 있음")
     @PostMapping("/terms")
     public BaseResponse<Boolean> acceptTermsOfUse(@RequestBody AcceptTermReqDto acceptTermReqDto){
         try {
