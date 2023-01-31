@@ -107,7 +107,7 @@ public class CommunalService {
         }
         trainerInfo.setImageList(imageList);
         trainerInfo.setMatching_state(optional.get().getUser().getUserState().equals("A"));
-        trainerInfo.setCategory(optional.get().getCategory());
+        trainerInfo.setCategory(convertCategoryForClient(optional.get().getCategory()));
         return trainerInfo;
     }
 
@@ -133,5 +133,20 @@ public class CommunalService {
         myPageDto.setEmail(optional.get().getEmail());
         myPageDto.setLocation(optional.get().getLocation());
         return myPageDto;
+    }
+
+    public String convertCategoryForClient(Category category){
+        if (category.equals(Category.PERSONAL_PT)){
+            return "pt";
+        } else if(category.equals(Category.DIET)){
+            return "diet";
+        } else if(category.equals(Category.FOOD_CHECK)){
+            return "food";
+        } else if(category.equals(Category.REHAB)){
+            return "rehab";
+        } else if(category.equals(Category.FIT_MATE)){
+            return "friend";
+        }
+        return null;
     }
 }
