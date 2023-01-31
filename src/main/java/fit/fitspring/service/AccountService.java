@@ -2,10 +2,7 @@ package fit.fitspring.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import fit.fitspring.controller.dto.account.*;
-import fit.fitspring.domain.account.Account;
-import fit.fitspring.domain.account.AccountRepository;
-import fit.fitspring.domain.account.School;
-import fit.fitspring.domain.account.SchoolRepository;
+import fit.fitspring.domain.account.*;
 import fit.fitspring.domain.trainer.*;
 import fit.fitspring.exception.account.AccountNotFoundException;
 import fit.fitspring.exception.common.BusinessException;
@@ -54,6 +51,8 @@ public class AccountService {
     private final TrainerRepository trainerRepository;
     private final SchoolRepository schoolRepository;
     private final LevelRepository levelRepository;
+    private final TermAgreeRepository termAgreeRepository;
+    private final TermRepository termRepository;
     @Autowired
     private final RedisTemplate redisTemplate;
     //private final RedisUtil redisUtil;
@@ -126,8 +125,15 @@ public class AccountService {
         }
         Account account = registerDto.toEntity();
 
+
         try{ // 회원가입 정보 저장, jwt 생성, 결과 반환(userIdx, jwt)
-            accountRepository.save(account); // 일단 데이터 저장
+            // 1. 일단 데이터 저장
+            accountRepository.save(account);
+            // 2. 저장한 user에서 userIdx 뽑아오기
+            Account user = accountRepository.findByEmail(email).orElseThrow();
+            // 3. 약관 동의
+            acceptTerm(true, true, true, user);
+
             return (registerDto.getName() + " 님, 환영합니다."); // 가입한 회원의 이름 반환
         } catch (DataIntegrityViolationException e){ // 중복 이메일 게정 체크
             throw new DuplicatedAccountException();
@@ -149,6 +155,7 @@ public class AccountService {
         }
 
         String pwd;
+        String email = registerDto.getEmail();
         try {
             pwd = new AES128(pwKey).encrypt(registerDto.getPassword());
             registerDto.setPassword(pwd);
@@ -178,7 +185,12 @@ public class AccountService {
         account.setTrainer(trainer);
 
         try{ // 회원가입 정보 저장, jwt 생성, 결과 반환(userIdx, jwt)
-            accountRepository.save(account); // 일단 데이터 저장
+            // 1. 일단 데이터 저장
+            accountRepository.save(account);
+            // 2. 저장한 user에서 userIdx 뽑아오기
+            Account user = accountRepository.findByEmail(email).orElseThrow();
+            // 3. 약관 동의
+            acceptTerm(true, true, true, user);
         } catch (DataIntegrityViolationException e){ // 중복 이메일 게정 체크
             throw new DuplicatedAccountException();
         } catch(Exception exception){
@@ -311,5 +323,33 @@ public class AccountService {
         } catch(Exception e) {
             throw new BusinessException(ErrorCode.DB_MODIFY_ERROR);
         }
+    }
+
+    @Transactional
+    public void acceptTerm(Boolean term1, Boolean term2, Boolean term3, Account account){
+        TermAgree termAgree1 = new TermAgree();
+        TermAgree termAgree2 = new TermAgree();
+        TermAgree termAgree3 = new TermAgree();
+
+        Long id1 = Long.valueOf(1);
+        Long id2 = Long.valueOf(2);
+        Long id3 = Long.valueOf(3);
+
+        termAgree1.setUser(account);
+        termAgree2.setUser(account);
+        termAgree3.setUser(account);
+
+        termAgree1.setTerm(termRepository.findById(id1).orElseThrow());
+        termAgree2.setTerm(termRepository.findById(id2).orElseThrow());
+        termAgree3.setTerm(termRepository.findById(id3).orElseThrow());
+
+        termAgree1.setAgree(true);
+        termAgree2.setAgree(true);
+        termAgree3.setAgree(true);
+
+        termAgreeRepository.save(termAgree1);
+        termAgreeRepository.save(termAgree2);
+        termAgreeRepository.save(termAgree3);
+
     }
 }

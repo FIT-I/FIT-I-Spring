@@ -36,6 +36,7 @@ public enum ErrorCode {
     INVALID_TRAINERIDX(false, 3010, "잘못된 트레이너 식별자입니다."),
     INVALID_EMAIL(false, 3009, "존재하지 않는 이메일입니다."),
     DELETE_ACCOUNT(false, 3010, "탈퇴한 계정입니다."),
+    DISAGREE_TERM(false, 3011, "이용 약관에 동의하지 않으셨습니다."),
 
     /*서버, DB 4000*/
     DATABASE_ERROR(false, 4000, "DB에 문제가 발생했습니다."),
