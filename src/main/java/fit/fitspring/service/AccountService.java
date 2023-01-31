@@ -171,6 +171,7 @@ public class AccountService {
         trainer.setSchool(convertEmailToSchool(registerDto.getEmail()));
         trainer.setCategory(Category.PERSONAL_PT);
         trainer.setUser(account);
+        trainer.setPriceHour(10000);
         Optional<Level> optional = levelRepository.findById(1L);
         if(optional.isEmpty()){
             throw new BusinessException(ErrorCode.NO_EXIST_LEVEL_DATA);

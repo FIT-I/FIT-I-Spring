@@ -67,11 +67,16 @@ public class CommunalController {
         return new BaseResponse<>(communalService.getAnnouncementList());
     }
 
-    @Operation(summary = "이용약관목록조회", description = "이용약관목록조회(Response)")
+    @Operation(summary = "이용약관목록조회", description = "이용약관목록조회 - 회원가입 직후용(Response)")
     @GetMapping("/terms")
     public BaseResponse<List<TermDto>> getTermList(){
         List<TermDto> termDtoList = communalService.getTermList();
         return new BaseResponse<>(termDtoList);
     }
 
+    @Operation(summary = "이용약관조회", description = "이용약관조회 - 모든 약관을 하나의 문자열로 리턴, 마이페이지용(Response)")
+    @GetMapping("/terms/all")
+    public BaseResponse<String> getAllTermContents(){
+        return new BaseResponse<>(communalService.getAllTermContents());
+    }
 }

@@ -36,6 +36,7 @@ public class CommunalService {
     private final TrainerRepository trainerRepository;
     private final UserImgRepository userImgRepository;
     private final AccountRepository accountRepository;
+    private final TermAgreeRepository termAgreeRepository;
 
     @Transactional
     public List<AnnouncementDto> getAnnouncementList() {
@@ -107,7 +108,7 @@ public class CommunalService {
         }
         trainerInfo.setImageList(imageList);
         trainerInfo.setMatching_state(optional.get().getUser().getUserState().equals("A"));
-        trainerInfo.setCategory(optional.get().getCategory());
+        trainerInfo.setCategory(convertCategoryForClient(optional.get().getCategory()));
         return trainerInfo;
     }
 
@@ -133,5 +134,35 @@ public class CommunalService {
         myPageDto.setEmail(optional.get().getEmail());
         myPageDto.setLocation(optional.get().getLocation());
         return myPageDto;
+    }
+
+    public String convertCategoryForClient(Category category){
+        if (category.equals(Category.PERSONAL_PT)){
+            return "pt";
+        } else if(category.equals(Category.DIET)){
+            return "diet";
+        } else if(category.equals(Category.FOOD_CHECK)){
+            return "food";
+        } else if(category.equals(Category.REHAB)){
+            return "rehab";
+        } else if(category.equals(Category.FIT_MATE)){
+            return "friend";
+        }
+        return null;
+    }
+
+    @Transactional
+    public String getAllTermContents(){
+        Optional<Account> optional = accountRepository.findById(SecurityUtil.getLoginUserId());
+        if(optional.isEmpty()){
+            throw new BusinessException(ErrorCode.INVALID_USERIDX);
+        }
+        List<TermAgree> termList = termAgreeRepository.findAllByUser(optional.get());
+        String terms = "";
+        int count = 1;
+        for(TermAgree i : termList){
+            terms += Integer.toString(count) + "." + i.getTerm().getName() + ":" + i.getTerm().getDetail() + " ";
+        }
+        return terms;
     }
 }

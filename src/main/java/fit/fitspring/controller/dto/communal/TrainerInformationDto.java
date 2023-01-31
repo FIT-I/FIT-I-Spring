@@ -40,5 +40,5 @@ public class TrainerInformationDto {
     @Schema(description = "매칭 관리(on/off)", example = "true")
     private boolean matching_state;
     @Schema(description = "카테고리", example = "개인 PT")
-    private Category category;
+    private String category;
 }

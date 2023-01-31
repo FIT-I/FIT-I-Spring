@@ -137,6 +137,8 @@ public class TrainerService {
             category=Category.DIET;
         }else if(categoryStr.equals("rehab")){
             category=Category.REHAB;
+        }else if(categoryStr.equals("friend")){
+            category=Category.FIT_MATE;
         }
         trainer.modifyCategory(category);
     }

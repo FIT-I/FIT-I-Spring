@@ -57,6 +57,8 @@ public class CustomerService {
             category_enum = Category.DIET;
         }else if(category.equals("rehab")){
             category_enum = Category.REHAB;
+        }else if(category.equals("friend")){
+            category_enum = Category.FIT_MATE;
         }else{//pt가 기본값
             category_enum = Category.PERSONAL_PT;
         }
