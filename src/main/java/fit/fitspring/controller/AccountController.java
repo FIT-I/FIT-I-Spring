@@ -136,8 +136,29 @@ public class AccountController {
 
     @Operation(summary = "이용약관수락(미완)", description = "이용약관수락")
     @PostMapping("/terms")
-    public ResponseEntity acceptTermsOfUse(){
-        return ResponseEntity.ok().build();
+    public BaseResponse<Boolean> acceptTermsOfUse(@RequestBody AcceptTermReqDto acceptTermReqDto){
+        try {
+            Boolean term1 = acceptTermReqDto.getTerm1();
+            Boolean term2 = acceptTermReqDto.getTerm2();
+            Boolean term3 = acceptTermReqDto.getTerm3();
+
+            if (term1 == false || term1 == null){
+                return new BaseResponse<>(false);
+            }
+            else if (term2 == false || term2 == null){
+                return new BaseResponse<>(false);
+            }
+            else if (term3 == false || term3 == null){
+                return new BaseResponse<>(false);
+            }
+            else{
+                return new BaseResponse<>(true);
+            }
+
+            //accountService.acceptTerm(term1, term2, term3);
+        } catch(BusinessException e) {
+            return new BaseResponse<>(e.getErrorCode());
+        }
     }
 
     @Operation(summary = "비밀번호변경", description = "비밀번호가 변경되면 필연적으로 인증객체도 변경되기 때문에 다시 로그인을 해야 합니다.")

@@ -9,4 +9,5 @@ import java.util.Optional;
 @Repository
 public interface TermRepository extends JpaRepository<Term, Long> {
     List<Term> findAll();
+    Optional<Term> findById(Long id);
 }
