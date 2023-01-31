@@ -36,6 +36,7 @@ public class CommunalService {
     private final TrainerRepository trainerRepository;
     private final UserImgRepository userImgRepository;
     private final AccountRepository accountRepository;
+    private final TermAgreeRepository termAgreeRepository;
 
     @Transactional
     public List<AnnouncementDto> getAnnouncementList() {
@@ -148,5 +149,19 @@ public class CommunalService {
             return "friend";
         }
         return null;
+    }
+
+    @Transactional
+    public String getAllTermContents(){
+        Optional<Account> optional = accountRepository.findById(SecurityUtil.getLoginUserId());
+        if(optional.isEmpty()){
+            throw new BusinessException(ErrorCode.INVALID_USERIDX);
+        }
+        List<TermAgree> termList = termAgreeRepository.findAllByUser(optional.get());
+        String terms = "";
+        for(TermAgree i : termList){
+            terms += i.getTerm().getName() + " " + i.getTerm().getDetail();
+        }
+        return terms;
     }
 }
