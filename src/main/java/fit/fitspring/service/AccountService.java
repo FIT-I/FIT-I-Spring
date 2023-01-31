@@ -331,17 +331,13 @@ public class AccountService {
         TermAgree termAgree2 = new TermAgree();
         TermAgree termAgree3 = new TermAgree();
 
-        Long id1 = Long.valueOf(1);
-        Long id2 = Long.valueOf(2);
-        Long id3 = Long.valueOf(3);
-
         termAgree1.setUser(account);
         termAgree2.setUser(account);
         termAgree3.setUser(account);
 
-        termAgree1.setTerm(termRepository.findById(id1).orElseThrow());
-        termAgree2.setTerm(termRepository.findById(id2).orElseThrow());
-        termAgree3.setTerm(termRepository.findById(id3).orElseThrow());
+        termAgree1.setTerm(termRepository.findById(1L).orElseThrow());
+        termAgree2.setTerm(termRepository.findById(2L).orElseThrow());
+        termAgree3.setTerm(termRepository.findById(3L).orElseThrow());
 
         termAgree1.setAgree(true);
         termAgree2.setAgree(true);
@@ -350,6 +346,5 @@ public class AccountService {
         termAgreeRepository.save(termAgree1);
         termAgreeRepository.save(termAgree2);
         termAgreeRepository.save(termAgree3);
-
     }
 }
