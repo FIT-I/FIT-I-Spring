@@ -269,15 +269,36 @@ public class AccountService {
     }
 
     // 토큰 재발급
-    public TokenDto reissue(String reqAccessToken, String reqRefreshToken) throws JsonProcessingException {
-        if (!tokenProvider.validateToken(reqRefreshToken)) {
+    public TokenDto reissue(String accessToken, String refreshToken) throws JsonProcessingException {
+        // 토큰에서 이메일 추출
+        String email = tokenProvider.getEmail(accessToken);
+        System.out.println("email in token: " + email);
+
+        // 이메일로 비번 추출
+        String pwd = accountRepository.findByEmail(email).get().getPassword();
+
+        // refreshToken의 만료 시간 유효성 검증
+        if (!tokenProvider.validateToken(refreshToken)) {
             throw new BusinessException(ErrorCode.INVALID_JWT);
         }
-        Authentication authentication = tokenProvider.getAuthentication(reqAccessToken);
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+        // 이메일 + pwd로 새로운 토큰 생성
+        // 1. ID/pwd 를 기반으로 Authentication 객체 생성
+        //    이때 authentication은 인증 여부를 확인하는 authenticated 값이 false
+        UsernamePasswordAuthenticationToken authenticationToken
+                = new UsernamePasswordAuthenticationToken(email,pwd);
 
-        return tokenProvider.createToken(authentication);
+        // 2. 실제 검증 (사용자 비밀번호 체크)
+        //    authenticate 메서드 실행 => CustomUserDetailsService 에서 만든 loadUserByUsername 메서드 실행
+        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+
+        // 3. 인증 정보를 바탕으로 JWT 토큰 생성
+        TokenDto jwt = tokenProvider.createToken(authentication);
+
+        // 4. 기존 토큰 로그아웃
+        logout(accessToken, refreshToken);
+
+        return jwt;
     }
 
 
