@@ -57,7 +57,10 @@ public enum ErrorCode {
 
 
     /*AWS 7000*/
-    AWS_S3UPLOADER_ERROR(false, 7001, "aws s3 이미지 업로드 오류가 발생하였습니다.")
+    AWS_S3UPLOADER_ERROR(false, 7001, "aws s3 이미지 업로드 오류가 발생하였습니다."),
+
+    /*OAuth - Apple*/
+    FAIL_GET_PUB_KEY(false, 8001,"FAIL GET PUBLIC KEY"),
     ;
 
     private final boolean isSuccess;
