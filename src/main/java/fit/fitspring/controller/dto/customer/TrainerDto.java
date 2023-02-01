@@ -31,8 +31,8 @@ public class TrainerDto {
     private Long certificateNum;
     @Schema(description = "소개글", example = "안녕하세요")
     private String contents;
-    @Schema(description = "비용", example = "10,000")
-    private int cost;
+    @Schema(description = "비용", example = "10000")
+    private String cost;
 
     public TrainerDto(Trainer entity, Long certificateNum) {
         this.id = entity.getId();
@@ -43,6 +43,6 @@ public class TrainerDto {
         this.grade = entity.getGrade();
         this.certificateNum = certificateNum;
         this.contents = entity.getIntro();
-        this.cost = entity.getPriceHour();
+        this.cost = String.valueOf(entity.getPriceHour());
     }
 }
