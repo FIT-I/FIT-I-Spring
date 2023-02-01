@@ -39,7 +39,7 @@ public class TrainerService {
         Trainer trainer = trainerRepository.findById(trainerIdx)
                 .orElseThrow(TrainerException::new);
         trainer.getUser().updateName(req.getName());
-        trainer.updateInfo(req.getCostHour(), req.getIntro(), req.getServiceDetail() );
+        trainer.updateInfo(Integer.parseInt(req.getCostHour()), req.getIntro(), req.getServiceDetail() );
     }
 
     public void modifyTrainerProfile(MultipartFile profileImg) throws BusinessException, IOException {

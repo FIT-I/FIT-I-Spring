@@ -38,7 +38,7 @@ public class CustomerController {
 
     @Operation(summary = "트레이너 목록조회", description = "트레이너 목록조회(Response)")
     @GetMapping("/trainer-list")
-    public BaseResponse<SliceResDto<TrainerDto>> getTrainerList(@Parameter(description = "트레이너의 카테고리 값(pt/food/diet/rehab)", in = ParameterIn.QUERY)@RequestParam String category, @Parameter(description = "마지막으로 조회된 trainerId값(첫 조회시 값 필요 없음)", in = ParameterIn.QUERY)@RequestParam(required = false) Long lastTrainerId, @ParameterObject@PageableDefault(size=20, sort="recent",direction = Sort.Direction.DESC)Pageable pageable){
+    public BaseResponse<SliceResDto<TrainerDto>> getTrainerList(@Parameter(description = "트레이너의 카테고리 값(pt/food/diet/rehab/friend)", in = ParameterIn.QUERY)@RequestParam String category, @Parameter(description = "마지막으로 조회된 trainerId값(첫 조회시 값 필요 없음)", in = ParameterIn.QUERY)@RequestParam(required = false) Long lastTrainerId, @ParameterObject@PageableDefault(size=20, sort="recent",direction = Sort.Direction.DESC)Pageable pageable){
         try {
             SliceResDto<TrainerDto> trainerDtoList;
             trainerDtoList = customerService.getTrainerList(category, lastTrainerId, pageable);

@@ -93,7 +93,7 @@ public class CommunalService {
         trainerInfo.setLevelName(optional.get().getLevel().getName());
         trainerInfo.setSchool(optional.get().getSchool());
         trainerInfo.setGrade(optional.get().getGrade());
-        trainerInfo.setCost(optional.get().getPriceHour());
+        trainerInfo.setCost(String.valueOf(optional.get().getPriceHour()));
         trainerInfo.setIntro(optional.get().getIntro());
         trainerInfo.setService(optional.get().getService());
         List<ReviewDto> reviewList = getTrainerReviewList(trainerIdx);

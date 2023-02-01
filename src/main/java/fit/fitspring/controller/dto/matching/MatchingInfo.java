@@ -21,9 +21,9 @@ public class MatchingInfo {
     @Schema(description = "고객이름", example = "홍길동")
     private String name;
     @Schema(description = "시간 당 가격", example = "20000")
-    private int pricePerHour;
+    private String pricePerHour;
     @Schema(description = "총 금액", example = "20000")
-    private int totalPrice;
+    private String totalPrice;
     @Schema(description = "매칭 시작 날짜", example = "2023.01.25")
     private String matchingStart;
     @Schema(description = "매칭 끝나는 날짜", example = "2023.01.30")
@@ -39,8 +39,8 @@ public class MatchingInfo {
         this.matchingId = entity.getId();
         this.customerId = entity.getCustomer().getId();
         this.name = entity.getCustomer().getName();
-        this.pricePerHour = entity.getTrainer().getPriceHour();
-        this.totalPrice = entity.getTrainer().getPriceHour();
+        this.pricePerHour = String.valueOf(entity.getTrainer().getPriceHour());
+        this.totalPrice = String.valueOf(entity.getTrainer().getPriceHour());
         this.matchingStart = matchingStart;
         this.matchingFinish = MatchingFinish;
         this.matchingPeriod = matchingPeriod;

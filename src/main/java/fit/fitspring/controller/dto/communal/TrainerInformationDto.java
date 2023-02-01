@@ -28,7 +28,7 @@ public class TrainerInformationDto {
     @Schema(description = "평점", example = "4.8")
     private Float grade;
     @Schema(description = "관리비용", example = "10000")
-    private int cost;
+    private String cost;
     @Schema(description = "소개글", example = "안녕하세요")
     private String intro;
     @Schema(description = "서비스상세설명", example = "안녕하세요")
