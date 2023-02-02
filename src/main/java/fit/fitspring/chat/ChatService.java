@@ -3,12 +3,15 @@ package fit.fitspring.chat;
 import fit.fitspring.chat.dto.ChatRoomAndUserDto;
 import fit.fitspring.chat.entity.*;
 import fit.fitspring.domain.account.Account;
+import fit.fitspring.domain.trainer.Trainer;
 import fit.fitspring.exception.account.AccountNotFoundException;
 import fit.fitspring.service.AccountService;
+import fit.fitspring.service.TrainerService;
 import fit.fitspring.utils.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.units.qual.A;
+import org.checkerframework.checker.units.qual.C;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -20,27 +23,10 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ChatService {
     private final AccountService accountService;
+    private final TrainerService trainerService;
     private final ChatRoomRepository chatRoomRepository;
     private final ChatBlockRepository chatBlockRepository;
-    //private Map<Long, ChatRoom> chatRooms;
-
-    /*
-    @PostConstruct
-    //의존관게 주입완료되면 실행되는 코드
-    private void init() {
-        chatRooms = new LinkedHashMap<>();
-    }
-     */
-
-    //채팅방 불러오기
-    /*
-    public List<ChatRoom> findAllRoom() {
-        //채팅방 최근 생성 순으로 반환
-        //List<ChatRoom> result = new ArrayList<>(chatRooms.values());
-        Collections.reverse(result);
-        return result;
-    }
-     */
+    private final ChatInfoRepository chatInfoRepository;
 
     //채팅방 하나 불러오기
     public ChatRoom findById(Long roomId) {
@@ -102,5 +88,17 @@ public class ChatService {
                 .sender(accountService.getById(blockId))
                 .build();
         chatBlockRepository.save(block);
+    }
+
+    public ChatInfo addMatchingChat(String openChatLink, Long trainerIdx, Long customerId) {
+        Account customer = accountService.getById(customerId);
+        Trainer trainer = trainerService.getById(trainerIdx);
+
+        ChatInfo chatInfo = ChatInfo.builder()
+                .link(openChatLink)
+                .customer(customer)
+                .trainer(trainer)
+                .build();
+        return chatInfoRepository.save(chatInfo);
     }
 }

@@ -1,5 +1,6 @@
 package fit.fitspring.service;
 
+import fit.fitspring.chat.ChatService;
 import fit.fitspring.controller.dto.matching.MatchingInfo;
 import fit.fitspring.controller.dto.matching.MatchingListForCust;
 import fit.fitspring.controller.dto.matching.MatchingListForTrainer;
@@ -27,6 +28,7 @@ import static fit.fitspring.exception.common.ErrorCode.*;
 @Service
 public class MatchingService {
 
+    private final ChatService chatService;
     private final MatchingOrderRepository matchingOrderRepository;
     private final AccountRepository accountRepository;
     private final TrainerRepository trainerRepository;
@@ -79,10 +81,12 @@ public class MatchingService {
     }
 
     @Transactional
-    public void matchingAccept(Long trainerIdx, Long matchingIdx){
-        MatchingOrder matchingOrder = matchingOrderRepository.findById(matchingIdx).orElseThrow(()->new BusinessException(MATCHING_NOT_FOUND));
-        if(matchingOrder.getTrainer().getId()!=trainerIdx)
+    public void matchingAccept(Long trainerIdx, Long matchingIdx, String openChatLink){
+        MatchingOrder matchingOrder = matchingOrderRepository.findById(matchingIdx)
+                .orElseThrow(()->new BusinessException(MATCHING_NOT_FOUND));
+        if(!matchingOrder.getTrainer().getId().equals(trainerIdx))
             throw new BusinessException(PERMISSION_DENIED);
+        chatService.addMatchingChat(openChatLink, trainerIdx, matchingOrder.getCustomer().getId());
         matchingOrder.acceptMatching();
     }
     @Transactional

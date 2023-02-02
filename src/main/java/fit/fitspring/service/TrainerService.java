@@ -153,4 +153,8 @@ public class TrainerService {
         Long certificateNum = trainerCertRepository.countByTrainer(trainer);
         return new TrainerMainRes(trainer,category,certificateNum);
     }
+
+    public Trainer getById(Long trainerIdx) {
+        return trainerRepository.getReferenceById(trainerIdx);
+    }
 }

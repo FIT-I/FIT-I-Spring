@@ -1,5 +1,6 @@
 package fit.fitspring.domain.trainer;
 
+import fit.fitspring.chat.entity.ChatInfo;
 import fit.fitspring.domain.account.Account;
 import fit.fitspring.domain.matching.MatchingOrder;
 import fit.fitspring.domain.review.Review;
@@ -66,6 +67,9 @@ public class Trainer {
     @Builder.Default
     @OneToMany(mappedBy = "trainer")
     private List<MatchingOrder> matchingOrderList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "trainer")
+    private List<ChatInfo> chatInfos =  new ArrayList<>();
 
     public void updateInfo(int priceHour, String intro, String service){
         this.priceHour = priceHour;
