@@ -24,20 +24,20 @@ public class ChatController {
     private final MessageService messageService;
 
     // 사용자의 채팅방 목록 반환
-    @Operation(summary = "유저의 채팅방 조회", description = "해당 유저가 참여한 채팅방 목록 조회")
+    @Operation(summary = "유저의 채팅방 조회 - Not Used", description = "해당 유저가 참여한 채팅방 목록 조회")
     @GetMapping("/rooms/users/{userId}")
     public List<ChatRoomAndUserDto> room(@Parameter(description = "유저 식별자") @PathVariable Long userId) {
         List<ChatRoomAndUserDto> ret = chatService.findAllRoomsByUserId(userId);
         return ret;
     }
     // 채팅방 생성
-    @Operation(summary = "채팅방 생성", description = "채팅방 생성 ")
+    @Operation(summary = "채팅방 생성 - Not Used", description = "채팅방 생성 ")
     @PostMapping("/room")
     public ChatRoomAndUserDto createRoom(@Parameter(description = "채팅방 이름, 참여자의 email")@RequestBody ChatRoomAndUserDto dto) {
         return chatService.createRoom(dto.getRoomName(), dto.getEmails());
     }
 
-    @Operation(summary = "단일 채팅방 조회", description = "단일 채팅방 조회")
+    @Operation(summary = "단일 채팅방 조회 - Not Used", description = "단일 채팅방 조회")
     @GetMapping("/room/{roomId}")
     public ChatRoom roomInfo(@Parameter(description = "채팅방 id")@PathVariable Long roomId) {
         return chatService.findById(roomId);
@@ -48,19 +48,19 @@ public class ChatController {
                     "2. 메세지 전송도 /chat/message 가 아니라 /fit/chat/message 로 전송해야 합니다. \n" +
                     "3. 자세한 사용 방법은 /resources/templates/chat/roomdetail.html 의 script를 확인해주세요. pub/sub 모델입니다."
     )
-    @MessageMapping("/chat/message")
+    @MessageMapping("/chat/message - Not Used")
     public void sendMessage(ChatMessageDto message) throws IOException {
         messageService.sendMessage(message);
     }
 
-    @Operation(summary = "채팅 내역 fetch", description = "대상 roomId 의 채팅 내역 중 messageId 다음 것을 fetch")
+    @Operation(summary = "채팅 내역 fetch - Not Used", description = "대상 roomId 의 채팅 내역 중 messageId 다음 것을 fetch")
     @GetMapping("/chat/rooms/{roomId}/messages/{messageId}")
     public List<MessageDto> getMessagesAfterOf(@PathVariable Long roomId,
                                                @Parameter(description = "마지막으로 받은 메세지 Id")@PathVariable Long messageId) {
         return messageService.findAfterOf(roomId, messageId);
     }
 
-    @Operation(summary = "메시지 차단 (미완)")
+    @Operation(summary = "메시지 차단 (미완) - Not Used")
     @PostMapping("/block/{userId}")
     public BaseResponse<String> blockUser(@Parameter(description = "대상 유저의 메세지를 차단합니다")@PathVariable Long userId) {
         chatService.blockUser(userId);
