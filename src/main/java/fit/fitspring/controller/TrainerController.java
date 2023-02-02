@@ -2,6 +2,7 @@ package fit.fitspring.controller;
 
 import fit.fitspring.controller.dto.communal.TrainerInformationDto;
 import fit.fitspring.controller.dto.trainer.CategoryReq;
+import fit.fitspring.controller.dto.trainer.TrainerMainRes;
 import fit.fitspring.controller.dto.trainer.UpdateTrainerInfoReq;
 import fit.fitspring.exception.common.BusinessException;
 import fit.fitspring.exception.trainer.TrainerException;
@@ -148,6 +149,17 @@ public class TrainerController {
         try{
             Long trainerIdx = SecurityUtil.getLoginUserId();
             return new BaseResponse<>(communalService.getTrainerInformation(trainerIdx));
+        } catch(BusinessException e){
+            return new BaseResponse<>(e.getErrorCode());
+        }
+    }
+
+    @Operation(summary = "트레이너 홈화면", description = "트레이너의 홈화면(Response)")
+    @GetMapping("/home")
+    public BaseResponse<TrainerMainRes> getTrainerMain(){
+        try{
+            Long trainerIdx = SecurityUtil.getLoginUserId();
+            return new BaseResponse<>(trainerService.trainerMain(trainerIdx));
         } catch(BusinessException e){
             return new BaseResponse<>(e.getErrorCode());
         }

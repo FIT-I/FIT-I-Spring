@@ -1,5 +1,6 @@
 package fit.fitspring.service;
 
+import fit.fitspring.controller.dto.trainer.TrainerMainRes;
 import fit.fitspring.controller.dto.trainer.UpdateTrainerInfoReq;
 import fit.fitspring.domain.trainer.*;
 import fit.fitspring.domain.account.Account;
@@ -33,6 +34,8 @@ public class TrainerService {
     private final UserImgRepository userImgRepository;
     private final AccountRepository accountRepository;
     private final EtcImgRepository etcImgRepository;
+    private final TrainerCertRepository trainerCertRepository;
+    private final CommunalService communalService;
 
     @Transactional
     public void updateTrainerInfo(Long trainerIdx, UpdateTrainerInfoReq req) {
@@ -141,5 +144,13 @@ public class TrainerService {
             category=Category.FIT_MATE;
         }
         trainer.modifyCategory(category);
+    }
+
+    @Transactional
+    public TrainerMainRes trainerMain(Long trainerIdx) throws BusinessException {
+        Trainer trainer = trainerRepository.findById(trainerIdx).orElseThrow(()-> new BusinessException(ACCOUNT_NOT_FOUND));
+        String category = communalService.convertCategoryForClient(trainer.getCategory());
+        Long certificateNum = trainerCertRepository.countByTrainer(trainer);
+        return new TrainerMainRes(trainer,category,certificateNum);
     }
 }
