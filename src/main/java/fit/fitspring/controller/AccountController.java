@@ -71,6 +71,17 @@ public class AccountController {
         }
     }
 
+    @Operation(summary = "회원가입 validation", description = "Log-in VC#18에서 입력한 회원가입 정보의 validation을 진행하는 api")
+    @PostMapping("/customer/validation")
+    public BaseResponse<String> registerCustomerValidation(@RequestBody RegisterCustomerValidationDto registerDto){
+        try{
+            String result = accountService.registerCustomerValidation(registerDto);
+            return new BaseResponse<>(result);
+        } catch(BusinessException e){
+            return new BaseResponse<>(e.getErrorCode());
+        }
+    }
+
     @Operation(summary = "로그인", description = "로그인(Request) accessToken, requestToken 발급")
     @PostMapping("/login")
     public BaseResponse<TokenDto> userLogin(@RequestBody LoginReqDto loginDto) {

@@ -101,18 +101,23 @@ public class AccountService {
     @Transactional
     public String registerCustomer(RegisterCustomerDto registerDto) throws BusinessException {
 
-        // 이메일, 비밀번호, 이름이 입력 되지 않았을 경우 에러 코드 리턴
+        // 이름 null 확인 + 공백 확인
+        if (registerDto.getName() ==null || registerDto.getName().trim().length() == 0 ) {
+            throw new BusinessException(ErrorCode.POST_ACCOUNTS_EMPTY_NAME);
+        }
+        // eamil null 확인
         if (registerDto.getEmail() == null) {
             throw new BusinessException(ErrorCode.POST_ACCOUNTS_EMPTY_EMAIL);
         }
-        // 이름이 입력되지 않았을 경우 에러 리턴
-        if (registerDto.getName() ==null) {
-            throw new BusinessException(ErrorCode.POST_ACCOUNTS_EMPTY_NAME);
-        }
-        // 이메일 형식이 맞지 않은 경우 에러 코드 리턴
+        // email 형식 확인
         if (!ValidationRegex.isRegexEmail(registerDto.getEmail())){
             throw new BusinessException(ErrorCode.POST_ACCOUNTS_INVALID_EMAIL);
         }
+        // pwd null 확인 + 공백 확인
+        if (registerDto.getPassword() ==null || registerDto.getPassword().trim().length() == 0 ) {
+            throw new BusinessException(ErrorCode.POST_ACCOUNTS_EMPTY_NAME);
+        }
+
         String pwd;
         String email = registerDto.getEmail();
 
@@ -142,16 +147,55 @@ public class AccountService {
         }
     }
 
+    public String registerCustomerValidation(RegisterCustomerValidationDto registerDto){
+        try{
+            // 이름 null 확인 + 공백 확인
+            if (registerDto.getName() ==null || registerDto.getName().trim().length() == 0 ) {
+                throw new BusinessException(ErrorCode.POST_ACCOUNTS_EMPTY_NAME);
+            }
+            // eamil null 확인
+            if (registerDto.getEmail() == null || registerDto.getEmail().trim().length() == 0) {
+                throw new BusinessException(ErrorCode.POST_ACCOUNTS_EMPTY_EMAIL);
+            }
+            // email 형식 확인
+            if (!ValidationRegex.isRegexEmail(registerDto.getEmail())){
+                throw new BusinessException(ErrorCode.POST_ACCOUNTS_INVALID_EMAIL);
+            }
+            // pwd null 확인 + 공백 확인
+            if (registerDto.getPassword() ==null || registerDto.getPassword().trim().length() == 0 ) {
+                throw new BusinessException(ErrorCode.POST_ACCOUNTS_EMPTY_PWD);
+            }
+
+            // 저장해보고 -> 여기서 중복 걸리면 catch로 넘어감
+            Account account = registerDto.toEntity();
+            accountRepository.save(account);
+            // 안 걸리고 넘어오면 DB 내용 삭제하기
+            accountRepository.delete(account);
+            // 그리고 return 값 반환
+            return "validation에 통과하였습니다.";
+
+        } catch (DataIntegrityViolationException e){
+            throw new DuplicatedAccountException();
+        }
+    }
+
     @Transactional
     public String registerTrainer(RegisterTrainerDto registerDto) throws BusinessException {
-        if (registerDto.getEmail() == null) {
-            throw new BusinessException(ErrorCode.POST_ACCOUNTS_EMPTY_EMAIL);
-        }
-        if (registerDto.getName() ==null) {
+        // 이름 null 확인 + 공백 확인
+        if (registerDto.getName() ==null || registerDto.getName().trim().length() == 0 ) {
             throw new BusinessException(ErrorCode.POST_ACCOUNTS_EMPTY_NAME);
         }
+        // eamil null 확인
+        if (registerDto.getEmail() == null || registerDto.getEmail().trim().length() == 0) {
+            throw new BusinessException(ErrorCode.POST_ACCOUNTS_EMPTY_EMAIL);
+        }
+        // email 형식 확인
         if (!ValidationRegex.isRegexEmail(registerDto.getEmail())){
             throw new BusinessException(ErrorCode.POST_ACCOUNTS_INVALID_EMAIL);
+        }
+        // pwd null 확인 + 공백 확인
+        if (registerDto.getPassword() ==null || registerDto.getPassword().trim().length() == 0 ) {
+            throw new BusinessException(ErrorCode.POST_ACCOUNTS_EMPTY_PWD);
         }
 
         String pwd;

@@ -29,7 +29,7 @@ public enum ErrorCode {
     EMAIL_SENDING_ERROR(false, 3003, "이메일 전송에 실패하였습니다."),
     POST_ACCOUNTS_EMPTY_EMAIL(false, 3004, "이메일을 입력해주세요."),
     POST_ACCOUNTS_EMPTY_NAME(false, 3005, "이름을 입력해주세요."),
-    POST_ACCOUNTS_INVALID_EMAIL(false, 3006, "이메일 형식이 잘 못 되었습니다."),
+    POST_ACCOUNTS_INVALID_EMAIL(false, 3006, "이메일 형식이 잘못되었습니다."),
     FAILED_TO_LOGIN(false, 3007, "비밀번호가 틀렸습니다."),
     IS_NOT_TRAINER(false,3008, "트레이너가 아닙니다."),
     INVALID_USERIDX(false, 3009, "잘못된 유저 식별자입니다."),
@@ -37,6 +37,7 @@ public enum ErrorCode {
     INVALID_EMAIL(false, 3009, "존재하지 않는 이메일입니다."),
     DELETE_ACCOUNT(false, 3010, "탈퇴한 계정입니다."),
     DISAGREE_TERM(false, 3011, "이용 약관에 동의하지 않으셨습니다."),
+    POST_ACCOUNTS_EMPTY_PWD(false, 3012, "비밀번호를 입력하지 않으셨습니다."),
 
     /*서버, DB 4000*/
     DATABASE_ERROR(false, 4000, "DB에 문제가 발생했습니다."),
