@@ -6,11 +6,14 @@ import fit.fitspring.controller.dto.matching.MatchingListForCust;
 import fit.fitspring.controller.dto.matching.MatchingListForTrainer;
 import fit.fitspring.domain.account.Account;
 import fit.fitspring.domain.account.AccountRepository;
+import fit.fitspring.domain.account.AccountType;
 import fit.fitspring.domain.matching.MatchingOrder;
 import fit.fitspring.domain.matching.MatchingOrderRepository;
 import fit.fitspring.domain.trainer.Trainer;
 import fit.fitspring.domain.trainer.TrainerRepository;
 import fit.fitspring.exception.common.BusinessException;
+import fit.fitspring.exception.common.ErrorCode;
+import fit.fitspring.utils.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,7 +31,6 @@ import static fit.fitspring.exception.common.ErrorCode.*;
 @Service
 public class MatchingService {
 
-    private final ChatService chatService;
     private final MatchingOrderRepository matchingOrderRepository;
     private final AccountRepository accountRepository;
     private final TrainerRepository trainerRepository;
@@ -104,4 +106,12 @@ public class MatchingService {
         MatchingOrder
         return matchingListForTrainerList;
     }*/
+
+    public List<MatchingOrder> getOwnMatchingList() {
+        Account account = accountRepository.findById(SecurityUtil.getLoginUserId())
+                .orElseThrow(() -> new BusinessException(ACCOUNT_NOT_FOUND));
+        return account.getAccountType().equals(AccountType.CUSTOMER) ?
+                account.getMatchingOrderList() :
+                account.getTrainer().getMatchingOrderList();
+    }
 }

@@ -1,21 +1,20 @@
 package fit.fitspring.chat;
 
+import fit.fitspring.chat.dto.ChatInfoDto;
 import fit.fitspring.chat.dto.ChatRoomAndUserDto;
 import fit.fitspring.chat.entity.*;
 import fit.fitspring.domain.account.Account;
-import fit.fitspring.domain.trainer.Trainer;
+import fit.fitspring.domain.matching.MatchingOrder;
 import fit.fitspring.exception.account.AccountNotFoundException;
 import fit.fitspring.service.AccountService;
-import fit.fitspring.service.TrainerService;
+import fit.fitspring.service.MatchingService;
 import fit.fitspring.utils.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.checkerframework.checker.units.qual.A;
-import org.checkerframework.checker.units.qual.C;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -23,10 +22,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ChatService {
     private final AccountService accountService;
-    private final TrainerService trainerService;
+    private final MatchingService matchingService;
     private final ChatRoomRepository chatRoomRepository;
     private final ChatBlockRepository chatBlockRepository;
-    private final ChatInfoRepository chatInfoRepository;
 
     //채팅방 하나 불러오기
     public ChatRoom findById(Long roomId) {
@@ -90,15 +88,25 @@ public class ChatService {
         chatBlockRepository.save(block);
     }
 
-    public ChatInfo addMatchingChat(String openChatLink, Long trainerIdx, Long customerId) {
-        Account customer = accountService.getById(customerId);
-        Trainer trainer = trainerService.getById(trainerIdx);
-
-        ChatInfo chatInfo = ChatInfo.builder()
-                .link(openChatLink)
-                .customer(customer)
-                .trainer(trainer)
+    public List<ChatInfoDto> findAllOwnedChats() {
+        List<MatchingOrder> matchings = matchingService.getOwnMatchingList();
+        List<ChatInfoDto> rets = new ArrayList<>();
+        for (MatchingOrder match : matchings) {
+            rets.add(toDto(match));
+        }
+        return rets;
+    }
+    private ChatInfoDto toDto(MatchingOrder match){
+        return ChatInfoDto.builder()
+                .openChatLink(match.getOpenChatLink())
+                .trainerId(match.getTrainer().getId())
+                .trainerName(match.getTrainer().getUser().getName())
+                .trainerGrade(match.getTrainer().getGrade())
+                .trainerSchool(match.getTrainer().getSchool())
+                .customerId(match.getCustomer().getId())
+                .pickUp(match.getPickUpType().getKrName())
+                .customerLocation(match.getCustomer().getLocation())
+                .createdAt(match.getCreatedDate())
                 .build();
-        return chatInfoRepository.save(chatInfo);
     }
 }

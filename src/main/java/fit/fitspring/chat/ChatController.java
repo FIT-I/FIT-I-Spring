@@ -1,9 +1,10 @@
 package fit.fitspring.chat;
 
+import fit.fitspring.chat.dto.ChatInfoDto;
 import fit.fitspring.chat.dto.ChatRoomAndUserDto;
+import fit.fitspring.chat.dto.MessageDto;
 import fit.fitspring.chat.entity.ChatMessageDto;
 import fit.fitspring.chat.entity.ChatRoom;
-import fit.fitspring.chat.entity.MessageDto;
 import fit.fitspring.response.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -18,12 +19,19 @@ import java.util.List;
 @RestController
 @Tag(name = "채팅 API")
 @RequiredArgsConstructor
-@RequestMapping("/chat")
+@RequestMapping("/api/chat")
 public class ChatController {
     private final ChatService chatService;
     private final MessageService messageService;
 
     // 사용자의 채팅방 목록 반환
+    @Operation(summary = "유저의 채팅방 조회", description = "해당 유저가 참여한 채팅방 목록 조회")
+    @GetMapping("/entered")
+    public BaseResponse<List<ChatInfoDto>> getEnteredChat() {
+        List<ChatInfoDto> ret = chatService.findAllOwnedChats();
+        return new BaseResponse<>(ret);
+    }
+
     @Operation(summary = "유저의 채팅방 조회 - Not Used", description = "해당 유저가 참여한 채팅방 목록 조회")
     @GetMapping("/rooms/users/{userId}")
     public List<ChatRoomAndUserDto> room(@Parameter(description = "유저 식별자") @PathVariable Long userId) {
