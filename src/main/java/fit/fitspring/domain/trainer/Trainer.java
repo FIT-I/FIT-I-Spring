@@ -2,6 +2,7 @@ package fit.fitspring.domain.trainer;
 
 import fit.fitspring.domain.account.Account;
 import fit.fitspring.domain.matching.MatchingOrder;
+import fit.fitspring.domain.redBell.RedBell;
 import fit.fitspring.domain.review.Review;
 import jakarta.persistence.*;
 import lombok.*;
@@ -58,6 +59,10 @@ public class Trainer {
     @Builder.Default
     @OneToMany(mappedBy = "trainer")
     private List<Review> reviewList = new ArrayList<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "trainer")
+    private List<RedBell> redBellList = new ArrayList<>();
 
     @Builder.Default
     @OneToMany(mappedBy = "trainer")

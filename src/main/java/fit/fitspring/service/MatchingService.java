@@ -81,22 +81,16 @@ public class MatchingService {
     @Transactional
     public void matchingAccept(Long trainerIdx, Long matchingIdx){
         MatchingOrder matchingOrder = matchingOrderRepository.findById(matchingIdx).orElseThrow(()->new BusinessException(MATCHING_NOT_FOUND));
-        if(matchingOrder.getTrainer().getId()!=trainerIdx)
+        if(!matchingOrder.getTrainer().getId().equals(trainerIdx))
             throw new BusinessException(PERMISSION_DENIED);
         matchingOrder.acceptMatching();
     }
     @Transactional
     public void matchingReject(Long trainerIdx, Long matchingIdx){
         MatchingOrder matchingOrder = matchingOrderRepository.findById(matchingIdx).orElseThrow(()->new BusinessException(MATCHING_NOT_FOUND));
-        if(matchingOrder.getTrainer().getId()!=trainerIdx)
+        if(!matchingOrder.getTrainer().getId().equals(trainerIdx))
             throw new BusinessException(PERMISSION_DENIED);
         matchingOrder.rejectMatching();
     }
 
-    /*
-    @Transactional
-    public MatchingInfo getMatchingInfo(Long matchingIdx){
-        MatchingOrder
-        return matchingListForTrainerList;
-    }*/
 }
