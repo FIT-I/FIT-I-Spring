@@ -1,31 +1,20 @@
 package fit.fitspring.service;
 
-import fit.fitspring.controller.dto.communal.AnnouncementDto;
-import fit.fitspring.controller.dto.communal.MyPageDto;
-import fit.fitspring.controller.dto.communal.ReviewDto;
-import fit.fitspring.controller.dto.communal.TermDto;
-import fit.fitspring.controller.dto.communal.TrainerInformationDto;
-import fit.fitspring.controller.dto.customer.WishDto;
+import fit.fitspring.controller.dto.communal.*;
+import fit.fitspring.controller.dto.trainer.TrainerInformationDto;
 import fit.fitspring.domain.account.*;
-import fit.fitspring.domain.matching.WishList;
 import fit.fitspring.domain.review.Review;
 import fit.fitspring.domain.trainer.*;
 import fit.fitspring.exception.common.BusinessException;
 import fit.fitspring.exception.common.ErrorCode;
 import fit.fitspring.utils.SecurityUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.parameters.P;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
-import static fit.fitspring.exception.common.ErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
@@ -80,13 +69,13 @@ public class CommunalService {
     }
 
     @Transactional
-    public TrainerInformationDto getTrainerInformation(Long trainerIdx){
+    public TrainerInformationForUserDto getTrainerInformation(Long trainerIdx){
         Optional<Trainer> optional = trainerRepository.findById(trainerIdx);
         if(optional.isEmpty()) {
             throw new BusinessException(ErrorCode.INVALID_TRAINERIDX);
         }
         Optional<UserImg> userImg = userImgRepository.findByTrainer(optional.get());
-        TrainerInformationDto trainerInfo = new TrainerInformationDto();
+        TrainerInformationForUserDto trainerInfo = new TrainerInformationForUserDto();
         trainerInfo.setName(optional.get().getUser().getName());
         trainerInfo.setProfile(userImg.get().getProfile());
         trainerInfo.setBackground(userImg.get().getBackGround());
@@ -107,8 +96,6 @@ public class CommunalService {
             imageList.add(i.getEtcImg());
         }
         trainerInfo.setImageList(imageList);
-        trainerInfo.setMatching_state(optional.get().getUser().getUserState().equals("A"));
-        trainerInfo.setCategory(convertCategoryForClient(optional.get().getCategory()));
         return trainerInfo;
     }
 
@@ -164,5 +151,19 @@ public class CommunalService {
             terms += Integer.toString(count) + "." + i.getTerm().getName() + ":" + i.getTerm().getDetail() + " ";
         }
         return terms;
+    }
+
+    @Transactional
+    public void modifyUserLocation(String location) throws BusinessException{
+        Optional<Account> optional = accountRepository.findById(SecurityUtil.getLoginUserId());
+        if(optional.isEmpty()){
+            throw new BusinessException(ErrorCode.INVALID_USERIDX);
+        }
+        optional.get().modifyLocation(location);
+        try{
+            accountRepository.save(optional.get());
+        } catch (Exception e){
+            throw new BusinessException(ErrorCode.DB_MODIFY_ERROR);
+        }
     }
 }

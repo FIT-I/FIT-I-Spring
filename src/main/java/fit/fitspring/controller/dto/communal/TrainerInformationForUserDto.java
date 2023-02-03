@@ -1,6 +1,5 @@
 package fit.fitspring.controller.dto.communal;
 
-import fit.fitspring.domain.trainer.Category;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,7 +13,7 @@ import java.util.List;
 @ToString
 @NoArgsConstructor
 @Schema(title = "트레이너정보")
-public class TrainerInformationDto {
+public class TrainerInformationForUserDto {
     @Schema(description = "이름", example = "홍길동")
     private String name;
     @Schema(description = "프로필이미지", example = "1.jpg")
@@ -37,8 +36,4 @@ public class TrainerInformationDto {
     private List<ReviewDto> reviewDto;
     @Schema(description = "사진및자격증리스트", example = "1.jpg")
     private List<String> imageList;
-    @Schema(description = "매칭 관리(on/off)", example = "true")
-    private boolean matching_state;
-    @Schema(description = "카테고리", example = "개인 PT")
-    private String category;
 }

@@ -140,18 +140,6 @@ public class CustomerController {
         }
     }
 
-    @Operation(summary = "매칭위치설정", description = "매칭위치설정(Request)")
-    @PatchMapping("/location/{location}")
-    public BaseResponse<String> modifyMatchingLocation(@Parameter(description = "위치")@PathVariable String location){
-        try{
-            //로그인 구현 후 수정
-            customerService.modifyUserLocation(location);
-            return new BaseResponse<>("매칭 위치를 변경하였습니다.");
-        }catch(BusinessException e){
-            return new BaseResponse<>(e.getErrorCode());
-        }
-    }
-
     @Operation(summary = "고객 프로필수정", description = "프로필수정(Request)")
     @PatchMapping("/profile/{profile}")
     public BaseResponse<String> modifyCustomerProfileImage(@Parameter(description = "프로필 문자열")@PathVariable String profile){
