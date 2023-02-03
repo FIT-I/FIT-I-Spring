@@ -1,5 +1,6 @@
 package fit.fitspring.chat;
 
+import fit.fitspring.chat.dto.MessageDto;
 import fit.fitspring.chat.entity.*;
 import fit.fitspring.controller.dto.firebase.FcmMessage;
 import fit.fitspring.service.AccountService;

@@ -46,6 +46,8 @@ public class MatchingOrder extends BaseTimeEntity {
     @Column(name = "is_complete")
     private String isComplete;
 
+    private String openChatLink;
+
     public void acceptMatching(){
         this.isComplete = "ACCEPT";
     }

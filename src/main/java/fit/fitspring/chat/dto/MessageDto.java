@@ -1,4 +1,4 @@
-package fit.fitspring.chat.entity;
+package fit.fitspring.chat.dto;
 
 import fit.fitspring.domain.account.Account;
 import jakarta.persistence.*;

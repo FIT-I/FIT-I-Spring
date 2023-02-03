@@ -1,18 +1,20 @@
 package fit.fitspring.chat;
 
+import fit.fitspring.chat.dto.ChatInfoDto;
 import fit.fitspring.chat.dto.ChatRoomAndUserDto;
 import fit.fitspring.chat.entity.*;
 import fit.fitspring.domain.account.Account;
+import fit.fitspring.domain.matching.MatchingOrder;
 import fit.fitspring.exception.account.AccountNotFoundException;
 import fit.fitspring.service.AccountService;
+import fit.fitspring.service.MatchingService;
 import fit.fitspring.utils.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -20,27 +22,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ChatService {
     private final AccountService accountService;
+    private final MatchingService matchingService;
     private final ChatRoomRepository chatRoomRepository;
     private final ChatBlockRepository chatBlockRepository;
-    //private Map<Long, ChatRoom> chatRooms;
-
-    /*
-    @PostConstruct
-    //의존관게 주입완료되면 실행되는 코드
-    private void init() {
-        chatRooms = new LinkedHashMap<>();
-    }
-     */
-
-    //채팅방 불러오기
-    /*
-    public List<ChatRoom> findAllRoom() {
-        //채팅방 최근 생성 순으로 반환
-        //List<ChatRoom> result = new ArrayList<>(chatRooms.values());
-        Collections.reverse(result);
-        return result;
-    }
-     */
 
     //채팅방 하나 불러오기
     public ChatRoom findById(Long roomId) {
@@ -102,5 +86,27 @@ public class ChatService {
                 .sender(accountService.getById(blockId))
                 .build();
         chatBlockRepository.save(block);
+    }
+
+    public List<ChatInfoDto> findAllOwnedChats() {
+        List<MatchingOrder> matchings = matchingService.getOwnMatchingList();
+        List<ChatInfoDto> rets = new ArrayList<>();
+        for (MatchingOrder match : matchings) {
+            rets.add(toDto(match));
+        }
+        return rets;
+    }
+    private ChatInfoDto toDto(MatchingOrder match){
+        return ChatInfoDto.builder()
+                .openChatLink(match.getOpenChatLink())
+                .trainerId(match.getTrainer().getId())
+                .trainerName(match.getTrainer().getUser().getName())
+                .trainerGrade(match.getTrainer().getGrade())
+                .trainerSchool(match.getTrainer().getSchool())
+                .customerId(match.getCustomer().getId())
+                .pickUp(match.getPickUpType().getKrName())
+                .customerLocation(match.getCustomer().getLocation())
+                .createdAt(match.getCreatedDate())
+                .build();
     }
 }

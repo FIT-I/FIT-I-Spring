@@ -1,15 +1,19 @@
 package fit.fitspring.service;
 
+import fit.fitspring.chat.ChatService;
 import fit.fitspring.controller.dto.matching.MatchingInfo;
 import fit.fitspring.controller.dto.matching.MatchingListForCust;
 import fit.fitspring.controller.dto.matching.MatchingListForTrainer;
 import fit.fitspring.domain.account.Account;
 import fit.fitspring.domain.account.AccountRepository;
+import fit.fitspring.domain.account.AccountType;
 import fit.fitspring.domain.matching.MatchingOrder;
 import fit.fitspring.domain.matching.MatchingOrderRepository;
 import fit.fitspring.domain.trainer.Trainer;
 import fit.fitspring.domain.trainer.TrainerRepository;
 import fit.fitspring.exception.common.BusinessException;
+import fit.fitspring.exception.common.ErrorCode;
+import fit.fitspring.utils.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -79,11 +83,14 @@ public class MatchingService {
     }
 
     @Transactional
-    public void matchingAccept(Long trainerIdx, Long matchingIdx){
-        MatchingOrder matchingOrder = matchingOrderRepository.findById(matchingIdx).orElseThrow(()->new BusinessException(MATCHING_NOT_FOUND));
+    public void matchingAccept(Long trainerIdx, Long matchingIdx, String openChatLink){
+        MatchingOrder matchingOrder = matchingOrderRepository.findById(matchingIdx)
+                .orElseThrow(()->new BusinessException(MATCHING_NOT_FOUND));
         if(!matchingOrder.getTrainer().getId().equals(trainerIdx))
             throw new BusinessException(PERMISSION_DENIED);
+
         matchingOrder.acceptMatching();
+        matchingOrder.setOpenChatLink(openChatLink);
     }
     @Transactional
     public void matchingReject(Long trainerIdx, Long matchingIdx){
@@ -91,6 +98,22 @@ public class MatchingService {
         if(!matchingOrder.getTrainer().getId().equals(trainerIdx))
             throw new BusinessException(PERMISSION_DENIED);
         matchingOrder.rejectMatching();
+    }
+
+
+    /*
+    @Transactional
+    public MatchingInfo getMatchingInfo(Long matchingIdx){
+        MatchingOrder
+        return matchingListForTrainerList;
+    }*/
+
+    public List<MatchingOrder> getOwnMatchingList() {
+        Account account = accountRepository.findById(SecurityUtil.getLoginUserId())
+                .orElseThrow(() -> new BusinessException(ACCOUNT_NOT_FOUND));
+        return account.getAccountType().equals(AccountType.CUSTOMER) ?
+                account.getMatchingOrderList() :
+                account.getTrainer().getMatchingOrderList();
     }
 
 }

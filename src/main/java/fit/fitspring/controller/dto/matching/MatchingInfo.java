@@ -35,12 +35,16 @@ public class MatchingInfo {
     @Schema(description = "매칭 장소(픽업타입이 TRAINER_GO일 경우만 제공 됨)", example = "서울특별시 상도로 50")
     private String location;
 
+    @Schema(description = "오픈 채팅 링크 (수락 후 생성됨)", example = "bit.ly.,eqe")
+    private String openChatLink;
+
     public MatchingInfo(MatchingOrder entity,String matchingStart, String MatchingFinish, int matchingPeriod) {
         this.matchingId = entity.getId();
         this.customerId = entity.getCustomer().getId();
         this.name = entity.getCustomer().getName();
         this.pricePerHour = String.valueOf(entity.getTrainer().getPriceHour());
         this.totalPrice = String.valueOf(entity.getTrainer().getPriceHour());
+        this.openChatLink = entity.getOpenChatLink();
         this.matchingStart = matchingStart;
         this.matchingFinish = MatchingFinish;
         this.matchingPeriod = matchingPeriod;

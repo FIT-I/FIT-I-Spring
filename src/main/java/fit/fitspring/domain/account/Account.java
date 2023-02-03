@@ -99,6 +99,8 @@ public class Account extends BaseTimeEntity implements UserDetails {
 
     @OneToOne(mappedBy = "account")
     private FCMToken fcmToken;
+
+
     public void updateName(String name){
         this.name=name;
     }

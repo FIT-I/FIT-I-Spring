@@ -157,6 +157,10 @@ public class TrainerService {
         return new TrainerMainRes(trainer,category,certificateNum);
     }
 
+
+    public Trainer getById(Long trainerIdx) {
+        return trainerRepository.getReferenceById(trainerIdx);
+
     @Transactional
     public TrainerInformationDto getTrainerInformation(Long trainerIdx){
         Optional<Trainer> optional = trainerRepository.findById(trainerIdx);
@@ -188,5 +192,6 @@ public class TrainerService {
         trainerInfo.setMatching_state(optional.get().getUser().getUserState().equals("A"));
         trainerInfo.setCategory(communalService.convertCategoryForClient(optional.get().getCategory()));
         return trainerInfo;
+
     }
 }
