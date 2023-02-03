@@ -182,20 +182,6 @@ public class CustomerService {
     }
 
     @Transactional
-    public void modifyUserLocation(String location) throws BusinessException{
-        Optional<Account> optional = accountRepository.findById(SecurityUtil.getLoginUserId());
-        if(optional.isEmpty()){
-            throw new BusinessException(ErrorCode.INVALID_USERIDX);
-        }
-        optional.get().modifyLocation(location);
-        try{
-            accountRepository.save(optional.get());
-        } catch (Exception e){
-            throw new BusinessException(ErrorCode.DB_MODIFY_ERROR);
-        }
-    }
-
-    @Transactional
     public List<WishDto> getWishList() throws BusinessException{
         Optional<Account> optional = accountRepository.findById(SecurityUtil.getLoginUserId());
         if(optional.isEmpty()){

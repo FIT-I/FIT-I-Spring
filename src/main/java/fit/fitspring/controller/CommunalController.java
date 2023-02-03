@@ -79,4 +79,15 @@ public class CommunalController {
     public BaseResponse<String> getAllTermContents(){
         return new BaseResponse<>(communalService.getAllTermContents());
     }
+
+    @Operation(summary = "매칭위치설정", description = "매칭위치설정(Request)")
+    @PatchMapping("/location/{location}")
+    public BaseResponse<String> modifyMatchingLocation(@Parameter(description = "위치")@PathVariable String location){
+        try{
+            communalService.modifyUserLocation(location);
+            return new BaseResponse<>("매칭 위치를 변경하였습니다.");
+        }catch(BusinessException e){
+            return new BaseResponse<>(e.getErrorCode());
+        }
+    }
 }
