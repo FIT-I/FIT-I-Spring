@@ -99,7 +99,7 @@ public class TrainerService {
     public void deleteEtcImg(Long trainerIdx, Long etcImgIdx) throws BusinessException {
         Trainer trainer = trainerRepository.getReferenceById(trainerIdx);
         EtcImg etcImg = etcImgRepository.findById(etcImgIdx).orElseThrow(()-> new BusinessException(NOT_FOUND_IMG));
-        if(etcImg.getUserImg().getTrainer()!=trainer){
+        if(!etcImg.getUserImg().getTrainer().equals(trainer)){
             throw new BusinessException(PERMISSION_DENIED);
         }
         etcImgRepository.delete(etcImg);
