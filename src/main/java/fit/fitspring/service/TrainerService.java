@@ -160,6 +160,7 @@ public class TrainerService {
 
     public Trainer getById(Long trainerIdx) {
         return trainerRepository.getReferenceById(trainerIdx);
+    }
 
     @Transactional
     public TrainerInformationDto getTrainerInformation(Long trainerIdx){
