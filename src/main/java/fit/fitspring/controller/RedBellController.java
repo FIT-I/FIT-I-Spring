@@ -1,6 +1,5 @@
 package fit.fitspring.controller;
 
-import fit.fitspring.controller.dto.communal.TrainerInformationDto;
 import fit.fitspring.controller.dto.redBell.ReasonListRes;
 import fit.fitspring.controller.dto.redBell.RedBellReq;
 import fit.fitspring.controller.dto.trainer.UpdateTrainerInfoReq;
