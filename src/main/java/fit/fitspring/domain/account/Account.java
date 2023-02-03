@@ -7,6 +7,7 @@ import fit.fitspring.domain.BaseTimeEntity;
 import fit.fitspring.domain.firebase.FCMToken;
 import fit.fitspring.domain.matching.MatchingOrder;
 import fit.fitspring.domain.matching.WishList;
+import fit.fitspring.domain.redBell.RedBell;
 import fit.fitspring.domain.review.Review;
 import fit.fitspring.domain.trainer.Trainer;
 import jakarta.persistence.*;
@@ -64,6 +65,10 @@ public class Account extends BaseTimeEntity implements UserDetails {
     @Builder.Default
     @OneToMany(mappedBy = "customer")
     private List<Review> reviewList = new ArrayList<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "customer")
+    private List<RedBell> redBellList = new ArrayList<>();
 
     @Builder.Default
     @OneToMany(mappedBy = "customer")

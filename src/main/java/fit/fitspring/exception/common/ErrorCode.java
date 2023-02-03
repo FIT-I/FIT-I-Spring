@@ -34,16 +34,16 @@ public enum ErrorCode {
     IS_NOT_TRAINER(false,3008, "트레이너가 아닙니다."),
     INVALID_USERIDX(false, 3009, "잘못된 유저 식별자입니다."),
     INVALID_TRAINERIDX(false, 3010, "잘못된 트레이너 식별자입니다."),
-    INVALID_EMAIL(false, 3009, "존재하지 않는 이메일입니다."),
-    DELETE_ACCOUNT(false, 3010, "탈퇴한 계정입니다."),
-    DISAGREE_TERM(false, 3011, "이용 약관에 동의하지 않으셨습니다."),
-    POST_ACCOUNTS_EMPTY_PWD(false, 3012, "비밀번호를 입력하지 않으셨습니다."),
+    INVALID_EMAIL(false, 3011, "존재하지 않는 이메일입니다."),
+    DELETE_ACCOUNT(false, 3012, "탈퇴한 계정입니다."),
+    DISAGREE_TERM(false, 3013, "이용 약관에 동의하지 않으셨습니다."),
+    POST_ACCOUNTS_EMPTY_PWD(false, 3014, "비밀번호를 입력하지 않으셨습니다."),
 
     /*서버, DB 4000*/
     DATABASE_ERROR(false, 4000, "DB에 문제가 발생했습니다."),
     DB_INSERT_ERROR(false, 4001, "데이터 저장 오류가 발생하였습니다."),
     DB_MODIFY_ERROR(false, 4002, "데이터 수정 오류가 발생하였습니다."),
-    NO_EXIST_LEVEL_DATA(false, 6001, "DB에 LEVEL 데이터가 존재하지 않습니다."),
+    NO_EXIST_LEVEL_DATA(false, 4003, "DB에 LEVEL 데이터가 존재하지 않습니다."),
 
 
     /*매칭, 좋아요 5000*/

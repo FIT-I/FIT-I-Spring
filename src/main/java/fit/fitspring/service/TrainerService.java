@@ -1,5 +1,7 @@
 package fit.fitspring.service;
 
+import fit.fitspring.controller.dto.communal.ReviewDto;
+import fit.fitspring.controller.dto.trainer.TrainerInformationDto;
 import fit.fitspring.controller.dto.trainer.TrainerMainRes;
 import fit.fitspring.controller.dto.trainer.UpdateTrainerInfoReq;
 import fit.fitspring.domain.trainer.*;
@@ -20,7 +22,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.security.Principal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static fit.fitspring.exception.common.ErrorCode.*;
@@ -102,7 +105,7 @@ public class TrainerService {
     public void deleteEtcImg(Long trainerIdx, Long etcImgIdx) throws BusinessException {
         Trainer trainer = trainerRepository.getReferenceById(trainerIdx);
         EtcImg etcImg = etcImgRepository.findById(etcImgIdx).orElseThrow(()-> new BusinessException(NOT_FOUND_IMG));
-        if(etcImg.getUserImg().getTrainer()!=trainer){
+        if(!etcImg.getUserImg().getTrainer().equals(trainer)){
             throw new BusinessException(PERMISSION_DENIED);
         }
         etcImgRepository.delete(etcImg);
@@ -154,7 +157,41 @@ public class TrainerService {
         return new TrainerMainRes(trainer,category,certificateNum);
     }
 
+
     public Trainer getById(Long trainerIdx) {
         return trainerRepository.getReferenceById(trainerIdx);
+
+    @Transactional
+    public TrainerInformationDto getTrainerInformation(Long trainerIdx){
+        Optional<Trainer> optional = trainerRepository.findById(trainerIdx);
+        if(optional.isEmpty()) {
+            throw new BusinessException(ErrorCode.INVALID_TRAINERIDX);
+        }
+        Optional<UserImg> userImg = userImgRepository.findByTrainer(optional.get());
+        TrainerInformationDto trainerInfo = new TrainerInformationDto();
+        trainerInfo.setName(optional.get().getUser().getName());
+        trainerInfo.setProfile(userImg.get().getProfile());
+        trainerInfo.setBackground(userImg.get().getBackGround());
+        trainerInfo.setLevelName(optional.get().getLevel().getName());
+        trainerInfo.setSchool(optional.get().getSchool());
+        trainerInfo.setGrade(optional.get().getGrade());
+        trainerInfo.setCost(String.valueOf(optional.get().getPriceHour()));
+        trainerInfo.setIntro(optional.get().getIntro());
+        trainerInfo.setService(optional.get().getService());
+        List<ReviewDto> reviewList = communalService.getTrainerReviewList(trainerIdx);
+        if(reviewList.toArray().length > 3){
+            reviewList = reviewList.subList(0, 3);
+        }
+        trainerInfo.setReviewDto(reviewList);
+        List<EtcImg> etcImgList = userImg.get().getEtcImgList();
+        List<String> imageList = new ArrayList<>();
+        for(EtcImg i : etcImgList){
+            imageList.add(i.getEtcImg());
+        }
+        trainerInfo.setImageList(imageList);
+        trainerInfo.setMatching_state(optional.get().getUser().getUserState().equals("A"));
+        trainerInfo.setCategory(communalService.convertCategoryForClient(optional.get().getCategory()));
+        return trainerInfo;
+
     }
 }

@@ -1,6 +1,6 @@
 package fit.fitspring.controller;
 
-import fit.fitspring.controller.dto.communal.TrainerInformationDto;
+import fit.fitspring.controller.dto.trainer.TrainerInformationDto;
 import fit.fitspring.controller.dto.trainer.CategoryReq;
 import fit.fitspring.controller.dto.trainer.TrainerMainRes;
 import fit.fitspring.controller.dto.trainer.UpdateTrainerInfoReq;
@@ -19,12 +19,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.security.Principal;
 import java.util.List;
 
 @Slf4j
@@ -49,7 +46,7 @@ public class TrainerController {
             return new BaseResponse<>(new TrainerException().getErrorCode());
         }
         trainerService.updateTrainerInfo(trainerIdx, req);
-        TrainerInformationDto trainerInformationDto = communalService.getTrainerInformation(trainerIdx);
+        TrainerInformationDto trainerInformationDto = trainerService.getTrainerInformation(trainerIdx);
         return new BaseResponse<>(trainerInformationDto);
     }
 
@@ -148,7 +145,7 @@ public class TrainerController {
     public BaseResponse<TrainerInformationDto> getTrainerInformation(){
         try{
             Long trainerIdx = SecurityUtil.getLoginUserId();
-            return new BaseResponse<>(communalService.getTrainerInformation(trainerIdx));
+            return new BaseResponse<>(trainerService.getTrainerInformation(trainerIdx));
         } catch(BusinessException e){
             return new BaseResponse<>(e.getErrorCode());
         }

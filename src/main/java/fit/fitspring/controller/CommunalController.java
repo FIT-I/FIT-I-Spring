@@ -1,11 +1,8 @@
 package fit.fitspring.controller;
 
 import fit.fitspring.controller.dto.communal.*;
-import fit.fitspring.controller.dto.customer.WishDto;
-import fit.fitspring.domain.review.Review;
+import fit.fitspring.controller.dto.trainer.TrainerInformationDto;
 import fit.fitspring.exception.common.BusinessException;
-import fit.fitspring.exception.common.ErrorCode;
-import fit.fitspring.exception.trainer.TrainerException;
 import fit.fitspring.response.BaseResponse;
 import fit.fitspring.service.CommunalService;
 import fit.fitspring.service.CustomerService;
@@ -14,11 +11,8 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.security.Principal;
 import java.util.List;
 
 @Slf4j
@@ -33,7 +27,7 @@ public class CommunalController {
 
     @Operation(summary = "트레이너 정보조회", description = "트레이너 정보조회(Request/Response)")
     @GetMapping("/trainer/{trainerIdx}")
-    public BaseResponse<TrainerInformationDto> getTrainerInformation(@Parameter(description = "트레이너 식별자")@PathVariable Long trainerIdx){
+    public BaseResponse<TrainerInformationForUserDto> getTrainerInformation(@Parameter(description = "트레이너 식별자")@PathVariable Long trainerIdx){
         try{
             return new BaseResponse<>(communalService.getTrainerInformation(trainerIdx));
         } catch(BusinessException e){
@@ -78,5 +72,16 @@ public class CommunalController {
     @GetMapping("/terms/all")
     public BaseResponse<String> getAllTermContents(){
         return new BaseResponse<>(communalService.getAllTermContents());
+    }
+
+    @Operation(summary = "매칭위치설정", description = "매칭위치설정(Request)")
+    @PatchMapping("/location/{location}")
+    public BaseResponse<String> modifyMatchingLocation(@Parameter(description = "위치")@PathVariable String location){
+        try{
+            communalService.modifyUserLocation(location);
+            return new BaseResponse<>("매칭 위치를 변경하였습니다.");
+        }catch(BusinessException e){
+            return new BaseResponse<>(e.getErrorCode());
+        }
     }
 }
