@@ -72,7 +72,7 @@ public class MatchingController {
     @Operation(summary = "매칭 수락", description = "매칭 수락하기")
     @PatchMapping("/{matchingIdx}/accept")
     public BaseResponse<String> MatchingAccept(@Parameter(description = "매칭식별자", in = ParameterIn.PATH)@PathVariable Long matchingIdx,
-                                               @Parameter(description = "오픈 채팅 링크")@RequestParam(required = false) String openChatLink){
+                                               @Parameter(description = "오픈 채팅 링크")@RequestParam String openChatLink){
         Long trainerIdx = SecurityUtil.getLoginUserId();
         try{
             matchingService.matchingAccept(trainerIdx, matchingIdx, openChatLink);
