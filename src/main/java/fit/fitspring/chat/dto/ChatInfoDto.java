@@ -22,4 +22,7 @@ public class ChatInfoDto {
     private String customerLocation;
 
     private LocalDateTime createdAt;
+
+    private Long matchingId;
+    private String trainerProfile;
 }
