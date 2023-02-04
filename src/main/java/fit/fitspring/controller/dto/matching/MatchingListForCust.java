@@ -29,8 +29,6 @@ public class MatchingListForCust {
     @Schema(description = "보낸 날짜(몇일 전인지)", example = "2")
     private int orderDateGap;
 
-    @Schema(description = "오픈 채팅 링크 (수락 후 생성됨)", example = "bit.ly.,eqe")
-    private String openChatLink;
 
     public MatchingListForCust(MatchingOrder entity, String orderDate, int orderDateGap) {
         this.matchingId = entity.getId();
@@ -39,7 +37,6 @@ public class MatchingListForCust {
         this.profile = entity.getTrainer().getUserImg().getProfile();
         this.school = entity.getTrainer().getSchool();
         this.grade = entity.getTrainer().getGrade();
-        this.openChatLink = entity.getOpenChatLink();
         this.orderDate = orderDate;
         this.orderDateGap = orderDateGap;
     }
