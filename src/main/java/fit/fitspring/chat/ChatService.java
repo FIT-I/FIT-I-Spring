@@ -107,6 +107,8 @@ public class ChatService {
                 .pickUp(match.getPickUpType().getKrName())
                 .customerLocation(match.getCustomer().getLocation())
                 .createdAt(match.getCreatedDate())
+                .matchingId(match.getId())
+                .trainerProfile(match.getTrainer().getUserImg().getProfile())
                 .build();
     }
 }
