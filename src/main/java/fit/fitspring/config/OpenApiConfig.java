@@ -10,6 +10,7 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
+import io.swagger.v3.oas.models.servers.Server;
 import org.apache.catalina.connector.Request;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -25,19 +26,6 @@ import java.util.List;
 
 @Configuration
 public class OpenApiConfig {
-//
-//    @Bean
-//    public Docket api() {
-//        return new Docket(DocumentationType.SWAGGER_2)
-//                .useDefaultResponseMessages(false)
-//                .apiInfo(apiInfo())
-//                .select()
-//                .apis(RequestHandlerSelectors.basePackage("fit.fitspring.controller"))
-//                .paths(PathSelectors.any())
-//                .build();
-//    }
-//
-//}
 
     private static final String API_NAME = "Fit-I API";
     private static final String API_VERSION = "1.0.0";
