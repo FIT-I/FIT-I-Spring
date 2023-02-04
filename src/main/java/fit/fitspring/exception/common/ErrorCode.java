@@ -38,6 +38,7 @@ public enum ErrorCode {
     DELETE_ACCOUNT(false, 3012, "탈퇴한 계정입니다."),
     DISAGREE_TERM(false, 3013, "이용 약관에 동의하지 않으셨습니다."),
     POST_ACCOUNTS_EMPTY_PWD(false, 3014, "비밀번호를 입력하지 않으셨습니다."),
+    ALREADY_REGISTERED_REVIEW(false, 3015, "이미 리뷰를 작성한 트레이너입니다."),
 
     /*서버, DB 4000*/
     DATABASE_ERROR(false, 4000, "DB에 문제가 발생했습니다."),
