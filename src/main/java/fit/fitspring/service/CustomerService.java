@@ -166,7 +166,7 @@ public class CustomerService {
         try{
             reviewRepository.save(review);
         } catch (Exception e){
-            throw new BusinessException(ErrorCode.DB_INSERT_ERROR);
+            throw new BusinessException(ErrorCode.ALREADY_REGISTERED_REVIEW);
         }
         List<Review> reviewList = optionalT.get().getReviewList();
         Float reviewGrade = 0f;

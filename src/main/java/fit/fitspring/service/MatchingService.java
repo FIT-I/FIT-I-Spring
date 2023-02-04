@@ -88,9 +88,10 @@ public class MatchingService {
                 .orElseThrow(()->new BusinessException(MATCHING_NOT_FOUND));
         if(!matchingOrder.getTrainer().getId().equals(trainerIdx))
             throw new BusinessException(PERMISSION_DENIED);
-
-        matchingOrder.acceptMatching();
-        matchingOrder.setOpenChatLink(openChatLink);
+        if(openChatLink != null){
+            matchingOrder.acceptMatching();
+            matchingOrder.setOpenChatLink(openChatLink);
+        }
     }
     @Transactional
     public void matchingReject(Long trainerIdx, Long matchingIdx){
