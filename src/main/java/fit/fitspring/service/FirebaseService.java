@@ -71,9 +71,8 @@ public class FirebaseService {
     }
 
     public void deleteTokenByEmail(String email) {
-        FCMToken token = firebaseRepository.findByAccount(accountService.getByEmail(email))
-                .orElseThrow(EntityNotFoundException::new);
-        firebaseRepository.delete(token);
+        firebaseRepository.findByAccount(accountService.getByEmail(email))
+                .ifPresent(firebaseRepository::delete);
     }
 
     /**
