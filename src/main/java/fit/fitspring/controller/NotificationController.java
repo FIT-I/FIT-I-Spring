@@ -29,12 +29,21 @@ public class NotificationController {
         return new BaseResponse<>("전송 완료");
     }
 
-    @Operation(summary = "알림 전송", description = "해당 유저에게 전송한다.")
+    @Operation(summary = "알림 전송", description = "해당 유저에게 전송한다. By Email")
     @PostMapping("/users/{email}")
     public BaseResponse<String> sendNotificationByEmail(@Parameter(description = "이메일") @RequestParam String email,
                                    @Parameter(description = "알림 제목") @RequestBody String title,
                                    @Parameter(description = "알림 내용") @RequestBody String body) throws Exception {
         firebaseService.sendMessage(email, title, body);
         return new BaseResponse<>("전송 완료");
+    }
+
+    @Operation(summary = "알림 전송", description = "해당 유저에게 전송한다. By Id")
+    @PostMapping("/users/{email}")
+    public ResponseEntity sendNotificationById(@Parameter(description = "Id") @RequestParam Long id,
+                                                  @Parameter(description = "알림 제목") @RequestBody String title,
+                                                  @Parameter(description = "알림 내용") @RequestBody String body) throws Exception {
+        firebaseService.sendMessage(id, title, body);
+        return ResponseEntity.ok().build();
     }
 }

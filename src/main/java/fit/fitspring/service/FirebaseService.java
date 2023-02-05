@@ -81,6 +81,9 @@ public class FirebaseService {
     public void sendMessage(FcmMessage message) throws IOException {
         try {
             sendMessage(message, accessToken);
+        } catch (EntityNotFoundException e){
+            // 대상에게 토큰이 없는 것은 오류라고 볼 수 없음
+            return;
         } catch (Exception e) {
             this.accessToken = getAccessToken();
             sendMessage(message, accessToken);
@@ -90,6 +93,11 @@ public class FirebaseService {
     /* 이메일을 통해 토큰을 찾고 해당 토큰으로 알림을 전송 */
     public void sendMessage(String email, String title, String body) throws Exception {
         String token = findByEmail(email).getToken();
+        sendMessage(makeMessage(token, title, body));
+    }
+    /* ID를 통해 토큰을 찾고 해당 토큰으로 알림을 전송 */
+    public void sendMessage(Long id, String title, String body) throws Exception {
+        String token = findById(id).getToken();
         sendMessage(makeMessage(token, title, body));
     }
 
@@ -105,6 +113,10 @@ public class FirebaseService {
 
     private FCMToken findByEmail(String email){
         Account account = accountService.getByEmail(email);
+        return firebaseRepository.findByAccount(account).orElseThrow(() -> new BusinessException(ErrorCode.IS_NOT_TRAINER));
+    }
+    private FCMToken findById(Long id){
+        Account account = accountService.getById(id);
         return firebaseRepository.findByAccount(account).orElseThrow(EntityNotFoundException::new);
     }
 
