@@ -113,8 +113,8 @@ public class MatchingService {
         Account account = accountRepository.findById(SecurityUtil.getLoginUserId())
                 .orElseThrow(() -> new BusinessException(ACCOUNT_NOT_FOUND));
         return account.getAccountType().equals(AccountType.CUSTOMER) ?
-                account.getMatchingOrderList() :
-                account.getTrainer().getMatchingOrderList();
+                matchingOrderRepository.findAllByCustomerAndIsCompleteLikeOrderByIdDesc(account, "ACCEPT") :
+                matchingOrderRepository.findAllByTrainerAndIsCompleteLikeOrderByIdDesc(account.getTrainer(),"ACCEPT");
     }
 
 }
