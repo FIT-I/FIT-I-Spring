@@ -14,6 +14,7 @@ import fit.fitspring.domain.firebase.FirebaseRepository;
 import fit.fitspring.exception.common.BusinessException;
 import fit.fitspring.exception.common.ErrorCode;
 import fit.fitspring.response.BaseResponse;
+import fit.fitspring.utils.SecurityUtil;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -54,8 +55,9 @@ public class FirebaseService {
         }
     }
 
-    public void storeToken(String email, String token) {
-        Account account = accountService.getByEmail(email);
+    public void storeToken(String token) {
+        Long id = SecurityUtil.getLoginUserId();
+        Account account = accountService.getById(id);
         if (account.getFcmToken().getToken().equals(token)){
             throw new BusinessException(ErrorCode.ALREADY_HAS_FCM_TOKEN);
         }
@@ -70,8 +72,8 @@ public class FirebaseService {
         }
     }
 
-    public void deleteTokenByEmail(String email) {
-        firebaseRepository.findByAccount(accountService.getByEmail(email))
+    public void deleteTokenByEmail(Long id) {
+        firebaseRepository.findByAccount(accountService.getById(id))
                 .ifPresent(firebaseRepository::delete);
     }
 
