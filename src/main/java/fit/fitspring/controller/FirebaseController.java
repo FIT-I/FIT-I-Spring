@@ -1,6 +1,7 @@
 package fit.fitspring.controller;
 
 import fit.fitspring.controller.dto.firebase.FcmTokenDto;
+import fit.fitspring.response.BaseResponse;
 import fit.fitspring.service.FirebaseService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -20,15 +21,15 @@ public class FirebaseController {
 
     @Operation(summary = "토큰 저장", description = "해당 유저의 토큰을 저장")
     @PostMapping()
-    public ResponseEntity storeToken(@RequestBody FcmTokenDto dto){
+    public BaseResponse<String> storeToken(@RequestBody FcmTokenDto dto){
         firebaseService.storeToken(dto.getEmail(), dto.getToken());
-        return ResponseEntity.ok().build();
+        return new BaseResponse<String>("토큰 저장 완료");
     }
 
     @Operation(summary = "토큰 삭제", description = "해당 유저의 토큰을 삭제")
     @DeleteMapping("/users/{email}")
-    public ResponseEntity deleteTokenByUser(@Parameter(description = "이메일") @PathVariable String email){
+    public BaseResponse<String> deleteTokenByUser(@Parameter(description = "이메일") @PathVariable String email){
         firebaseService.deleteTokenByEmail(email);
-        return ResponseEntity.ok().build();
+        return new BaseResponse<String>("토큰 삭제 완료");
     }
 }
