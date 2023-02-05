@@ -60,7 +60,13 @@ public enum ErrorCode {
 
 
     /*AWS 7000*/
-    AWS_S3UPLOADER_ERROR(false, 7001, "aws s3 이미지 업로드 오류가 발생하였습니다.")
+    AWS_S3UPLOADER_ERROR(false, 7001, "aws s3 이미지 업로드 오류가 발생하였습니다."),
+
+    /*알림 토큰 8000*/
+    SOMEONE_HAS_FCM_TOKEN(false, 8001, "동일한 토큰을 타인이 가지고 있습니다."),
+    ALREADY_HAS_FCM_TOKEN(false, 8002, "동일한 토큰을 이미 가지고 있습니다.")
+
+
     ;
 
     private final boolean isSuccess;

@@ -13,6 +13,7 @@ import fit.fitspring.domain.firebase.FCMToken;
 import fit.fitspring.domain.firebase.FirebaseRepository;
 import fit.fitspring.exception.common.BusinessException;
 import fit.fitspring.exception.common.ErrorCode;
+import fit.fitspring.response.BaseResponse;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -54,17 +55,24 @@ public class FirebaseService {
     }
 
     public void storeToken(String email, String token) {
+        Account account = accountService.getByEmail(email);
+        if (account.getFcmToken().getToken().equals(token)){
+            throw new BusinessException(ErrorCode.ALREADY_HAS_FCM_TOKEN);
+        }
         FCMToken tokenEntity = FCMToken.builder()
-                .account(accountService.getByEmail(email))
+                .account(account)
                 .token(token)
                 .build();
-        firebaseRepository.save(tokenEntity);
+        try {
+            firebaseRepository.save(tokenEntity);
+        } catch (Exception e) {
+            throw new BusinessException(ErrorCode.SOMEONE_HAS_FCM_TOKEN);
+        }
     }
 
     public void deleteTokenByEmail(String email) {
-        FCMToken token = firebaseRepository.findByAccount(accountService.getByEmail(email))
-                .orElseThrow(EntityNotFoundException::new);
-        firebaseRepository.delete(token);
+        firebaseRepository.findByAccount(accountService.getByEmail(email))
+                .ifPresent(firebaseRepository::delete);
     }
 
     /**
