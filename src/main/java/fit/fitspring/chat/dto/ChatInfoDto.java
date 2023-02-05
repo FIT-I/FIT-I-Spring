@@ -18,6 +18,7 @@ public class ChatInfoDto {
     private String trainerSchool;
 
     private Long customerId;
+    private String customerName;
     private String pickUp;
     private String customerLocation;
 

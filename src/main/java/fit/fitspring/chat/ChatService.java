@@ -103,6 +103,7 @@ public class ChatService {
                 .trainerName(match.getTrainer().getUser().getName())
                 .trainerGrade(match.getTrainer().getGrade())
                 .trainerSchool(match.getTrainer().getSchool())
+                .customerName(match.getCustomer().getName())
                 .customerId(match.getCustomer().getId())
                 .pickUp(match.getPickUpType().getKrName())
                 .customerLocation(match.getCustomer().getLocation())
