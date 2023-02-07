@@ -84,4 +84,7 @@ public class Trainer {
     public void modifyCategory(Category category){
         this.category = category;
     }
+    public void modifyOpenChatLink(String openChatLink){
+        this.openChatLink = openChatLink;
+    }
 }

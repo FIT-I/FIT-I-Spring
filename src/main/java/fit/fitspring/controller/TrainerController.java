@@ -161,4 +161,16 @@ public class TrainerController {
             return new BaseResponse<>(e.getErrorCode());
         }
     }
+
+    @Operation(summary = "트레이너 오픈채팅링크 수정", description = "트레이너 오픈채팅링크 수정(Request)")
+    @PatchMapping("/chat/{openChatLink}")
+    public BaseResponse<String> modifyOpenChatLink(@Parameter(description = "오픈채팅링크", in = ParameterIn.PATH)@PathVariable String openChatLink){
+        try{
+            Long trainerIdx = SecurityUtil.getLoginUserId();
+            trainerService.modifyOpenChatLink(trainerIdx, openChatLink);
+            return new BaseResponse<>("오픈채팅링크가 변경되었습니다.");
+        } catch(BusinessException e) {
+            return new BaseResponse<>(e.getErrorCode());
+        }
+    }
 }
