@@ -26,4 +26,6 @@ public class ChatInfoDto {
 
     private Long matchingId;
     private String trainerProfile;
+    private String trainerLocation;
+    private String customerProfile;
 }

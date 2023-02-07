@@ -195,4 +195,10 @@ public class TrainerService {
         return trainerInfo;
 
     }
+
+    @Transactional
+    public void modifyOpenChatLink(Long userIdx, String openChatLink){
+        Account user = accountRepository.findById(userIdx).orElseThrow(() -> new BusinessException(INVALID_USERIDX));
+        user.getTrainer().modifyOpenChatLink(openChatLink);
+    }
 }

@@ -12,8 +12,8 @@ import org.springframework.web.filter.ForwardedHeaderFilter;
 @EnableJpaAuditing
 @SpringBootApplication
 @OpenAPIDefinition(servers = {
-        @Server(url = "${custom.http.server}", description = "Generated server url"),
         @Server(url = "${custom.https.server}", description = "Security Verification server url"),
+        @Server(url = "${custom.http.server}", description = "Generated server url"),
         @Server(url = "${custom.localhost.server}"+"${server.port}", description = "Generated server url"),
 })
 public class FitSpringApplication {
