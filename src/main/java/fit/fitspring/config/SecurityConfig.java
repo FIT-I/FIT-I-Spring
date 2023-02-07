@@ -73,7 +73,7 @@ public class SecurityConfig {
 
                 .and()
                 .authorizeHttpRequests()
-                .requestMatchers("/api/accounts/customer/**", "/api/accounts/trainer", "/api/accounts/login",
+                .requestMatchers("/api/accounts/customer/**", "/api/accounts/trainer/**", "/api/accounts/login",
                         "/api/accounts/terms", "/api/accounts/password/**", "/api/accounts/email/**", "/api/communal/terms",
                         "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/api/accounts/test").permitAll()
                 //.requestMatchers(PathRequest.toH2Console()).permitAll()

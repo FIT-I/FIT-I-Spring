@@ -40,6 +40,7 @@ public enum ErrorCode {
     POST_ACCOUNTS_EMPTY_PWD(false, 3014, "비밀번호를 입력하지 않으셨습니다."),
     ALREADY_REGISTERED_REVIEW(false, 3015, "이미 리뷰를 작성한 트레이너입니다."),
     DENIED_REGISTER(false, 3016,"탈퇴한 계정으로 다시 가입할 수 없습니다."),
+    POST_ACCOUNTS_EMPTY_MAJOR(false, 3017, "전공을 입력하지 않으셨습니다."),
 
     /*서버, DB 4000*/
     DATABASE_ERROR(false, 4000, "DB에 문제가 발생했습니다."),

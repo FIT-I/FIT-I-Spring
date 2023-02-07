@@ -71,11 +71,24 @@ public class AccountController {
         }
     }
 
-    @Operation(summary = "회원가입 validation", description = "Log-in VC#18에서 입력한 회원가입 정보의 validation을 진행하는 api")
+    @Operation(summary = "고객 회원가입 validation", description = "고객 Log-in VC#18에서 입력한 회원가입 정보의 validation을 진행하는 api\n"
+                                                                        + "## 입력값: name, email, password")
     @PostMapping("/customer/validation")
-    public BaseResponse<String> registerCustomerValidation(@RequestBody RegisterCustomerValidationDto registerDto){
+    public BaseResponse<String> registerCustomerValidation(@RequestBody RegisterValidationDto registerDto){
         try{
-            String result = accountService.registerCustomerValidation(registerDto);
+            String result = accountService.registerValidation(registerDto);
+            return new BaseResponse<>(result);
+        } catch(BusinessException e){
+            return new BaseResponse<>(e.getErrorCode());
+        }
+    }
+
+    @Operation(summary = "트레이너 회원가입 validation", description = "트레이너 Log-in VC#21에서 입력한 회원가입 정보의 validation을 진행하는 api\n"
+                                                                         +  "## 입력값: name, email, password")
+    @PostMapping("/trainer/validation")
+    public BaseResponse<String> registerTrainerValidation(@RequestBody RegisterValidationDto registerDto){
+        try{
+            String result = accountService.registerValidation(registerDto);
             return new BaseResponse<>(result);
         } catch(BusinessException e){
             return new BaseResponse<>(e.getErrorCode());

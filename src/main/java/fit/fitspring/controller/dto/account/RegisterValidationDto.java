@@ -13,7 +13,7 @@ import lombok.ToString;
 @Builder
 @ToString
 @Schema(title = "회원정보")
-public class RegisterCustomerValidationDto {
+public class RegisterValidationDto {
     @Schema(description = "이름", example = "홍길동")
     private String name;
     @Schema(description = "이메일", example = "fiti@soongsil.ac.kr")
@@ -22,7 +22,7 @@ public class RegisterCustomerValidationDto {
     private String password;
 
 
-    public RegisterCustomerValidationDto(String name, String email, String password) {
+    public RegisterValidationDto(String name, String email, String password) {
         this.name = name;
         this.email = email;
         this.password = password;

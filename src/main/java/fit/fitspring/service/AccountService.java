@@ -9,7 +9,6 @@ import fit.fitspring.exception.common.BusinessException;
 import fit.fitspring.exception.account.DuplicatedAccountException;
 import fit.fitspring.exception.common.ErrorCode;
 import fit.fitspring.jwt.TokenProvider;
-import fit.fitspring.jwt.RedisUtil;
 import fit.fitspring.utils.AES128;
 import fit.fitspring.utils.S3Uploader;
 import fit.fitspring.utils.ValidationRegex;
@@ -24,17 +23,13 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -159,7 +154,7 @@ public class AccountService {
         }
     }
 
-    public String registerCustomerValidation(RegisterCustomerValidationDto registerDto){
+    public String registerValidation(RegisterValidationDto registerDto){
         // 이름 null 확인 + 공백 확인
         if (registerDto.getName() ==null || registerDto.getName().trim().length() == 0 ) {
             throw new BusinessException(ErrorCode.POST_ACCOUNTS_EMPTY_NAME);
@@ -190,14 +185,6 @@ public class AccountService {
         else{
             return "validation에 통과하였습니다.";
         }
-
-//            // 저장해보고 -> 여기서 중복 걸리면 catch로 넘어감
-//            Account account = registerDto.toEntity();
-//            accountRepository.save(account);
-//            // 안 걸리고 넘어오면 DB 내용 삭제하기
-//            accountRepository.delete(account);
-//            // 그리고 return 값 반환
-//            return "validation에 통과하였습니다.";
     }
 
     @Transactional
@@ -218,6 +205,22 @@ public class AccountService {
         if (registerDto.getPassword() ==null || registerDto.getPassword().trim().length() == 0 ) {
             throw new BusinessException(ErrorCode.POST_ACCOUNTS_EMPTY_PWD);
         }
+        // 전공 입력 확인 + 공백 확인
+        if (registerDto.getMajor() ==null || registerDto.getMajor().trim().length() == 0 ) {
+            throw new BusinessException(ErrorCode.POST_ACCOUNTS_EMPTY_MAJOR);
+        }
+        // db 중복 이메일 체크
+        if (checkEmail(registerDto.getEmail()) == true) {
+            // 탈퇴한 전적이 있는 계정인가?
+            if(checkState(registerDto.getEmail()).equals("D")){
+                throw new BusinessException(ErrorCode.DENIED_REGISTER);
+            }
+            // 이미 가입된 계정인가? (active, inactive)
+            else{
+                throw new DuplicatedAccountException();
+            }
+        }
+
 
         String pwd;
         String email = registerDto.getEmail();
