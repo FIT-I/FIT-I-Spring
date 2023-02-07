@@ -117,6 +117,18 @@ public class AccountService {
         if (registerDto.getPassword() ==null || registerDto.getPassword().trim().length() == 0 ) {
             throw new BusinessException(ErrorCode.POST_ACCOUNTS_EMPTY_NAME);
         }
+        // db 중복 이메일 체크
+        if (checkEmail(registerDto.getEmail()) == true) {
+            // 탈퇴한 전적이 있는 계정인가?
+            if(checkState(registerDto.getEmail()).equals("D")){
+                throw new BusinessException(ErrorCode.DENIED_REGISTER);
+            }
+            // 이미 가입된 계정인가? (active, inactive)
+            else{
+                throw new DuplicatedAccountException();
+            }
+        }
+
 
         String pwd;
         String email = registerDto.getEmail();
@@ -148,35 +160,44 @@ public class AccountService {
     }
 
     public String registerCustomerValidation(RegisterCustomerValidationDto registerDto){
-        try{
-            // 이름 null 확인 + 공백 확인
-            if (registerDto.getName() ==null || registerDto.getName().trim().length() == 0 ) {
-                throw new BusinessException(ErrorCode.POST_ACCOUNTS_EMPTY_NAME);
-            }
-            // eamil null 확인
-            if (registerDto.getEmail() == null || registerDto.getEmail().trim().length() == 0) {
-                throw new BusinessException(ErrorCode.POST_ACCOUNTS_EMPTY_EMAIL);
-            }
-            // email 형식 확인
-            if (!ValidationRegex.isRegexEmail(registerDto.getEmail())){
-                throw new BusinessException(ErrorCode.POST_ACCOUNTS_INVALID_EMAIL);
-            }
-            // pwd null 확인 + 공백 확인
-            if (registerDto.getPassword() ==null || registerDto.getPassword().trim().length() == 0 ) {
-                throw new BusinessException(ErrorCode.POST_ACCOUNTS_EMPTY_PWD);
-            }
-
-            // 저장해보고 -> 여기서 중복 걸리면 catch로 넘어감
-            Account account = registerDto.toEntity();
-            accountRepository.save(account);
-            // 안 걸리고 넘어오면 DB 내용 삭제하기
-            accountRepository.delete(account);
-            // 그리고 return 값 반환
-            return "validation에 통과하였습니다.";
-
-        } catch (DataIntegrityViolationException e){
-            throw new DuplicatedAccountException();
+        // 이름 null 확인 + 공백 확인
+        if (registerDto.getName() ==null || registerDto.getName().trim().length() == 0 ) {
+            throw new BusinessException(ErrorCode.POST_ACCOUNTS_EMPTY_NAME);
         }
+        // eamil null 확인
+        else if (registerDto.getEmail() == null || registerDto.getEmail().trim().length() == 0) {
+            throw new BusinessException(ErrorCode.POST_ACCOUNTS_EMPTY_EMAIL);
+        }
+        // email 형식 확인
+        else if (!ValidationRegex.isRegexEmail(registerDto.getEmail())){
+            throw new BusinessException(ErrorCode.POST_ACCOUNTS_INVALID_EMAIL);
+        }
+        // pwd null 확인 + 공백 확인
+        else if (registerDto.getPassword() ==null || registerDto.getPassword().trim().length() == 0 ) {
+            throw new BusinessException(ErrorCode.POST_ACCOUNTS_EMPTY_PWD);
+        }
+        // db 중복 이메일 체크
+        else if (checkEmail(registerDto.getEmail()) == true) {
+            // 탈퇴한 전적이 있는 계정인가?
+            if(checkState(registerDto.getEmail()).equals("D")){
+                throw new BusinessException(ErrorCode.DENIED_REGISTER);
+            }
+            // 이미 가입된 계정인가? (active, inactive)
+            else{
+                throw new DuplicatedAccountException();
+            }
+        }
+        else{
+            return "validation에 통과하였습니다.";
+        }
+
+//            // 저장해보고 -> 여기서 중복 걸리면 catch로 넘어감
+//            Account account = registerDto.toEntity();
+//            accountRepository.save(account);
+//            // 안 걸리고 넘어오면 DB 내용 삭제하기
+//            accountRepository.delete(account);
+//            // 그리고 return 값 반환
+//            return "validation에 통과하였습니다.";
     }
 
     @Transactional
@@ -284,6 +305,15 @@ public class AccountService {
     public boolean checkEmail(String email) throws BusinessException {
         try{
             return accountRepository.findByEmail(email).isPresent();
+        } catch (Exception e) {
+            throw new BusinessException(ErrorCode.DATABASE_ERROR);
+        }
+    }
+
+    // db에 존재하는 email의 status 확인
+    public String checkState(String email) throws BusinessException {
+        try{
+            return accountRepository.findByEmail(email).get().getUserState();
         } catch (Exception e) {
             throw new BusinessException(ErrorCode.DATABASE_ERROR);
         }
