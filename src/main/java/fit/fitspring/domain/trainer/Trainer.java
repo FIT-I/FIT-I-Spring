@@ -72,6 +72,9 @@ public class Trainer {
     @OneToMany(mappedBy = "trainer")
     private List<MatchingOrder> matchingOrderList = new ArrayList<>();
 
+    @Column(name = "open_Chat_link")
+    private String openChatLink;
+
     public void updateInfo(int priceHour, String intro, String service){
         this.priceHour = priceHour;
         this.intro = intro;

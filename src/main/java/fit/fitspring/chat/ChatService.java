@@ -110,6 +110,8 @@ public class ChatService {
                 .createdAt(match.getCreatedDate())
                 .matchingId(match.getId())
                 .trainerProfile(match.getTrainer().getUserImg().getProfile())
+                .trainerLocation(match.getTrainer().getUser().getLocation())
+                .customerProfile(match.getCustomer().getProfile())
                 .build();
     }
 }
