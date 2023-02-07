@@ -39,7 +39,7 @@ public class NotificationController {
     }
 
     @Operation(summary = "알림 전송", description = "해당 유저에게 전송한다. By Id")
-    @PostMapping("/users/{email}")
+    @PostMapping("/users/{id}")
     public ResponseEntity sendNotificationById(@Parameter(description = "Id") @RequestParam Long id,
                                                   @Parameter(description = "알림 제목") @RequestBody String title,
                                                   @Parameter(description = "알림 내용") @RequestBody String body) throws Exception {
