@@ -12,7 +12,9 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
 
@@ -96,5 +98,14 @@ public class CommunalController {
         }catch(BusinessException e){
             return new BaseResponse<>(e.getErrorCode());
         }
+    }
+
+    @Operation(summary = "우편 번호 로딩(미완)", description = "카카오 우편 번호 서비스 로딩")
+    @GetMapping("/zipcode")
+    public ModelAndView zipcode(){
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("zipcode");
+
+        return modelAndView;
     }
 }

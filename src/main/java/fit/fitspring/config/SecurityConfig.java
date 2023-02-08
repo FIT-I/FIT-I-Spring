@@ -9,9 +9,11 @@ import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -42,6 +44,7 @@ public class SecurityConfig {
         this.jwtAccessDeniedHandler = jwtAccessDeniedHandler;
         this.redisTemplate = redisTemplate;
     }
+
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -75,6 +78,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests()
                 .requestMatchers("/api/accounts/customer/**", "/api/accounts/trainer/**", "/api/accounts/login",
                         "/api/accounts/terms", "/api/accounts/password/**", "/api/accounts/email/**", "/api/communal/terms",
+                        "/api/communal/zipcode",
                         "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/api/accounts/test").permitAll()
                 //.requestMatchers(PathRequest.toH2Console()).permitAll()
                 .anyRequest().authenticated()
@@ -84,4 +88,11 @@ public class SecurityConfig {
 
         return httpSecurity.build();
     }
+
+//    @Bean
+//    public WebSecurityCustomizer webSecurityCustomizer(){
+//        return web -> {
+//            web.ignoring()
+//        };
+//    }
 }
