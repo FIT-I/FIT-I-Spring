@@ -446,4 +446,29 @@ public class AccountService {
         termAgreeRepository.save(termAgree2);
         termAgreeRepository.save(termAgree3);
     }
+
+    public String emailValidationCheck(String email) {
+        // eamil null 확인
+        if (email == null || email.trim().length() == 0) {
+            throw new BusinessException(ErrorCode.POST_ACCOUNTS_EMPTY_EMAIL);
+        }
+        // email 형식 확인
+        else if (!ValidationRegex.isRegexEmail(email)){
+            throw new BusinessException(ErrorCode.POST_ACCOUNTS_INVALID_EMAIL);
+        }
+        // db 중복 이메일 체크
+        else if (checkEmail(email) == true) {
+            // 탈퇴한 전적이 있는 계정인가?
+            if(checkState(email).equals("D")){
+                throw new BusinessException(ErrorCode.DENIED_REGISTER);
+            }
+            // 이미 가입된 계정인가? (active, inactive)
+            else{
+                throw new DuplicatedAccountException();
+            }
+        }
+        else{
+            return "validation에 통과하였습니다.";
+        }
+    }
 }
