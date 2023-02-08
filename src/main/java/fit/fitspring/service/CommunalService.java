@@ -11,6 +11,7 @@ import fit.fitspring.utils.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import static fit.fitspring.exception.common.ErrorCode.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -165,5 +166,13 @@ public class CommunalService {
         } catch (Exception e){
             throw new BusinessException(ErrorCode.DB_MODIFY_ERROR);
         }
+    }
+    @Transactional
+    public String getUserState(Long userIdx) throws BusinessException{
+        Optional<Account> optional = accountRepository.findById(userIdx);
+        if(optional.isEmpty()){
+            throw new BusinessException(ACCOUNT_NOT_FOUND);
+        }
+        return optional.get().getUserState();
     }
 }
