@@ -9,13 +9,22 @@ import fit.fitspring.domain.redBell.RedBell;
 import fit.fitspring.domain.redBell.RedBellRepository;
 import fit.fitspring.domain.trainer.Trainer;
 import fit.fitspring.domain.trainer.TrainerRepository;
+import fit.fitspring.exception.common.BusinessException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
+import static fit.fitspring.exception.common.ErrorCode.*;
+
+
 
 @RequiredArgsConstructor
 @Service
@@ -33,10 +42,32 @@ public class RedBellService {
 
     @Transactional
     public void saveRedBell(Long custId, RedBellReq req){
+        if(checkLastRedBell(custId, req.getTrainerId())){
+            Account customer = accountRepository.getReferenceById(custId);
+            Trainer trainer = trainerRepository.getReferenceById(req.getTrainerId());
+            RedBell redBell = RedBell.builder().customer(customer).trainer(trainer).reason(req.getReason()).build();
+            redBellRepository.save(redBell);
+            if(redBellRepository.countByTrainer(trainer).compareTo(5L)==1){ //5번 이상 신고 당할 경우
+                //trainer의 state "D"로 변경
+                trainer.getUser().block();
+            }
+        }else{
+            throw new BusinessException(WAITING_24HOURS);
+        }
+    }
+
+    @Transactional
+    public boolean checkLastRedBell(Long custId, Long trainerId){
         Account customer = accountRepository.getReferenceById(custId);
-        Trainer trainer = trainerRepository.getReferenceById(req.getTrainerId());
-        RedBell redBell = RedBell.builder().customer(customer).trainer(trainer).reason(req.getReason()).build();
-        redBellRepository.save(redBell);
+        Trainer trainer = trainerRepository.getReferenceById(trainerId);
+        Optional<RedBell> lastRedBell = redBellRepository.findFirstByCustomerAndTrainerOrderByCreatedDateDesc(customer,trainer);
+        if(lastRedBell.isPresent()){
+            long hourGap = ChronoUnit.HOURS.between(lastRedBell.get().getCreatedDate(), LocalDateTime.now());
+            if(hourGap<24){//트레이너를 신고한지 24시간이 지나지 않음
+                return false;
+            }
+        }
+        return true;
     }
 
 }

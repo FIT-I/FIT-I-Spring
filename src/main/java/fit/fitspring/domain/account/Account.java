@@ -59,9 +59,6 @@ public class Account extends BaseTimeEntity implements UserDetails {
     @Column(name = "user_role")
     private AccountType accountType;
 
-    @Column(name="user_status")
-    private String status;
-
     @Builder.Default
     @OneToMany(mappedBy = "customer")
     private List<Review> reviewList = new ArrayList<>();
@@ -150,4 +147,6 @@ public class Account extends BaseTimeEntity implements UserDetails {
     public void alarmOn(){
         this.alarmState = "on";
     }
+
+    public void block(){ this.userState = "D" ;}
 }
