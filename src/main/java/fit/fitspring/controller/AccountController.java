@@ -140,6 +140,17 @@ public class AccountController {
         }
     }
 
+    @Operation(summary = "인증 이메일 validation", description = "트레이너 인증 이메일 validation\n" + "이메일 null, 공백 입력, 형식 확인, DB 저장 or 탈퇴 확인")
+    @GetMapping("/email/validation/{email}")
+    public BaseResponse<String> emailValidation(@Parameter(description = "이메일")@PathVariable String email){
+        try{
+            String result = accountService.emailValidationCheck(email);
+            return new BaseResponse<>(result);
+        } catch (BusinessException e){
+            return new BaseResponse<>(e.getErrorCode());
+        }
+    }
+
     @Operation(summary = "카카오로그인(미완)", description = "카카오로그인(Request)")
     @PostMapping("/kakao")
     public ResponseEntity userKakaoLogin(){
