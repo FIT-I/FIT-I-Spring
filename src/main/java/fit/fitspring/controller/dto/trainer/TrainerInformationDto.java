@@ -42,4 +42,6 @@ public class TrainerInformationDto {
     private boolean matching_state;
     @Schema(description = "카테고리", example = "개인 PT")
     private String category;
+    @Schema(description = "오픈채팅링크", example = "http://open")
+    private String openChatLink;
 }
