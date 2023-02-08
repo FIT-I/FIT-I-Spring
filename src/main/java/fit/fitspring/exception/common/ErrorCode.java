@@ -66,9 +66,10 @@ public enum ErrorCode {
 
     /*알림 토큰 8000*/
     SOMEONE_HAS_FCM_TOKEN(false, 8001, "동일한 토큰을 타인이 가지고 있습니다."),
-    ALREADY_HAS_FCM_TOKEN(false, 8002, "동일한 토큰을 이미 가지고 있습니다.")
+    ALREADY_HAS_FCM_TOKEN(false, 8002, "동일한 토큰을 이미 가지고 있습니다."),
 
-
+    /*신고 9000*/
+    WAITING_24HOURS(false, 9001, "24시간 후에 신고해주세요."),
     ;
 
     private final boolean isSuccess;

@@ -1,6 +1,7 @@
 package fit.fitspring.service;
 
 import fit.fitspring.controller.dto.communal.ReviewDto;
+import fit.fitspring.controller.dto.trainer.EtcImgList;
 import fit.fitspring.controller.dto.trainer.TrainerInformationDto;
 import fit.fitspring.controller.dto.trainer.TrainerMainRes;
 import fit.fitspring.controller.dto.trainer.UpdateTrainerInfoReq;
@@ -185,9 +186,9 @@ public class TrainerService {
         }
         trainerInfo.setReviewDto(reviewList);
         List<EtcImg> etcImgList = userImg.get().getEtcImgList();
-        List<String> imageList = new ArrayList<>();
+        List<EtcImgList> imageList = new ArrayList<>();
         for(EtcImg i : etcImgList){
-            imageList.add(i.getEtcImg());
+            imageList.add(new EtcImgList(i));
         }
         trainerInfo.setImageList(imageList);
         trainerInfo.setMatching_state(optional.get().getUser().getUserState().equals("A"));
