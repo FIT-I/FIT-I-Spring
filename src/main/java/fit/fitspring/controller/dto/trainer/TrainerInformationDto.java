@@ -36,8 +36,8 @@ public class TrainerInformationDto {
     private String service;
     @Schema(description = "리뷰리스트", example = "{홍길동, profile1, 4, 2023.1.20, 좋아요")
     private List<ReviewDto> reviewDto;
-    @Schema(description = "사진및자격증리스트", example = "1.jpg")
-    private List<String> imageList;
+    @Schema(description = "사진및자격증리스트")
+    private List<EtcImgList> imageList;
     @Schema(description = "매칭 관리(on/off)", example = "true")
     private boolean matching_state;
     @Schema(description = "카테고리", example = "개인 PT")
