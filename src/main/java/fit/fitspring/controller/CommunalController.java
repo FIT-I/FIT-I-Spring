@@ -6,6 +6,7 @@ import fit.fitspring.exception.common.BusinessException;
 import fit.fitspring.response.BaseResponse;
 import fit.fitspring.service.CommunalService;
 import fit.fitspring.service.CustomerService;
+import fit.fitspring.utils.SecurityUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -80,6 +81,18 @@ public class CommunalController {
         try{
             communalService.modifyUserLocation(location);
             return new BaseResponse<>("매칭 위치를 변경하였습니다.");
+        }catch(BusinessException e){
+            return new BaseResponse<>(e.getErrorCode());
+        }
+    }
+
+    @Operation(summary = "유저의 state 확인", description = "유저의 state 확인(Response)")
+    @PatchMapping("/state")
+    public BaseResponse<StateDto> getUserState(){
+        try{
+            Long userIdx = SecurityUtil.getLoginUserId();
+            String state = communalService.getUserState(userIdx);
+            return new BaseResponse<>(new StateDto(state));
         }catch(BusinessException e){
             return new BaseResponse<>(e.getErrorCode());
         }
