@@ -43,6 +43,7 @@ public class SecurityConfig {
         this.redisTemplate = redisTemplate;
     }
 
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -75,6 +76,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests()
                 .requestMatchers("/api/accounts/customer/**", "/api/accounts/trainer/**", "/api/accounts/login",
                         "/api/accounts/terms", "/api/accounts/password/**", "/api/accounts/email/**", "/api/communal/terms",
+                        "/api/communal/zipcode",
                         "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/api/accounts/test").permitAll()
                 //.requestMatchers(PathRequest.toH2Console()).permitAll()
                 .anyRequest().authenticated()
