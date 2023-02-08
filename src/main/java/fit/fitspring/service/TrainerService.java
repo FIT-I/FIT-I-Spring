@@ -193,8 +193,8 @@ public class TrainerService {
         trainerInfo.setImageList(imageList);
         trainerInfo.setMatching_state(optional.get().getUser().getUserState().equals("A"));
         trainerInfo.setCategory(communalService.convertCategoryForClient(optional.get().getCategory()));
+        trainerInfo.setOpenChatLink(optional.get().getOpenChatLink());
         return trainerInfo;
-
     }
 
     @Transactional
