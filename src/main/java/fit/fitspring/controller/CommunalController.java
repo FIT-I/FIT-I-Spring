@@ -99,12 +99,25 @@ public class CommunalController {
         }
     }
 
-    @Operation(summary = "우편 번호 로딩(미완)", description = "카카오 우편 번호 서비스 로딩")
-    @GetMapping("/zipcode")
+    @Operation(summary = "카카오 우편 번호 페이지 로딩 (거의 완성)", description = "카카오 우편 번호 서비스 로딩")
+    @GetMapping("/zipcode/page")
     public ModelAndView zipcode(){
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("zipcode");
+        modelAndView.addObject("address", new ZipCodeDto());
 
         return modelAndView;
     }
+
+    @Operation(summary = "카카오 우편 번호 입력값 반환 (거의 완성)", description = "카카오 우편 번호 입력값 클라에게 반환해주는 api")
+    @GetMapping("/zipcode/address")
+    public BaseResponse<ZipCodeDto> zipcodeResponse(ZipCodeDto zipCodeDto){
+        try{
+            // 생성한 값 반환
+            return new BaseResponse<>(zipCodeDto);
+        } catch(BusinessException e){
+            return new BaseResponse<>(e.getErrorCode());
+        }
+    }
+
 }
