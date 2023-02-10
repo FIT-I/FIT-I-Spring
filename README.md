@@ -1,4 +1,6 @@
 # FIT-I-Spring
+![](https://velog.velcdn.com/images/bricksky/post/35f2ac84-73e3-4c61-bc18-39376c97fd21/image.png)
+&nbsp;&nbsp;
 
 ## Branch 전략 - Git Flow
 - main 브랜치는 배포 가능한 상태로 유지합니다.
