@@ -7,12 +7,14 @@
     <title>Kakao Zip-Code</title>
 </head>
 <body>
-    <input type="text" id="sample6_postcode" placeholder="우편번호">
-    <input type="button" onclick="sample6_execDaumPostcode()" value="우편번호 찾기"><br>
-    <input type="text" id="sample6_address" placeholder="주소"><br>
-    <input type="text" id="sample6_detailAddress" placeholder="상세주소">
-    <input type="text" id="sample6_extraAddress" placeholder="참고항목">
-
+    <form role="form" action="/api/communal/zipcode/address" th:object="${address}" method="get">
+        <input type="text" th:field="*{zipCode}" id="sample6_postcode" placeholder="우편번호">
+        <input type="button" onclick="sample6_execDaumPostcode()" value="우편번호 찾기"><br>
+        <input type="text" th:field="*{streetAddress}" id="sample6_address" placeholder="주소"><br>
+        <input type="text" th:field="*{detailAddress} "id="sample6_detailAddress" placeholder="상세주소">
+        <input type="text" th:field="*{extraAddress}" id="sample6_extraAddress" placeholder="참고항목">
+        <button type="submit">입력</button>
+    </form>
     <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
     <script th:inline="javascript">
         function sample6_execDaumPostcode() {
