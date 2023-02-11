@@ -199,7 +199,8 @@ public class TrainerService {
 
     @Transactional
     public void modifyOpenChatLink(Long userIdx, String openChatLink){
+        String originalLink = openChatLink.replace("#", "/");
         Account user = accountRepository.findById(userIdx).orElseThrow(() -> new BusinessException(INVALID_USERIDX));
-        user.getTrainer().modifyOpenChatLink(openChatLink);
+        user.getTrainer().modifyOpenChatLink(originalLink);
     }
 }
