@@ -44,4 +44,6 @@ public class TrainerInformationDto {
     private String category;
     @Schema(description = "오픈채팅링크", example = "http://open")
     private String openChatLink;
+    @Schema(description = "트레이터 상태", example = "A(매칭 활성화) I(매칭 비활성화) D(탈퇴)")
+    private String state;
 }

@@ -194,6 +194,7 @@ public class TrainerService {
         trainerInfo.setMatching_state(optional.get().getUser().getUserState().equals("A"));
         trainerInfo.setCategory(communalService.convertCategoryForClient(optional.get().getCategory()));
         trainerInfo.setOpenChatLink(optional.get().getOpenChatLink());
+        trainerInfo.setState(optional.get().getUser().getUserState());
         return trainerInfo;
     }
 
