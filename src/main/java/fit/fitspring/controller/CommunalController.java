@@ -99,7 +99,7 @@ public class CommunalController {
         }
     }
 
-    @Operation(summary = "카카오 우편 번호 페이지 로딩 (거의 완성)", description = "카카오 우편 번호 서비스 로딩")
+    @Operation(summary = "카카오 우편 번호 페이지 로딩 (거의 완성)", description = "카카오 우편 번호 서비스 페이지 로딩")
     @GetMapping("/zipcode/page")
     public ModelAndView zipcode(){
         ModelAndView modelAndView = new ModelAndView();
