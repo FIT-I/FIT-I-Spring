@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import static fit.fitspring.exception.common.ErrorCode.*;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -66,6 +67,7 @@ public class CommunalService {
             reviewDto.setCreatedAt(i.getCreatedDate().toLocalDate());
             reviewDtoList.add(reviewDto);
         }
+        Collections.reverse(reviewDtoList);
         return reviewDtoList;
     }
 
@@ -87,9 +89,6 @@ public class CommunalService {
         trainerInfo.setIntro(optional.get().getIntro());
         trainerInfo.setService(optional.get().getService());
         List<ReviewDto> reviewList = getTrainerReviewList(trainerIdx);
-        if(reviewList.toArray().length > 3){
-            reviewList = reviewList.subList(0, 3);
-        }
         trainerInfo.setReviewDto(reviewList);
         List<EtcImg> etcImgList = userImg.get().getEtcImgList();
         List<String> imageList = new ArrayList<>();
