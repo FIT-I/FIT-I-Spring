@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
@@ -22,7 +23,7 @@ public class ChatInfoDto {
     private String pickUp;
     private String customerLocation;
 
-    private LocalDateTime createdAt;
+    private LocalDate createdAt;
 
     private Long matchingId;
     private String trainerProfile;
