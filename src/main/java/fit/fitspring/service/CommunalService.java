@@ -96,6 +96,7 @@ public class CommunalService {
             imageList.add(i.getEtcImg());
         }
         trainerInfo.setImageList(imageList);
+        trainerInfo.setState(optional.get().getUser().getUserState());
         return trainerInfo;
     }
 
