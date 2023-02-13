@@ -36,4 +36,6 @@ public class TrainerInformationForUserDto {
     private List<ReviewDto> reviewDto;
     @Schema(description = "사진및자격증리스트", example = "1.jpg")
     private List<String> imageList;
+    @Schema(description = "트레이터 상태", example = "A(매칭 활성화) I(매칭 비활성화) D(탈퇴)")
+    private String state;
 }
