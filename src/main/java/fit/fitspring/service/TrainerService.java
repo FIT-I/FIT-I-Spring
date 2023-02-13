@@ -181,9 +181,6 @@ public class TrainerService {
         trainerInfo.setIntro(optional.get().getIntro());
         trainerInfo.setService(optional.get().getService());
         List<ReviewDto> reviewList = communalService.getTrainerReviewList(trainerIdx);
-        if(reviewList.toArray().length > 3){
-            reviewList = reviewList.subList(0, 3);
-        }
         trainerInfo.setReviewDto(reviewList);
         List<EtcImg> etcImgList = userImg.get().getEtcImgList();
         List<EtcImgList> imageList = new ArrayList<>();
