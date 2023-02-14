@@ -55,9 +55,9 @@ public class RedBellService {
 
     @Transactional
     public void saveRedBellCustomer(Long trainerId, RedBellCustomerReq req){
-        if(checkLastRedBell(trainerId, req.getCustomerId(), "customer")){
-            Account customer = accountRepository.getReferenceById(trainerId);
-            Trainer trainer = trainerRepository.getReferenceById(req.getCustomerId());
+        if(checkLastRedBell(req.getCustomerId(), trainerId, "customer")){
+            Account customer = accountRepository.getReferenceById(req.getCustomerId());
+            Trainer trainer = trainerRepository.getReferenceById(trainerId);
             RedBell redBell = RedBell.builder().customer(customer).trainer(trainer).reason(req.getReason()).target("customer").build();
             redBellRepository.save(redBell);
             if(redBellRepository.countByCustomerAndTarget(customer,"customer").compareTo(5L)==1){ //5번 이상 신고 당할 경우

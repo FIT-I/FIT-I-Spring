@@ -49,6 +49,7 @@ public class RedBellController {
     @PostMapping("/customer")
     public BaseResponse<String> redBellCustomer(@RequestBody RedBellCustomerReq redBellCustomerReq){
         Long trainerId = SecurityUtil.getLoginUserId();
+        System.out.println("###########################trainer's IDx: " + trainerId);
         try {
             redBellService.saveRedBellCustomer(trainerId, redBellCustomerReq);
         } catch (BusinessException e) {
