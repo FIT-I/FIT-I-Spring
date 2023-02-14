@@ -45,11 +45,10 @@ public class RedBellController {
         return new BaseResponse<>("신고가 접수되었습니다.");
     }
 
-    @Operation(summary = "트레이너가 고객 신고 하기 (미완성)", description = "신고 하기(request, response)")
+    @Operation(summary = "트레이너가 고객 신고 하기", description = "신고 하기(request, response)")
     @PostMapping("/customer")
     public BaseResponse<String> redBellCustomer(@RequestBody RedBellCustomerReq redBellCustomerReq){
         Long trainerId = SecurityUtil.getLoginUserId();
-        System.out.println("###########################trainer's IDx: " + trainerId);
         try {
             redBellService.saveRedBellCustomer(trainerId, redBellCustomerReq);
         } catch (BusinessException e) {

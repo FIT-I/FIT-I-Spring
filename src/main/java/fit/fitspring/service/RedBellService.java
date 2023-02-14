@@ -44,7 +44,7 @@ public class RedBellService {
             Trainer trainer = trainerRepository.getReferenceById(req.getTrainerId());
             RedBell redBell = RedBell.builder().customer(customer).trainer(trainer).reason(req.getReason()).target("trainer").build();
             redBellRepository.save(redBell);
-            if(redBellRepository.countByTrainerAndTarget(trainer, "trainer").compareTo(5L)==1){ //5번 이상 신고 당할 경우
+            if(redBellRepository.countByTrainerAndTarget(trainer, "trainer").compareTo(4L)==1){ //5번 이상 신고 당할 경우
                 //trainer의 state "D"로 변경
                 trainer.getUser().block();
             }
@@ -60,7 +60,7 @@ public class RedBellService {
             Trainer trainer = trainerRepository.getReferenceById(trainerId);
             RedBell redBell = RedBell.builder().customer(customer).trainer(trainer).reason(req.getReason()).target("customer").build();
             redBellRepository.save(redBell);
-            if(redBellRepository.countByCustomerAndTarget(customer,"customer").compareTo(5L)==1){ //5번 이상 신고 당할 경우
+            if(redBellRepository.countByCustomerAndTarget(customer,"customer").compareTo(4L)==1){ //5번 이상 신고 당할 경우
                 //customer의 state "D"로 변경
                 customer.block();
             }
