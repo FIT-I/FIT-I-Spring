@@ -348,14 +348,14 @@ public class AccountService {
     // 토큰 재발급
     public TokenDto reissue(String accessToken, String refreshToken) throws JsonProcessingException {
         // 토큰에서 이메일 추출
-        String email = tokenProvider.getEmail(accessToken);
+        String email = tokenProvider.getEmail(refreshToken);
         System.out.println("email in token: " + email);
 
         // 이메일로 비번 추출
         String pwd = accountRepository.findByEmail(email).get().getPassword();
 
         // refreshToken의 만료 시간 유효성 검증
-        if (!tokenProvider.validateToken(refreshToken)) {
+        if (!tokenProvider.getExpirationRefreshToken(refreshToken)) {
             throw new BusinessException(ErrorCode.INVALID_JWT);
         }
 
@@ -373,7 +373,7 @@ public class AccountService {
         TokenDto jwt = tokenProvider.createToken(authentication);
 
         // 4. 기존 토큰 로그아웃
-        logout(accessToken, refreshToken);
+        logoutReissue(refreshToken);
 
         return jwt;
     }
@@ -387,6 +387,16 @@ public class AccountService {
         Long expirationRefresh = tokenProvider.getExpiration(refreshToken);
 
         redisTemplate.opsForValue().set(accessToken, "logout", expirationAccess, TimeUnit.MILLISECONDS);
+        redisTemplate.opsForValue().set(refreshToken, "logout", expirationRefresh, TimeUnit.MILLISECONDS);
+    }
+
+    public void logoutReissue(String refreshToken){
+//        redisUtil.setBlackList(accessToken, "accessToken", 1800);
+//        redisUtil.setBlackList(refreshToken, "refreshToken", 60400);
+        //Long expirationAccess = tokenProvider.getExpiration(accessToken);
+        Long expirationRefresh = tokenProvider.getExpiration(refreshToken);
+
+        //redisTemplate.opsForValue().set(accessToken, "logout", expirationAccess, TimeUnit.MILLISECONDS);
         redisTemplate.opsForValue().set(refreshToken, "logout", expirationRefresh, TimeUnit.MILLISECONDS);
     }
 

@@ -1,6 +1,7 @@
 package fit.fitspring.controller;
 
 import fit.fitspring.controller.dto.redBell.ReasonListRes;
+import fit.fitspring.controller.dto.redBell.RedBellCustomerReq;
 import fit.fitspring.controller.dto.redBell.RedBellReq;
 import fit.fitspring.controller.dto.trainer.UpdateTrainerInfoReq;
 import fit.fitspring.domain.redBell.ReasonForRedBell;
@@ -32,13 +33,25 @@ public class RedBellController {
         return new BaseResponse<>(redBellService.getReasonList());
     }
 
-    @Operation(summary = "신고 하기", description = "신고 하기(request,response)")
+    @Operation(summary = "고객이 트레이너 신고 하기", description = "신고 하기(request,response)")
     @PostMapping("")
     public BaseResponse<String> getReasonList(@RequestBody RedBellReq redBellReq){
         Long custId = SecurityUtil.getLoginUserId();
         try {
             redBellService.saveRedBell(custId, redBellReq);
         }catch (BusinessException e){
+            return new BaseResponse<>(e.getErrorCode());
+        }
+        return new BaseResponse<>("신고가 접수되었습니다.");
+    }
+
+    @Operation(summary = "트레이너가 고객 신고 하기", description = "신고 하기(request, response)")
+    @PostMapping("/customer")
+    public BaseResponse<String> redBellCustomer(@RequestBody RedBellCustomerReq redBellCustomerReq){
+        Long trainerId = SecurityUtil.getLoginUserId();
+        try {
+            redBellService.saveRedBellCustomer(trainerId, redBellCustomerReq);
+        } catch (BusinessException e) {
             return new BaseResponse<>(e.getErrorCode());
         }
         return new BaseResponse<>("신고가 접수되었습니다.");

@@ -30,6 +30,10 @@ public class RedBell extends BaseTimeEntity {
 
     @Enumerated(EnumType.STRING) @Column(name = "redbell_reason")
     private ReasonForRedBell reason;
+
+    @Column(name = "redbell_target")
+    private String target;
+
 }
 
 

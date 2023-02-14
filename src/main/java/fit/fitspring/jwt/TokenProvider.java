@@ -49,8 +49,8 @@ public class TokenProvider implements InitializingBean {
             RedisTemplate redisTemplate) {
 
         this.secret = secret;
-        this.accessTokenValidityInMilliseconds = accessTokenValidityInSeconds * 48 * 30 * 10000000; // 1달 - test를 위해 길게 잡음
-        this.refreshTokenValidityInMilliseconds = refreshTokenValidityInMilliseconds * 48 * 30 * 10000000; // 1주 * 48 (약 1년)
+        this.accessTokenValidityInMilliseconds = (accessTokenValidityInSeconds * 1000) * 1000000; // (default) 30분
+        this.refreshTokenValidityInMilliseconds = (refreshTokenValidityInMilliseconds * 2000) * 1000000; // (default)2주
         this.redisTemplate = redisTemplate;
     }
 
@@ -124,6 +124,9 @@ public class TokenProvider implements InitializingBean {
             if (redisTemplate.hasKey(token)) {
                 throw new BusinessException(ErrorCode.ACCOUNT_NOT_FOUND);
             }
+//            if(getExpirationRefreshToken(token)){
+//                return true;
+//            }
             return true;
         } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
             //throw new BusinessException(ErrorCode.WRONG_JWT);
@@ -153,6 +156,25 @@ public class TokenProvider implements InitializingBean {
 
         Long now = new Date().getTime();
         return (expiration.getTime() - now);
+    }
+
+    public Boolean getExpirationRefreshToken(String refreshToken) {
+        Date expiration = Jwts
+                .parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(refreshToken)
+                .getBody()
+                .getExpiration();
+
+        Long now = new Date().getTime();
+        System.out.println("expiration: " +expiration.getTime());
+        System.out.println("now: " + now);
+
+        if(expiration.getTime() - now > 0){
+            return true;
+        }
+        return false;
     }
 
     // 토큰에서 회원 정보 추출하기
