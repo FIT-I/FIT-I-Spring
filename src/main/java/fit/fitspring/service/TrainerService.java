@@ -1,10 +1,11 @@
 package fit.fitspring.service;
 
-import fit.fitspring.controller.dto.communal.ReviewDto;
+import fit.fitspring.controller.dto.trainer.ReviewDto;
 import fit.fitspring.controller.dto.trainer.EtcImgList;
 import fit.fitspring.controller.dto.trainer.TrainerInformationDto;
 import fit.fitspring.controller.dto.trainer.TrainerMainRes;
 import fit.fitspring.controller.dto.trainer.UpdateTrainerInfoReq;
+import fit.fitspring.domain.review.Review;
 import fit.fitspring.domain.trainer.*;
 import fit.fitspring.domain.account.Account;
 import fit.fitspring.domain.account.AccountRepository;
@@ -24,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -180,7 +182,7 @@ public class TrainerService {
         trainerInfo.setCost(String.valueOf(optional.get().getPriceHour()));
         trainerInfo.setIntro(optional.get().getIntro());
         trainerInfo.setService(optional.get().getService());
-        List<ReviewDto> reviewList = communalService.getTrainerReviewList(trainerIdx);
+        List<ReviewDto> reviewList = getTrainerReviewList(trainerIdx);
         trainerInfo.setReviewDto(reviewList);
         List<EtcImg> etcImgList = userImg.get().getEtcImgList();
         List<EtcImgList> imageList = new ArrayList<>();
@@ -200,5 +202,27 @@ public class TrainerService {
         String originalLink = openChatLink.replace("#", "/");
         Account user = accountRepository.findById(userIdx).orElseThrow(() -> new BusinessException(INVALID_USERIDX));
         user.getTrainer().modifyOpenChatLink(originalLink);
+    }
+
+    @Transactional
+    public List<ReviewDto> getTrainerReviewList(Long trainerIdx){
+        Optional<Trainer> optional = trainerRepository.findById(trainerIdx);
+        if(optional.isEmpty()) {
+            throw new BusinessException(ErrorCode.INVALID_TRAINERIDX);
+        }
+        List<Review> reviewList = optional.get().getReviewList();
+        List<ReviewDto> reviewDtoList = new ArrayList<>();
+        for(Review i : reviewList){
+            ReviewDto reviewDto = new ReviewDto();
+            reviewDto.setName(i.getCustomer().getName());
+            reviewDto.setProfile(i.getCustomer().getProfile());
+            reviewDto.setGrade(i.getGrade());
+            reviewDto.setContents(i.getContent());
+            reviewDto.setCreatedAt(i.getCreatedDate().toLocalDate());
+            reviewDto.setCustomerIdx(i.getCustomer().getId());
+            reviewDtoList.add(reviewDto);
+        }
+        Collections.reverse(reviewDtoList);
+        return reviewDtoList;
     }
 }

@@ -1,6 +1,6 @@
 package fit.fitspring.controller.dto.trainer;
 
-import fit.fitspring.controller.dto.communal.ReviewDto;
+import fit.fitspring.controller.dto.trainer.ReviewDto;
 import fit.fitspring.domain.trainer.Category;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
