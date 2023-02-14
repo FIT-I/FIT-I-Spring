@@ -49,7 +49,7 @@ public class TokenProvider implements InitializingBean {
             RedisTemplate redisTemplate) {
 
         this.secret = secret;
-        this.accessTokenValidityInMilliseconds = (accessTokenValidityInSeconds * 1000)/ 30 / 2; // (default) 30분 - (test) 30초
+        this.accessTokenValidityInMilliseconds = (accessTokenValidityInSeconds * 1000); // (default) 30분 - (test) 30초
         this.refreshTokenValidityInMilliseconds = refreshTokenValidityInMilliseconds * 2000; // (default)2주
         this.redisTemplate = redisTemplate;
     }
