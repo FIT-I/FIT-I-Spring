@@ -12,6 +12,6 @@ import java.util.Optional;
 @Repository
 public interface RedBellRepository extends JpaRepository<RedBell, Long> {
     Optional<RedBell> findFirstByCustomerAndTrainerAndTargetOrderByCreatedDateDesc(@Param("customer") Account customer,@Param("trainer") Trainer trainer, @Param("target") String target);
-    Long countByTrainerAndTarget(Trainer trainer, String target);
-    Long countByCustomerAndTarget(Account customer, String target);
+    Long countByTrainerAndTarget(@Param("trainer") Trainer trainer, @Param("target") String target);
+    Long countByCustomerAndTarget(@Param("customer") Account customer, @Param("target") String target);
 }
